@@ -1,6 +1,6 @@
 package pl.dayfit.auroracore.type
 
-enum class EducationTypes {
+enum class EducationDegree {
     LOWER_SECONDARY_SCHOOL,
     UPPER_SECONDARY_SCHOOL,
     VOCATIONAL_SCHOOL,

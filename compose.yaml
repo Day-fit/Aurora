@@ -7,3 +7,17 @@ services:
       - 'POSTGRES_USER=${DB_USER}'
     ports:
       - '5432'
+
+  rabbitmq:
+    image: 'rabbitmq:4.1.0-management-alpine'
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "5552:5552"
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./definitions.json:/etc/rabbitmq/definitions.json:ro
+    command: >
+      bash -c "rabbitmq-plugins enable --offline rabbitmq_stream && rabbitmq-server"
+    profiles:
+      - production
