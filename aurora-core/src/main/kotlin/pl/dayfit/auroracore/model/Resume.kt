@@ -43,6 +43,8 @@ data class Resume(
 
     override fun hashCode(): Int {
         var result = age
+        result = 31 * result + (id?.hashCode() ?: 0)
+        result = 31 * result + userId.hashCode()
         result = 31 * result + name.hashCode()
         result = 31 * result + surname.hashCode()
         result = 31 * result + experience.hashCode()

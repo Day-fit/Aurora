@@ -21,17 +21,18 @@ class GenerationService(val resumeRepository: ResumeRepository) {
     @Transactional
     fun generateResume(requestDto: GenerationRequestDto, userId: UUID): GenerationResponseDto?
     {
+        requestDto.photo ?: return null
         val resume = Resume(
             null,
             userId,
-            requestDto.name,
-            requestDto.surname,
-            requestDto.age,
-            requestDto.experience,
+            requestDto.name!!,
+            requestDto.surname!!,
+            requestDto.age!!,
+            requestDto.experience!!,
             requestDto.skills,
-            requestDto.education,
-            Base64.decode(requestDto.photo),
-            requestDto.description
+            requestDto.education!!,
+            Base64.decode(requestDto.photo!!),
+            requestDto.description!!
         )
 
         resumeRepository.save(resume)
