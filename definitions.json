@@ -36,33 +36,16 @@
   ],
   "queues": [
     {
-      "name": "generated_stream",
+      "name": "generation_stream",
       "vhost": "/",
       "durable": true,
       "type": "stream"
     },
     {
-      "name": "enhancement_queue",
+      "name": "enhancement_stream",
       "vhost": "/",
       "durable": true,
-      "type": "classic"
-    }
-  ],
-  "exchanges": [
-    {
-      "name": "enhancement_exchange",
-      "vhost": "/",
-      "type": "topic",
-      "durable": true
-    }
-  ],
-  "bindings": [
-    {
-      "source": "enhancement_exchange",
-      "destination": "enhancement_queue",
-      "destination_type": "queue",
-      "routing_key": "enhancement_key",
-      "vhost": "/"
+      "type": "stream"
     }
   ]
 }
