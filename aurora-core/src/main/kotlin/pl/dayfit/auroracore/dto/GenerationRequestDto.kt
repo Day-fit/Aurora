@@ -11,7 +11,7 @@ data class GenerationRequestDto (
     val surname: String,
     val age: Int,
     val title: String,
-    val email: String?,
+    val email: String,
     val website: String?,
     val linkedIn: String?,
     val gitHub: String?,
