@@ -11,16 +11,16 @@ data class GenerationRequestDto (
     val surname: String,
     val age: Int,
     val title: String,
-    val email: String?,
+    val email: String,
     val website: String?,
     val linkedIn: String?,
     val gitHub: String?,
     val profileImage: String?,
     val profileDescription: String?,
-    val education: List<Education>?,
-    val skills: List<Skill>?,
-    val experiences: List<Experience>?,
-    val achievements: List<Achievement>?,
+    val education: List<Education>,
+    val skills: List<Skill>,
+    val experiences: List<Experience>,
+    val achievements: List<Achievement>,
 
     @Min(1)
     @Max(1) //TODO: Add more versions

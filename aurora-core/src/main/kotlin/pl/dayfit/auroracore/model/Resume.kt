@@ -19,6 +19,7 @@ class Resume(
     var name: String,
     var surname: String,
     var age: Int,
+    var title: String,
     @OneToMany(cascade = [CascadeType.ALL])
     var experiences: List<Experience>? = mutableListOf(),
     @OneToMany(cascade = [CascadeType.ALL])
@@ -30,5 +31,12 @@ class Resume(
     var photo: ByteArray? = null,
     var description: String?,
 
+    //Contact information
+    var email: String,
+    var website: String?,
+    var linkedIn: String?,
+    var gitHub: String?,
+
+    var templateVersion: Int,
     var lastUpdate: Instant
 )

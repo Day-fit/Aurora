@@ -19,5 +19,3 @@ services:
       - ./definitions.json:/etc/rabbitmq/definitions.json:ro
     command: >
       bash -c "rabbitmq-plugins enable --offline rabbitmq_stream && rabbitmq-server"
-    profiles:
-      - production

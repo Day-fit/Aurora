@@ -1,0 +1,15 @@
+FROM maven:3.9.11-amazoncorretto-25-debian-trixie
+
+COPY ./aurora-ai/ /aurora/
+
+WORKDIR /aurora
+
+RUN \
+    chmod +x ./mvn && \
+    chmod +x ./mvnw && \
+    ./mvnw clean package -DskipTests && \
+    mv /aurora/target/aurora-ai-*.jar /aurora/aurora-ai.jar
+
+CMD ["java", "-jar", "/aurora/aurora-ai.jar"]
+
+EXPOSE 8082

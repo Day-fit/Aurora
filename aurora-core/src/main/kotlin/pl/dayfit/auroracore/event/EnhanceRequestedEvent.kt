@@ -1,0 +1,11 @@
+package pl.dayfit.auroracore.event
+
+import java.util.UUID
+
+data class EnhanceRequestedEvent(
+    val id: UUID,
+    val title: String,
+    val description: String?,
+    val achievementDescriptions: List<String>,
+    val skillsNames: List<String>
+)
