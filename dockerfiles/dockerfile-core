@@ -1,0 +1,12 @@
+FROM amazoncorretto:21-alpine3.22-jdk
+
+COPY aurora-core/ /aurora/
+WORKDIR /aurora
+
+RUN \
+    chmod +x ./mvn && \
+    chmod +x ./mvnw && \
+    ./mwnw clean package -DskipTests && \
+    mv target/aurora-core-*.jar /aurora/aurora-core.jar
+
+CMD ["java", "-jar", "aurora-core.jar"]
