@@ -12,4 +12,4 @@ RUN \
 
 CMD ["java", "-jar", "/aurora/aurora-ai.jar"]
 
-EXPOSE["8082"]
+EXPOSE 8082
