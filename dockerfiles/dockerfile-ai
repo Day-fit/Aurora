@@ -6,7 +6,7 @@ WORKDIR /aurora
 
 RUN \
     chmod +x ./mvn && \
-    chmod +x ./mwnw && \
+    chmod +x ./mvnw && \
     ./mvnw clean package -DskipTests && \
     mv /aurora/target/aurora-ai-*.jar /aurora/aurora-ai.jar
 
