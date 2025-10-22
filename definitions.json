@@ -39,13 +39,20 @@
       "name": "generation_stream",
       "vhost": "/",
       "durable": true,
-      "type": "stream"
+      "type": "stream",
+      "arguments": {
+        "x-queue-type": "stream",
+        "x-stream-max-segment-size-bytes": 536870912
+      }
     },
     {
       "name": "enhancement_stream",
       "vhost": "/",
       "durable": true,
-      "type": "stream"
+      "arguments": {
+        "x-queue-type": "stream",
+        "x-stream-max-segment-size-bytes": 536870912
+      }
     }
   ]
 }

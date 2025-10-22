@@ -17,10 +17,10 @@ data class GenerationRequestDto (
     val gitHub: String?,
     val profileImage: String?,
     val profileDescription: String?,
-    val education: List<Education>?,
-    val skills: List<Skill>?,
-    val experiences: List<Experience>?,
-    val achievements: List<Achievement>?,
+    val education: List<Education>,
+    val skills: List<Skill>,
+    val experiences: List<Experience>,
+    val achievements: List<Achievement>,
 
     @Min(1)
     @Max(1) //TODO: Add more versions

@@ -1,4 +1,4 @@
-package pl.dayfit.auroraai.configuration
+package pl.dayfit.auroracore.configuration
 
 import com.rabbitmq.stream.Address
 import com.rabbitmq.stream.Environment
@@ -29,7 +29,7 @@ class SteamsConfiguration {
     @Bean
     fun streamTemplate(streamsEnvironment: Environment): RabbitStreamTemplate
     {
-        val template = RabbitStreamTemplate(streamsEnvironment, "generation_stream")
+        val template = RabbitStreamTemplate(streamsEnvironment, "enhancement_stream")
         template.setMessageConverter(JacksonJsonMessageConverter())
 
         return template

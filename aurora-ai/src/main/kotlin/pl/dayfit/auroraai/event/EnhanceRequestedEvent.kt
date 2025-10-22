@@ -1,6 +1,9 @@
 package pl.dayfit.auroraai.event
 
-data class EnhanceResumeEvent(
+import java.util.UUID
+
+data class EnhanceRequestedEvent(
+    val id: UUID,
     val title: String,
     val description: String?,
     val achievementDescriptions: List<String>,

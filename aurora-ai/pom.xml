@@ -57,10 +57,9 @@
         </dependency>
         <dependency>
             <groupId>com.openai</groupId>
-            <artifactId>openai-java</artifactId>
+            <artifactId>openai-java-spring-boot-starter</artifactId>
             <version>4.6.1</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -70,6 +69,11 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test-junit5</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-docker-compose</artifactId>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 

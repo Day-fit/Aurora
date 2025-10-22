@@ -1,6 +1,9 @@
-package pl.dayfit.auroraai.dto
+package pl.dayfit.auroraai.event
 
-data class EnhanceRequestDto(
+import java.util.UUID
+
+data class EnhanceDoneEvent (
+    val id: UUID,
     val newTitle: String,
     val newDescription: String?,
     val newAchievementDescriptions: List<String>,
