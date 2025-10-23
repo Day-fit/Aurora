@@ -50,7 +50,7 @@ class EnhancementService(
     fun enhance(event: EnhanceRequestedEvent)
     {
         val params = ResponseCreateParams.builder()
-            .model(ChatModel.GPT_4_1_NANO)
+            .model(ChatModel.GPT_4O_MINI)
             .store(false)
             .input(
                 """

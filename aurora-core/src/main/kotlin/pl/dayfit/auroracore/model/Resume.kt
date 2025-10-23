@@ -1,6 +1,7 @@
 package pl.dayfit.auroracore.model
 
 import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -19,6 +20,7 @@ class Resume(
     var name: String,
     var surname: String,
     var age: Int,
+    @Column(length = 500)
     var title: String,
     @OneToMany(cascade = [CascadeType.ALL])
     var experiences: List<Experience>? = mutableListOf(),
@@ -29,6 +31,7 @@ class Resume(
     @OneToMany(cascade = [CascadeType.ALL])
     var achievements: List<Achievement>? = mutableListOf(),
     var photo: ByteArray? = null,
+    @Column(length = 2000)
     var description: String?,
 
     //Contact information

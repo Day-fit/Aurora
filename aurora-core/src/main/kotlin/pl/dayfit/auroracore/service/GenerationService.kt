@@ -162,7 +162,7 @@ class GenerationService(
         data["age"] = resume.age
 
         //Profile
-        resume.photo?.let { data["profileImage"] = it } //TODO: Add base64 raw image support in template
+        resume.photo?.let { data["profileImage"] = "data:image/png;base64, ${Base64.encode(it)}" }
         resume.description?.let { data["profileDescription"] = it }
 
         //Contact information
