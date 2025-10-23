@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=210mm, height=297mm">
-    <title>${name} ${surname}</title>
+    <title>${name!''} ${surname!''}</title>
     <style>
         @page { size: A4; margin:20mm; }
         body { margin:0; font-family:'Arial', sans-serif; background:#fff; color:#333; }
@@ -31,68 +31,74 @@
 <div class="container">
 
     <div class="left">
-        <#if profileImage?? && profileImage?length > 0>
+        <#if profileImage?has_content>
             <img src="${profileImage}" alt="Profile Picture" class="profile-pic">
         </#if>
 
-        <#if email?? || website?? || linkedIn?? || gitHub??>
+        <#if email?has_content || website?has_content || linkedIn?has_content || gitHub?has_content>
             <div class="section-title">Contact</div>
-            <#if email?? && email?length > 0>
+            <#if email?has_content>
                 <div class="contact-item">📧<span>${email}</span></div>
             </#if>
-            <#if website?? && website?length > 0>
+            <#if website?has_content>
                 <div class="contact-item">🌐<span><a href="${website}" target="_blank">Portfolio</a></span></div>
             </#if>
-            <#if linkedIn?? && linkedIn?length > 0>
+            <#if linkedIn?has_content>
                 <div class="social-item">🔗<span><a href="${linkedIn}" target="_blank">LinkedIn</a></span></div>
             </#if>
-            <#if gitHub?? && gitHub?length > 0>
+            <#if gitHub?has_content>
                 <div class="social-item">🐱<span><a href="${gitHub}" target="_blank">GitHub</a></span></div>
             </#if>
         </#if>
 
-        <#if education?? && education?size > 0>
+        <#if education?has_content>
             <div class="section-title">Education</div>
-            <#list education as edu>
-                <div class="mt-small bold">${edu.institution}</div>
-                <div>${edu.degree} <#if edu.major??>${edu.major}</#if></div>
-                <div>${edu.fromYear} - <#if edu.toYear??>${edu.toYear}<#else>Present</#if></div>
+            <#list education![] as edu>
+                <div class="mt-small bold">${edu.institution!''}</div>
+                <div>${edu.degree!''} <#if edu.major?has_content>${edu.major}</#if></div>
+                <div>${edu.fromYear!''} - <#if edu.toYear?has_content>${edu.toYear}<#else>Present</#if></div>
             </#list>
         </#if>
 
-        <#if skills?? && skills?size > 0>
+        <#if skills?has_content>
             <div class="section-title">Skills</div>
             <ul>
-                <#list skills as skill>
-                    <li>${skill.name} <span class="skill-level">(${skill.level})</span></li>
+                <#list skills![] as skill>
+                    <li>${skill.name!''}<#if skill.level?has_content> <span class="skill-level">(${skill.level})</span></#if></li>
                 </#list>
             </ul>
         </#if>
     </div>
 
     <div class="right">
-        <h1>${name} ${surname}</h1>
-        <h2>${title}</h2>
+        <h1>${name!''} ${surname!''}</h1>
+        <h2>${title!''}</h2>
 
-        <#if profileDescription?? && profileDescription?length > 0>
+        <#if profileDescription?has_content>
             <div class="section-title">Profile</div>
             <p>${profileDescription}</p>
         </#if>
 
-        <#if experiences?? && experiences?size > 0>
+        <#if experiences?has_content>
             <div class="section-title">Work Experience</div>
-            <#list experiences as exp>
+            <#list experiences![] as exp>
                 <div class="mt-small">
-                    <div class="bold">${exp.position} at ${exp.company} | ${exp.fromYear} - <#if exp.toYear??>${exp.toYear}<#else>Present</#if></div>
+                    <div class="bold">
+                        ${exp.position!''} at ${exp.company!''} | ${exp.fromYear!''} -
+                        <#if exp.toYear?has_content>${exp.toYear}<#else>Present</#if>
+                    </div>
                 </div>
             </#list>
         </#if>
 
-        <#if achievements?? && achievements?size > 0>
+        <#if achievements?has_content>
             <div class="section-title">Achievements</div>
             <ul>
-                <#list achievements as ach>
-                    <li class="mt-small"><span class="bold">${ach.title}</span> <#if ach.year??>(${ach.year})</#if> - ${ach.description}</li>
+                <#list achievements![] as ach>
+                    <li class="mt-small">
+                        <span class="bold">${ach.title!''}</span>
+                        <#if ach.year?has_content>(${ach.year})</#if> - ${ach.description!''}
+                    </li>
                 </#list>
             </ul>
         </#if>
