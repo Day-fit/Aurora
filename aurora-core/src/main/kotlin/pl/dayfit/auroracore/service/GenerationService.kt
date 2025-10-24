@@ -1,5 +1,6 @@
 package pl.dayfit.auroracore.service
 
+import com.itextpdf.html2pdf.HtmlConverter
 import com.rabbitmq.stream.Consumer
 import com.rabbitmq.stream.Environment
 import com.rabbitmq.stream.OffsetSpecification
@@ -23,6 +24,7 @@ import pl.dayfit.auroracore.model.Resume
 import pl.dayfit.auroracore.model.Skill
 import pl.dayfit.auroracore.repository.ResumeRepository
 import tools.jackson.databind.ObjectMapper
+import java.io.ByteArrayOutputStream
 import java.io.StringWriter
 import java.nio.charset.StandardCharsets
 import java.time.Instant
@@ -110,6 +112,7 @@ class GenerationService(
             requestDto.website,
             requestDto.gitHub,
             requestDto.linkedIn,
+            null,
             requestDto.templateVersion,
             Instant.now(),
         )
@@ -147,7 +150,7 @@ class GenerationService(
      * @return The generated resume as a string.
      */
     @EventListener
-    fun generateResume(event: ResumeReadyToExport): String
+    fun generateResume(event: ResumeReadyToExport)
     {
         val resume = resumeRepository.findById(event.id)
             .orElseThrow { NoSuchElementException("Resume not found") }
@@ -179,7 +182,15 @@ class GenerationService(
 
         StringWriter().use {
             out -> template.process(data, out)
-            return out.toString()
+
+            ByteArrayOutputStream().use { outPdf ->
+                HtmlConverter.convertToPdf(
+                    out.toString(),
+                    outPdf
+                )
+
+                resume.generatedResult = outPdf.toByteArray()
+            }
         }
     }
 
