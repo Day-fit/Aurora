@@ -1,2 +1,2 @@
-# AuroraResume
+# Aurora
 CV generation web-app
