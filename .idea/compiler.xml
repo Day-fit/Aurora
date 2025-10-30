@@ -6,7 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="aurora-auth-lib" />
         <module name="aurora-core" />
+        <module name="aurora-auth" />
         <module name="aurora-ai" />
       </profile>
     </annotationProcessing>
@@ -14,6 +16,8 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="aurora-ai" options="-parameters" />
+      <module name="aurora-auth" options="-parameters" />
+      <module name="aurora-auth-lib" options="-parameters" />
       <module name="aurora-core" options="-parameters" />
     </option>
   </component>
