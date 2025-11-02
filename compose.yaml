@@ -3,10 +3,24 @@ services:
     image: 'postgres:latest'
     environment:
       - 'POSTGRES_DB=${DB_NAME}'
-      - 'POSTGRES_PASSWORD=${DB_PASSWORD:-secret}'
+      - 'POSTGRES_PASSWORD=${DB_PASSWORD}'
       - 'POSTGRES_USER=${DB_USER}'
+    volumes:
+      - postgres:/var/lib/postgresql/data
     ports:
       - '5432:5432'
+
+  minio:
+    image: 'minio/minio:latest'
+    ports:
+      - '9000:9000'
+    environment:
+      - 'MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}'
+      - 'MINIO_SECRET_KEY=${MINIO_SECRET_KEY}'
+    command: server /data
+    volumes:
+      - minio:/data
+      - ./buckets.json:/root/.minio/buckets.json:ro
 
   rabbitmq:
     image: 'rabbitmq:4.1.0-management-alpine'
@@ -17,5 +31,11 @@ services:
     volumes:
       - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
       - ./definitions.json:/etc/rabbitmq/definitions.json:ro
+      - rabbitmq:/var/lib/rabbitmq
     command: >
       bash -c "rabbitmq-plugins enable --offline rabbitmq_stream && rabbitmq-server"
+
+volumes:
+  postgres:
+  minio:
+  rabbitmq:

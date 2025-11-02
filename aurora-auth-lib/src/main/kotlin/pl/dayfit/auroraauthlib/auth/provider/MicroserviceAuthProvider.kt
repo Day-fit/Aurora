@@ -1,10 +1,10 @@
-package pl.dayfit.auroraauthlib.authprovider
+package pl.dayfit.auroraauthlib.auth.provider
 
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
-import pl.dayfit.auroraauthlib.authtoken.MicroserviceToken
-import pl.dayfit.auroraauthlib.authtoken.MicroserviceTokenCandidate
+import pl.dayfit.auroraauthlib.auth.token.MicroserviceToken
+import pl.dayfit.auroraauthlib.auth.token.MicroserviceTokenCandidate
 import pl.dayfit.auroraauthlib.service.JwtClaimsService
 
 @Component

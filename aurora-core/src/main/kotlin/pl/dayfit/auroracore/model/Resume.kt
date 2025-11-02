@@ -16,7 +16,7 @@ class Resume(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID?,
-    var userId: UUID,
+    var auroraUserId: UUID,
 
     var name: String,
     var surname: String,

@@ -1,4 +1,4 @@
-package pl.dayfit.auroraauthlib.authtoken
+package pl.dayfit.auroraauthlib.auth.token
 
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.core.GrantedAuthority
@@ -11,5 +11,9 @@ class MicroserviceToken(val principal: Principal, grantedAuthorities: Collection
 
     override fun getPrincipal(): Any {
         return principal
+    }
+
+    override fun isAuthenticated(): Boolean {
+        return false
     }
 }

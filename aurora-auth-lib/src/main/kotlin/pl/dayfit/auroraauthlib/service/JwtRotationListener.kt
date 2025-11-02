@@ -14,7 +14,7 @@ import org.springframework.messaging.handler.annotation.Header
 import org.springframework.stereotype.Service
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
-import pl.dayfit.auroraauthlib.configuration.properties.JWKSConfigurationProperties
+import pl.dayfit.auroraauthlib.configuration.properties.JwksConsumerConfigurationProperties
 import pl.dayfit.auroraauthlib.event.JwksKeyRotationEvent
 import java.io.IOException
 import java.io.SyncFailedException
@@ -24,9 +24,9 @@ import java.time.Instant
 
 @Service
 @ConditionalOnProperty(value = ["key-listener.enabled"], havingValue = "true")
-@EnableConfigurationProperties(JWKSConfigurationProperties::class)
+@EnableConfigurationProperties(JwksConsumerConfigurationProperties::class)
 class JwtRotationListener(
-    private val jwksConfigurationProperties: JWKSConfigurationProperties,
+    private val jwksConsumerConfigurationProperties: JwksConsumerConfigurationProperties,
     private val jwtClaimsService: JwtClaimsService
 ) {
     private val log = LoggerFactory.getLogger(JwtRotationListener::class.java)
@@ -82,7 +82,7 @@ class JwtRotationListener(
     private fun updateJwks() {
         val restTemplate = RestTemplate()
         val response: ResponseEntity<String> =
-            restTemplate.getForEntity(jwksConfigurationProperties.uri, String::class.java)
+            restTemplate.getForEntity(jwksConsumerConfigurationProperties.uri, String::class.java)
 
         val body = response.body
         if (!response.statusCode.is2xxSuccessful || body.isNullOrEmpty())
