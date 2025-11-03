@@ -4,7 +4,6 @@
       <option value="$PROJECT_DIR$/.env" />
     </option>
     <module name="aurora-auth" />
-    <option name="PROGRAM_PARAMETERS" value="--debug " />
     <selectedOptions>
       <option name="environmentVariables" />
     </selectedOptions>

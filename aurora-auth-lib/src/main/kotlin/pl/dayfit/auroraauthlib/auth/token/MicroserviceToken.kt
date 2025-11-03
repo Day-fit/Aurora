@@ -14,6 +14,6 @@ class MicroserviceToken(val principal: Principal, grantedAuthorities: Collection
     }
 
     override fun isAuthenticated(): Boolean {
-        return false
+        return true
     }
 }

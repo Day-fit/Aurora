@@ -1,5 +1,6 @@
 package pl.dayfit.auroraauth.service
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -19,7 +20,7 @@ class UserDetailsServiceImpl(val repository: UserRepository) : UserDetailsServic
             .orElseThrow { UsernameNotFoundException("Username or password is incorrect") }
 
         return UserDetailsImpl(
-            user.authorities,
+            user.authorities.map { SimpleGrantedAuthority(it) },
             user.password.orEmpty(),
             user.username,
             user.banned,

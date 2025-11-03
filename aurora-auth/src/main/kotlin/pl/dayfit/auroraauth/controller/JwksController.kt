@@ -12,6 +12,6 @@ class JwksController(private val jwksCacheService: JwksCacheService) {
 
     @GetMapping("/.well-known/jwks.json")
     fun getJwks(): JWKSet {
-        return jwksCacheService.getJwks()
+        return JWKSet(jwksCacheService.getJwks())
     }
 }
