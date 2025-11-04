@@ -3,9 +3,7 @@ package pl.dayfit.auroraauth
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
-@SpringBootApplication(
-    scanBasePackages = ["pl.dayfit.auroraauth"]
-)
+@SpringBootApplication
 class AuroraAuthApplication
 
 fun main(args: Array<String>) {
