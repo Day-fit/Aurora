@@ -12,7 +12,7 @@ import pl.dayfit.auroraauth.repository.UserRepository
 @Service
 class UserDetailsServiceImpl(val repository: UserRepository) : UserDetailsService {
     override fun loadUserByUsername(username: String): UserDetails {
-        val isUsername = username.contains('@')
+        val isUsername = !username.contains('@')
 
         val user: AuroraUser = if (isUsername) repository.findByUsername(username)
             .orElseThrow { UsernameNotFoundException("Username or password is incorrect") }
@@ -20,7 +20,7 @@ class UserDetailsServiceImpl(val repository: UserRepository) : UserDetailsServic
             .orElseThrow { UsernameNotFoundException("Username or password is incorrect") }
 
         return UserDetailsImpl(
-            user.authorities.map { SimpleGrantedAuthority(it) },
+            user.authorities.map { SimpleGrantedAuthority(it.toString()) },
             user.password.orEmpty(),
             user.username,
             user.banned,

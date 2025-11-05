@@ -2,7 +2,7 @@ package pl.dayfit.auroracore.configuration
 
 import com.rabbitmq.stream.Address
 import com.rabbitmq.stream.Environment
-import org.springframework.amqp.support.converter.JacksonJsonMessageConverter
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -30,7 +30,7 @@ class SteamsConfiguration {
     fun streamTemplate(streamsEnvironment: Environment): RabbitStreamTemplate
     {
         val template = RabbitStreamTemplate(streamsEnvironment, "enhancement_stream")
-        template.setMessageConverter(JacksonJsonMessageConverter())
+        template.setMessageConverter(Jackson2JsonMessageConverter())
 
         return template
     }

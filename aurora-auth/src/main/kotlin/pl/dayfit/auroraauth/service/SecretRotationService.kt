@@ -1,7 +1,6 @@
 package pl.dayfit.auroraauth.service
 
 import com.nimbusds.jose.jwk.Curve
-import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.gen.OctetKeyPairGenerator
 import org.springframework.amqp.rabbit.core.RabbitTemplate
@@ -24,12 +23,10 @@ class SecretRotationService(
     private val currentKeyId = AtomicInteger(0)
     private var firstRotation = true
 
-    private lateinit var jwkSet: JWKSet
-
     fun rotateSecret() {
         val keyId = currentKeyId.get()
 
-        val newSecret = OctetKeyPairGenerator(Curve.X25519)
+        val newSecret = OctetKeyPairGenerator(Curve.Ed25519)
             .keyUse(KeyUse.SIGNATURE)
             .keyID(keyId.toString())
             .issueTime(Date())

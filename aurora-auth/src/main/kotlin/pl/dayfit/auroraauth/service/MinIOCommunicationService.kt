@@ -20,27 +20,36 @@ class MinIOCommunicationService(
     jwtClaimsService: JwtClaimsService,
 ) {
     init {
-        jwtClaimsService.jwksSupplier = Supplier { JWKSet(jwksCacheService.getJwks()) }
+        jwtClaimsService.jwksSupplier = Supplier { jwksCacheService.getJwks() }
     }
 
     fun saveNewKey(publicKey: OctetKeyPair, index: Int)
     {
         if (publicKey.isPrivate) throw IllegalArgumentException("Private key is not allowed")
 
-        val jwks: MutableList<JWK> = try {
-            jwksCacheService.getJwks()
+        var jwks: JWKSet = try {
+            val oldJwks = jwksCacheService.getJwks()
+            val newKeys = oldJwks.keys
+                .toMutableList()
+
+            newKeys.add(index, publicKey.toPublicJWK())
+            JWKSet(newKeys)
         } catch (_: Exception) {
-            mutableListOf()
+            JWKSet(
+                listOf<JWK>(publicKey.toPublicJWK())
+            )
         }
 
-        jwks.add(index, publicKey)
+        val jwksBytes = jacksonObjectMapper()
+            .writeValueAsString(jwks.toJSONObject())
+            .toByteArray(Charsets.UTF_8)
 
-        val mapper = jacksonObjectMapper()
         minioAsyncClient.putObject(
             PutObjectArgs.builder()
                 .bucket(jwksConfigurationProperties.bucketName)
                 .`object`(jwksConfigurationProperties.fileName)
-                .stream(mapper.writeValueAsString(jwks).byteInputStream(), -1, 5 * 1024 * 1024)
+                .stream(jwksBytes.inputStream(), jwksBytes.size.toLong(), 5 * 1024 * 1024L)
+                .contentType("application/json")
                 .build()
         )
 

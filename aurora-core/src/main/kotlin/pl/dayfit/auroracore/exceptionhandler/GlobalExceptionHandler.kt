@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import org.springframework.web.servlet.resource.NoResourceFoundException
 import pl.dayfit.auroracore.exception.ResumeNotGeneratedYetException
 
 @RestControllerAdvice
@@ -41,8 +40,4 @@ class GlobalExceptionHandler {
                 mapOf("message" to e.message!!)
             )
     }
-
-    @ExceptionHandler(NoResourceFoundException::class)
-    fun handleNoResourceFoundException(): ResponseEntity<Map<String, String>> = ResponseEntity.notFound()
-        .build()
 }

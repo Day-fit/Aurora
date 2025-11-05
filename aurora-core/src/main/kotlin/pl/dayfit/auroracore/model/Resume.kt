@@ -24,13 +24,13 @@ class Resume(
     @Column(length = 500)
     var title: String,
     @OneToMany(cascade = [CascadeType.ALL])
-    var experiences: List<Experience>? = mutableListOf(),
+    var experiences: MutableList<Experience>? = mutableListOf(),
     @OneToMany(cascade = [CascadeType.ALL])
-    var skills: List<Skill>? = mutableListOf(),
+    var skills: MutableList<Skill>? = mutableListOf(),
     @OneToMany(cascade = [CascadeType.ALL])
-    var education: List<Education>? = mutableListOf(),
+    var education: MutableList<Education>? = mutableListOf(),
     @OneToMany(cascade = [CascadeType.ALL])
-    var achievements: List<Achievement>? = mutableListOf(),
+    var achievements: MutableList<Achievement>? = mutableListOf(),
     var photo: ByteArray? = null,
     @Column(length = 2000)
     var description: String?,

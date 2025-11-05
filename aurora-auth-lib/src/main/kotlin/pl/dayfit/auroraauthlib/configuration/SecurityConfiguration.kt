@@ -33,15 +33,19 @@ class SecurityConfiguration {
         corsConfigurationSource: CorsConfigurationSource,
         publicPathsConfigurationProperties: PublicPathsConfigurationProperties
     ): SecurityFilterChain {
+        val paths = publicPathsConfigurationProperties.paths.toTypedArray()
+
         return http
-            .securityMatcher("/api/**", "/.well-known/**")
+            .securityMatcher("/**")
+            .formLogin { it.disable() }
+            .httpBasic { it.disable() }
             .csrf { it.disable() }
             .cors { it.configurationSource(corsConfigurationSource) }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .addFilterBefore(microserviceJwtFilter, UsernamePasswordAuthenticationFilter::class.java)
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers(*publicPathsConfigurationProperties.paths.toTypedArray()).permitAll()
+                    .requestMatchers(*paths).permitAll()
                     .anyRequest().authenticated()
             }
             .build()

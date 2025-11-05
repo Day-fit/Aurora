@@ -1,11 +1,8 @@
 package pl.dayfit.auroraauth.service.cache
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.nimbusds.jose.jwk.JWK
+import com.nimbusds.jose.jwk.JWKSet
 import io.minio.GetObjectArgs
 import io.minio.MinioAsyncClient
-import io.minio.errors.ErrorResponseException
 import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
@@ -17,9 +14,9 @@ class JwksCacheService(
     private val jwksConfigurationProperties: JwksConfigurationProperties,
 ) {
 
-    @Throws(ErrorResponseException::class)
+    @Throws(Exception::class)
     @Cacheable(value = ["jwks"], key = "'jwks.json'")
-    fun getJwks(): MutableList<JWK> {
+    fun getJwks(): JWKSet {
         return minIOAsyncClient.getObject(
             GetObjectArgs.builder()
                 .bucket(jwksConfigurationProperties.bucketName)
@@ -27,20 +24,12 @@ class JwksCacheService(
                 .build()
         ).thenApply {
             val jwkJson: String = it.use { it.reader().readText() }
-            return@thenApply parseJwkList(jwkJson)
+            return@thenApply JWKSet.parse(jwkJson)
         }.get()
     }
 
     @CachePut(value = ["jwks"], key = "'jwks.json'")
-    fun setJwks(listJwk: MutableList<JWK>): MutableList<JWK> {
-        return listJwk
-    }
-
-    fun parseJwkList(json: String): MutableList<JWK> {
-        val mapper = jacksonObjectMapper()
-        val root = mapper.readTree(json)
-        val keysNode = root["keys"] ?: error("Missing 'keys' field in JWK Set JSON")
-        val jwkList: List<Map<String, Any>> = mapper.readValue(keysNode.toString())
-        return jwkList.map { JWK.parse(it) }.toMutableList()
+    fun setJwks(jwks: JWKSet): JWKSet {
+        return jwks
     }
 }
