@@ -21,11 +21,12 @@ class AppleOAuthValidator(
         val jwt = decoder.decode(token)
 
         require(jwt.claims["iss"] == "https://appleid.apple.com")
-        require(jwt.claims["email_verified"] == "true")
+        require(jwt.claims["email_verified"] == "true") { "Email is not verified"}
 
-        jwt.audience
-            .find { aud -> aud == properties.appleClientId }
+        val audience = jwt.audience
+            .any { aud -> aud == properties.appleClientId }
 
+        require(audience) { "Invalid audience" }
 
         val email = jwt.claims["email"].toString()
         val appUser = userRepository

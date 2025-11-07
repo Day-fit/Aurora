@@ -16,8 +16,8 @@ class OAuthService(
         val token = oauthAuthenticationProvider
             .authenticate(
                 OAuth2TokenCandidate(
-                    oauthTokenExchangeDto.provider,
-                    oauthTokenExchangeDto.accessToken
+                    oauthTokenExchangeDto.provider!!,
+                    oauthTokenExchangeDto.accessToken!!
                 )
             )
 

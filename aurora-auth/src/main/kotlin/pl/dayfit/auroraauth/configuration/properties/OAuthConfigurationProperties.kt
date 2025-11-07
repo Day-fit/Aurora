@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 class OAuthConfigurationProperties {
     lateinit var googleClientId: String
     lateinit var googleClientSecret: String
-    lateinit var googleJwksUri: String
+    lateinit var googleUserInfoUri: String
 
     lateinit var githubClientId: String
     lateinit var githubClientSecret: String
