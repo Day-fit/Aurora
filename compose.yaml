@@ -5,8 +5,47 @@ services:
       - 'POSTGRES_DB=${DB_NAME}'
       - 'POSTGRES_PASSWORD=${DB_PASSWORD:-secret}'
       - 'POSTGRES_USER=${DB_USER}'
+    volumes:
+      - postgres:/var/lib/postgresql/data
     ports:
       - '5432:5432'
+
+  redis:
+    image: 'redis:latest'
+    environment:
+      - 'REDIS_PASSWORD=${REDIS_PASSWORD}'
+    ports:
+      - '6379:6379'
+
+  minio:
+    image: minio/minio:latest
+    environment:
+      - 'MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}'
+      - 'MINIO_SECRET_KEY=${MINIO_SECRET_KEY}'
+    ports:
+      - "9000:9000"
+      - "9090:9090"
+    command: [ "server", "--console-address", ":9090", "/data"]
+    volumes:
+    - minio:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/ready"]
+      interval: 5s
+      timeout: 2s
+      retries: 12
+
+  create-buckets:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      sh -c "
+        mc alias set local http://minio:9000 ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY} &&
+        mc mb -p local/jwks || true &&
+        mc mb -p local/resumes || true
+      "
+    restart: "no"
 
   rabbitmq:
     image: 'rabbitmq:4.1.0-management-alpine'
@@ -17,5 +56,11 @@ services:
     volumes:
       - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
       - ./definitions.json:/etc/rabbitmq/definitions.json:ro
+      - rabbitmq:/var/lib/rabbitmq
     command: >
       bash -c "rabbitmq-plugins enable --offline rabbitmq_stream && rabbitmq-server"
+
+volumes:
+  postgres:
+  minio:
+  rabbitmq:

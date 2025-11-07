@@ -5,8 +5,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import org.springframework.web.servlet.resource.NoResourceFoundException
 import pl.dayfit.auroracore.exception.ResumeNotGeneratedYetException
+import java.util.NoSuchElementException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -42,7 +42,12 @@ class GlobalExceptionHandler {
             )
     }
 
-    @ExceptionHandler(NoResourceFoundException::class)
-    fun handleNoResourceFoundException(): ResponseEntity<Map<String, String>> = ResponseEntity.notFound()
-        .build()
+    @ExceptionHandler(NoSuchElementException::class)
+    fun handleNoSuchElementException(e: NoSuchElementException): ResponseEntity<Map<String, String>> {
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(
+                mapOf("error" to (e.message ?: "Not found"))
+            )
+    }
 }

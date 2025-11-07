@@ -7,24 +7,24 @@
       "tags": "administrator"
     },
     {
-      "name": "encryptifyapp",
+      "name": "auroraapp",
       "password_hash": "aykMfiRKdm5FjSZKovZai9D3C95RPbdeZhjhGfYz1Kqql17V",
       "hashing_algorithm": "rabbit_password_hashing_sha256",
-      "tags": "administrator"
+      "tags": "application"
     }
   ],
   "permissions": [
     {
-      "user": "encryptifyapp",
+      "user": "auroraapp",
       "vhost": "/",
-      "configure": ".*",
+      "configure": "",
       "write": ".*",
       "read": ".*"
     },
     {
       "user": "admin",
       "vhost": "/",
-      "configure": "",
+      "configure": ".*",
       "write": ".*",
       "read": ".*"
     }
@@ -35,6 +35,15 @@
     }
   ],
   "queues": [
+    {
+      "name": "jwks.queue.core",
+      "vhost": "/",
+      "durable": true,
+      "type": "classic",
+      "arguments": {
+        "x-queue-type": "classic"
+      }
+    },
     {
       "name": "generation_stream",
       "vhost": "/",
@@ -53,6 +62,25 @@
         "x-queue-type": "stream",
         "x-stream-max-segment-size-bytes": 536870912
       }
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "jwks.exchange",
+      "vhost": "/",
+      "type": "fanout",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "jwks.exchange",
+      "vhost": "/",
+      "destination": "jwks.queue.core",
+      "destination_type": "queue"
     }
   ]
 }

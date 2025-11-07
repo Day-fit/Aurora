@@ -1,0 +1,14 @@
+[
+  {
+    "name": "jwks",
+    "policy": "readwrite",
+    "purge": "false",
+    "versioning": "suspended"
+  },
+  {
+    "name": "resumes",
+    "policy": "readwrite",
+    "purge": "false",
+    "versioning": "suspended"
+  }
+]

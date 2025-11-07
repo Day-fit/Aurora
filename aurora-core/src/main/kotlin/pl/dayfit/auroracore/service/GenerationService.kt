@@ -1,5 +1,6 @@
 package pl.dayfit.auroracore.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.itextpdf.html2pdf.HtmlConverter
 import com.rabbitmq.stream.Consumer
 import com.rabbitmq.stream.Environment
@@ -23,7 +24,6 @@ import pl.dayfit.auroracore.model.Experience
 import pl.dayfit.auroracore.model.Resume
 import pl.dayfit.auroracore.model.Skill
 import pl.dayfit.auroracore.repository.ResumeRepository
-import tools.jackson.databind.ObjectMapper
 import java.io.ByteArrayOutputStream
 import java.io.StringWriter
 import java.nio.charset.StandardCharsets
@@ -63,7 +63,7 @@ class GenerationService(
     }
 
     @Transactional
-    fun requestGeneration(requestDto: GenerationRequestDto, userId: UUID)
+    fun requestGeneration(requestDto: GenerationRequestDto, userId: UUID): UUID
     {
         val resume = Resume(
             null,
@@ -80,13 +80,13 @@ class GenerationService(
                     it.startDate,
                     it.endDate,
                     it.description
-                )},
+                )}.toMutableList(),
             requestDto.skills.map {
                 Skill(
                     null,
                     it.name,
                     it.level
-                ) },
+                ) }.toMutableList(),
             requestDto.education.map {
                 Education(
                     null,
@@ -96,7 +96,7 @@ class GenerationService(
                     it.fromYear,
                     it.toYear
                 )
-            },
+            }.toMutableList(),
             requestDto.achievements.map {
                 Achievement(
                     null,
@@ -104,7 +104,7 @@ class GenerationService(
                     it.description,
                     it.year
                 )
-            },
+            }.toMutableList(),
             requestDto.profileImage?.let { Base64.decode(it) },
 
             requestDto.profileDescription,
@@ -125,7 +125,7 @@ class GenerationService(
                 ResumeReadyToExport(resume.id!!)
             )
             logger.trace("Resume ready to export: {}", resume.id)
-            return
+            return resume.id!!
         }
 
         streamTemplate.convertAndSend(
@@ -141,6 +141,7 @@ class GenerationService(
         )
 
         logger.trace("Resume ready to export: {}", resume.id)
+        return resume.id!!
     }
 
     /**

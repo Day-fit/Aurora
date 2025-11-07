@@ -1,0 +1,9 @@
+package pl.dayfit.auroraauth.configuration
+
+import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.context.annotation.Configuration
+import pl.dayfit.auroraauth.configuration.properties.JwksConfigurationProperties
+
+@Configuration
+@EnableConfigurationProperties(JwksConfigurationProperties::class)
+class JwksConfiguration
