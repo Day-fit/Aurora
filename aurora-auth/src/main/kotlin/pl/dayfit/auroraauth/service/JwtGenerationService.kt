@@ -12,6 +12,7 @@ import pl.dayfit.auroraauth.configuration.properties.JwtConfigurationProperties
 import pl.dayfit.auroraauth.event.SecretRotatedEvent
 import pl.dayfit.auroraauth.type.TokenType
 import java.util.Date
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
 
 @Service
@@ -22,10 +23,10 @@ class JwtGenerationService(private val jwtConfigurationProperties: JwtConfigurat
      * Generates a pair of JWT tokens, specifically an access token and a refresh token,
      * both associated with the provided subject.
      *
-     * @param subject the subject for which the tokens will be generated
+     * @param subject the uuid of subject for which the tokens will be generated
      * @return a pair of tokens where the first element is the access token and the second element is the refresh token
      */
-    fun generateTokenPair(subject: String): Pair<String, String>
+    fun generateTokenPair(subject: UUID): Pair<String, String>
     {
         val accessToken = generate(TokenType.ACCESS, subject)
         val refreshToken = generate(TokenType.REFRESH, subject)
@@ -33,14 +34,14 @@ class JwtGenerationService(private val jwtConfigurationProperties: JwtConfigurat
         return Pair(accessToken, refreshToken)
     }
 
-    private fun generate(tokenType: TokenType, subject: String): String
+    private fun generate(tokenType: TokenType, subject: UUID): String
     {
         val signer = Ed25519Signer(
             secretKey.get()
         )
 
         val claimSet = JWTClaimsSet.Builder()
-            .subject(subject)
+            .subject(subject.toString())
             .expirationTime(
                 if (tokenType == TokenType.ACCESS) Date(System.currentTimeMillis() + jwtConfigurationProperties.accessTokenValidity.inWholeMilliseconds)
                 else Date(System.currentTimeMillis() + jwtConfigurationProperties.refreshTokenValidity.inWholeMilliseconds)

@@ -1,4 +1,4 @@
-package pl.dayfit.auroraauth.configuration
+package pl.dayfit.auroraauthlib.configuration
 
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter
 import org.springframework.amqp.support.converter.MessageConverter

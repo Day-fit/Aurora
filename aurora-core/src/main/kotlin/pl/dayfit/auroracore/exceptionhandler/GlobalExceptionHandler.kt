@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import pl.dayfit.auroracore.exception.ResumeNotGeneratedYetException
+import java.util.NoSuchElementException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -38,6 +39,15 @@ class GlobalExceptionHandler {
             .status(HttpStatus.ACCEPTED)
             .body(
                 mapOf("message" to e.message!!)
+            )
+    }
+
+    @ExceptionHandler(NoSuchElementException::class)
+    fun handleNoSuchElementException(e: NoSuchElementException): ResponseEntity<Map<String, String>> {
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(
+                mapOf("error" to (e.message?: "Not found"))
             )
     }
 }

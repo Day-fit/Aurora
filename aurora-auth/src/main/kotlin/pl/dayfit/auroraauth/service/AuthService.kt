@@ -3,6 +3,7 @@ package pl.dayfit.auroraauth.service
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import pl.dayfit.auroraauth.auth.provider.CredentialsAuthProvider
+import pl.dayfit.auroraauth.auth.token.CredentialsToken
 import pl.dayfit.auroraauth.auth.token.CredentialsTokenCandidate
 import pl.dayfit.auroraauth.dto.request.LoginRequestDto
 import pl.dayfit.auroraauth.dto.request.RegisterRequestDto
@@ -30,9 +31,9 @@ class AuthService(
                 loginDto.identifier,
                 loginDto.password!!
             )
-        )
+        ) as CredentialsToken
 
-        val pair = jwtGenerationService.generateTokenPair(authentication.name)
+        val pair = jwtGenerationService.generateTokenPair(authentication.getId())
         return JwtTokenPairDto(
             pair.first,
             pair.second

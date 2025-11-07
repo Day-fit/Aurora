@@ -1,5 +1,6 @@
 package pl.dayfit.auroraai.service
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.openai.client.OpenAIClient
 import com.openai.models.ChatModel
 import com.openai.models.responses.ResponseCreateParams
@@ -15,13 +16,11 @@ import pl.dayfit.auroraai.dto.EnhanceRequestDto
 import pl.dayfit.auroraai.event.EnhanceDoneEvent
 import pl.dayfit.auroraai.event.EnhanceRequestedEvent
 import pl.dayfit.auroraai.exception.AiEnhancementFailedException
-import tools.jackson.databind.ObjectMapper
 import java.nio.charset.StandardCharsets
 
 @Service
 class EnhancementService(
     val client: OpenAIClient, val streamsEnvironment: Environment,
-    private val objectMapper: ObjectMapper,
     private val streamTemplate: RabbitStreamTemplate,
     private val applicationEventPublisher: ApplicationEventPublisher
 ) {
@@ -95,7 +94,7 @@ class EnhancementService(
 
     private fun mapToEvent(json: String): EnhanceRequestedEvent
     {
-        return objectMapper.readValue(
+        return jacksonObjectMapper().readValue(
             json,
             EnhanceRequestedEvent::class.java
         )

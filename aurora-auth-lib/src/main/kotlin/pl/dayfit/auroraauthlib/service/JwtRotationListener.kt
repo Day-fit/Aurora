@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
 import pl.dayfit.auroraauthlib.configuration.properties.JwksConsumerConfigurationProperties
-import pl.dayfit.auroraauthlib.event.JwksKeyRotationEvent
+import pl.dayfit.auroraauthlib.event.JwksRotationEvent
 import java.io.IOException
 import java.io.SyncFailedException
 import java.text.ParseException
@@ -52,15 +52,15 @@ class JwtRotationListener(
      * Handles receiving public keys from `auth` microservice.
      * @param keyRotationEvent DTO representing a public key rotation event.
      */
-    @RabbitListener(queues = [$$"service.${service.name}"])
+    @RabbitListener(queues = [$$"jwks.queue.${service.name}"])
     private fun handleKeyRotation(
-        keyRotationEvent: JwksKeyRotationEvent,
+        keyRotationEvent: JwksRotationEvent,
         channel: Channel,
         @Header(AmqpHeaders.DELIVERY_TAG) tag: Long
     ) {
         try {
             updateJwks()
-            val delay = Duration.between(keyRotationEvent.issuedAt, Instant.now())
+            val delay = Duration.between(keyRotationEvent.createdAt, Instant.now())
             log.info("Key rotation success. Delay ${delay.toMillis()} ms")
         } catch (e: Exception) {
             log.warn("NACKing message", e)

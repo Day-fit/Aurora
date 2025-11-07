@@ -10,6 +10,7 @@ import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
+import java.text.ParseException
 import java.util.Objects
 import java.util.UUID
 import java.util.function.Function
@@ -45,11 +46,11 @@ class JwtClaimsService {
 
             if (!jwt.verify(verifier))
             {
-                throw IllegalArgumentException("Invalid signature")
+                throw BadCredentialsException("Invalid signature")
             }
 
-            return solver.apply(JWTClaimsSet.parse(token))
-        } catch (parseException: BadCredentialsException) {
+            return solver.apply(jwt.jwtClaimsSet)
+        } catch (parseException: ParseException) {
             throw BadCredentialsException("Invalid token", parseException)
         } catch (joseException: JOSEException) {
             throw IllegalStateException("Could not verify token", joseException)

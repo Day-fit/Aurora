@@ -3,7 +3,6 @@ package pl.dayfit.auroraauthlib.configuration
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -13,6 +12,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import pl.dayfit.auroraauthlib.auth.entrypoint.AuroraAuthenticationEntryPoint
 import pl.dayfit.auroraauthlib.configuration.properties.CorsConfigurationProperties
 import pl.dayfit.auroraauthlib.configuration.properties.PublicPathsConfigurationProperties
 import pl.dayfit.auroraauthlib.filter.MicroserviceJwtFilter
@@ -26,12 +26,13 @@ import pl.dayfit.auroraauthlib.filter.MicroserviceJwtFilter
 class SecurityConfiguration {
 
     @Bean
-    @Order(Ordered.HIGHEST_PRECEDENCE)
+    @Order(2)
     fun filterChain(
         http: HttpSecurity,
         microserviceJwtFilter: MicroserviceJwtFilter,
         corsConfigurationSource: CorsConfigurationSource,
-        publicPathsConfigurationProperties: PublicPathsConfigurationProperties
+        publicPathsConfigurationProperties: PublicPathsConfigurationProperties,
+        authenticationEntryPoint: AuroraAuthenticationEntryPoint
     ): SecurityFilterChain {
         val paths = publicPathsConfigurationProperties.paths.toTypedArray()
 
@@ -48,6 +49,7 @@ class SecurityConfiguration {
                     .requestMatchers(*paths).permitAll()
                     .anyRequest().authenticated()
             }
+            .exceptionHandling { it.authenticationEntryPoint(authenticationEntryPoint) }
             .build()
     }
 

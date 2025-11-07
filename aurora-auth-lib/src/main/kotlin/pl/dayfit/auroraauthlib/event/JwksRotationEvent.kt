@@ -1,4 +1,4 @@
-package pl.dayfit.auroraauth.event
+package pl.dayfit.auroraauthlib.event
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import java.time.Instant

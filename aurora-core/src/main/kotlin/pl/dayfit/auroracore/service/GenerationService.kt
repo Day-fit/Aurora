@@ -63,7 +63,7 @@ class GenerationService(
     }
 
     @Transactional
-    fun requestGeneration(requestDto: GenerationRequestDto, userId: UUID)
+    fun requestGeneration(requestDto: GenerationRequestDto, userId: UUID): UUID
     {
         val resume = Resume(
             null,
@@ -125,7 +125,7 @@ class GenerationService(
                 ResumeReadyToExport(resume.id!!)
             )
             logger.trace("Resume ready to export: {}", resume.id)
-            return
+            return resume.id!!
         }
 
         streamTemplate.convertAndSend(
@@ -141,6 +141,7 @@ class GenerationService(
         )
 
         logger.trace("Resume ready to export: {}", resume.id)
+        return resume.id!!
     }
 
     /**

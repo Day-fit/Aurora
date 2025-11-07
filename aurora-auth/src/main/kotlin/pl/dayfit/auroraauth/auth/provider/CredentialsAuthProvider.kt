@@ -5,6 +5,7 @@ import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.Authentication
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
+import pl.dayfit.auroraauth.auth.principal.UserDetailsImpl
 import pl.dayfit.auroraauth.auth.token.CredentialsToken
 import pl.dayfit.auroraauth.auth.token.CredentialsTokenCandidate
 import pl.dayfit.auroraauth.service.UserDetailsServiceImpl
@@ -20,7 +21,10 @@ class CredentialsAuthProvider(
         }
 
         val candidate = authentication as CredentialsTokenCandidate
-        val userDetails = userDetailsServiceImpl.loadUserByUsername(candidate.identifier)
+        val userDetails = userDetailsServiceImpl
+            .loadUserByUsername(
+                candidate.identifier
+            ) as UserDetailsImpl
 
         if (!passwordEncoder.matches(candidate.password, userDetails.password)) {
             throw AccessDeniedException("Username or password is incorrect")
@@ -39,7 +43,8 @@ class CredentialsAuthProvider(
         return CredentialsToken(
             userDetails.authorities,
             userDetails.username,
-            userDetails.password.orEmpty()
+            userDetails.getId(),
+            userDetails.password
         )
     }
 

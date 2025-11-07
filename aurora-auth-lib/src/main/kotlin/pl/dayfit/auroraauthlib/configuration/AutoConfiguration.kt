@@ -2,6 +2,7 @@ package pl.dayfit.auroraauthlib.configuration
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
+import pl.dayfit.auroraauthlib.auth.entrypoint.AuroraAuthenticationEntryPoint
 import pl.dayfit.auroraauthlib.auth.provider.MicroserviceAuthProvider
 import pl.dayfit.auroraauthlib.exceptionhandler.AuthLibExceptionHandler
 import pl.dayfit.auroraauthlib.filter.MicroserviceJwtFilter
@@ -16,5 +17,7 @@ import pl.dayfit.auroraauthlib.service.JwtRotationListener
     MicroserviceAuthProvider::class,
     SecurityConfiguration::class,
     MicroserviceJwtFilter::class,
+    RabbitMQConfiguration::class,
+    AuroraAuthenticationEntryPoint::class
 ])
 class AutoConfiguration

@@ -15,13 +15,15 @@ class GenerationController(val generationService: GenerationService) {
 
     @PostMapping("/generate")
     fun generate(@RequestBody requestDto: GenerationRequestDto, @AuthenticationPrincipal principal: Principal?): ResponseEntity<Map<String, String>> {
-        generationService.requestGeneration(
+        val trackingId = generationService.requestGeneration(
             requestDto,
-            UUID.fromString("1186f8f9-131d-455b-9966-9d0f306090c2") //TODO: swap for actual logic, when auth service will be compleated
+            UUID.fromString(
+                principal?.name
+            )
         )
 
         return ResponseEntity.ok(
-            mapOf("message" to "Resume request placed successfully!")
+            mapOf("trackingId" to trackingId.toString())
         )
     }
 }
