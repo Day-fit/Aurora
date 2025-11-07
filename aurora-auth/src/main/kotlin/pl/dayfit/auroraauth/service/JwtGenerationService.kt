@@ -69,7 +69,7 @@ class JwtGenerationService(private val jwtConfigurationProperties: JwtConfigurat
 
         if (!jwk.isPrivate)
         {
-            throw IllegalArgumentException("Private key is not allowed")
+            throw IllegalArgumentException("Private key is required")
         }
 
         this.secretKey.set(jwk)
