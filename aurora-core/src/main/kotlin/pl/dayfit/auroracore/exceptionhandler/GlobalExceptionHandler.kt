@@ -47,7 +47,7 @@ class GlobalExceptionHandler {
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
             .body(
-                mapOf("error" to (e.message?: "Not found"))
+                mapOf("error" to (e.message ?: "Not found"))
             )
     }
 }
