@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+
+@theme {
+    --color-bg-dark: #121213;           /* Podstawowe tło */
+    --color-main-dark: #151515;         /* Main sections */
+    --color-frame-dark: #4B4B50;        /* Ramki ect. */
+    --color-aurora-green-dark: #59F0B9; /* zorza (green) */
+    --color-aurora-blue-dark: #9F80FF;  /* zorza (blue/purple) */
+    --color-text-dark: #E0E0E0;         /* tekst */
+    --color-heading-dark: #FFFFFF;      /* Nagłówki */
+
+    /* === Light Mode === */
+    --color-bg-light: #ffffff;          /* Podstawowe tło */
+    --color-main-light: #F5F5F7;        /* Main sections */
+    --color-frame-light: #D8D8D8;       /* Ramki ect. */
+    --color-aurora-green-light: #009688;/* zorza (green) */
+    --color-aurora-blue-light: #9381FF; /* zorza (blue/purple) */
+    --color-text-light: #333333;        /* tekst */
+    --color-heading-light: #000000;
+}
+body{
+    background-color: var(--color-bg-dark);
+    color: var(--color-text-dark);
+}
