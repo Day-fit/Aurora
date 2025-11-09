@@ -2,21 +2,21 @@
 
 
 @theme {
-    --color-bg-dark: #121213;           /* Podstawowe tło */
+    --color-bg-dark: #121213;           /* Base background */
     --color-main-dark: #151515;         /* Main sections */
-    --color-frame-dark: #4B4B50;        /* Ramki ect. */
-    --color-aurora-green-dark: #59F0B9; /* zorza (green) */
-    --color-aurora-blue-dark: #9F80FF;  /* zorza (blue/purple) */
-    --color-text-dark: #E0E0E0;         /* tekst */
-    --color-heading-dark: #FFFFFF;      /* Nagłówki */
+    --color-frame-dark: #4B4B50;        /* Frames etc. */
+    --color-aurora-green-dark: #59F0B9; /* Aurora (green) */
+    --color-aurora-blue-dark: #9F80FF;  /* Aurora (blue/purple) */
+    --color-text-dark: #E0E0E0;         /* Text */
+    --color-heading-dark: #FFFFFF;      /* Headings */
 
     /* === Light Mode === */
-    --color-bg-light: #ffffff;          /* Podstawowe tło */
+    --color-bg-light: #ffffff;          /* Base background */
     --color-main-light: #F5F5F7;        /* Main sections */
-    --color-frame-light: #D8D8D8;       /* Ramki ect. */
-    --color-aurora-green-light: #009688;/* zorza (green) */
-    --color-aurora-blue-light: #9381FF; /* zorza (blue/purple) */
-    --color-text-light: #333333;        /* tekst */
+    --color-frame-light: #D8D8D8;       /* Frames etc. */
+    --color-aurora-green-light: #009688;/* Aurora (green) */
+    --color-aurora-blue-light: #9381FF; /* Aurora (blue/purple) */
+    --color-text-light: #333333;        /* Text */
     --color-heading-light: #000000;
 }
 body{
