@@ -27,7 +27,7 @@ export default function PhoneNav({isLogged} : { isLogged: boolean }) {
                         />
                         <Button
                             text="Sign in"
-                            className=" text-heading-dark"
+                            className="text-heading-dark"
                         />
                     </>
                 ) : (
