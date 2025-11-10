@@ -10,7 +10,7 @@ enum class EducationDegree(val label: String) {
     UNIVERSITY("University"),
     ASSOCIATE_DEGREE("Associate degree"),
     BACHELOR_DEGREE("Bachelor's degree"),
-    MASTER_DEGREE("Master degree"),
+    MASTER_DEGREE("Master's degree"),
     DOCTORAL_DEGREE("Doctoral degree"),
     POSTDOCTORAL("Postdoctoral"),
     PROFESSIONAL_CERTIFICATE("Professional certificate"),
