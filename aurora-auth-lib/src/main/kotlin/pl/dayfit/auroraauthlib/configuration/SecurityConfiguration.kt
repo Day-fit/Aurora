@@ -3,7 +3,10 @@ package pl.dayfit.auroraauthlib.configuration
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.ProviderManager
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -13,6 +16,7 @@ import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import pl.dayfit.auroraauthlib.auth.entrypoint.AuroraAuthenticationEntryPoint
+import pl.dayfit.auroraauthlib.auth.provider.MicroserviceAuthProvider
 import pl.dayfit.auroraauthlib.configuration.properties.CorsConfigurationProperties
 import pl.dayfit.auroraauthlib.configuration.properties.PublicPathsConfigurationProperties
 import pl.dayfit.auroraauthlib.filter.MicroserviceJwtFilter
@@ -26,7 +30,17 @@ import pl.dayfit.auroraauthlib.filter.MicroserviceJwtFilter
 class SecurityConfiguration {
 
     @Bean
-    @Order(2)
+    fun authenticationManager(
+        http: HttpSecurity,
+        provider: MicroserviceAuthProvider
+    ): AuthenticationManager {
+        val manager = ProviderManager(provider)
+        http.authenticationManager(manager)
+        return manager
+    }
+
+    @Bean
+    @Order(HIGHEST_PRECEDENCE)
     fun filterChain(
         http: HttpSecurity,
         microserviceJwtFilter: MicroserviceJwtFilter,

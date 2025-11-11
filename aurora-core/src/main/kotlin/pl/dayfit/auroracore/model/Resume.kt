@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Lob
 import jakarta.persistence.OneToMany
+import pl.dayfit.auroracore.type.LanguageType
 import java.time.Instant
 import java.util.UUID
 
@@ -17,20 +18,21 @@ class Resume(
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID?,
     var auroraUserId: UUID,
+    var language: LanguageType?,
 
     var name: String,
     var surname: String,
     var age: Int,
     @Column(length = 500)
-    var title: String,
-    @OneToMany(cascade = [CascadeType.ALL])
-    var experiences: MutableList<Experience>? = mutableListOf(),
-    @OneToMany(cascade = [CascadeType.ALL])
-    var skills: MutableList<Skill>? = mutableListOf(),
-    @OneToMany(cascade = [CascadeType.ALL])
-    var education: MutableList<Education>? = mutableListOf(),
-    @OneToMany(cascade = [CascadeType.ALL])
-    var achievements: MutableList<Achievement>? = mutableListOf(),
+    var title: String?,
+    @OneToMany(cascade = [CascadeType.ALL], fetch = jakarta.persistence.FetchType.EAGER)
+    var experiences: MutableList<Experience> = mutableListOf(),
+    @OneToMany(cascade = [CascadeType.ALL], fetch = jakarta.persistence.FetchType.EAGER)
+    var skills: MutableList<Skill> = mutableListOf(),
+    @OneToMany(cascade = [CascadeType.ALL], fetch = jakarta.persistence.FetchType.EAGER)
+    var education: MutableList<Education> = mutableListOf(),
+    @OneToMany(cascade = [CascadeType.ALL], fetch = jakarta.persistence.FetchType.EAGER)
+    var achievements: MutableList<Achievement> = mutableListOf(),
     var photo: ByteArray? = null,
     @Column(length = 2000)
     var description: String?,

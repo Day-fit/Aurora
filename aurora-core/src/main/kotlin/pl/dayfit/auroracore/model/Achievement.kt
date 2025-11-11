@@ -6,7 +6,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 
 @Entity
-class Achievement(
+data class Achievement(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long?,

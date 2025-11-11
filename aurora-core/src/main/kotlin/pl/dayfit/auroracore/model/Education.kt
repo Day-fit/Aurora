@@ -7,7 +7,7 @@ import jakarta.persistence.Id
 import pl.dayfit.auroracore.type.EducationDegree
 
 @Entity
-class Education (
+data class Education (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,

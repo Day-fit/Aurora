@@ -27,9 +27,18 @@ class SteamsConfiguration {
     }
 
     @Bean
-    fun streamTemplate(streamsEnvironment: Environment): RabbitStreamTemplate
+    fun generationStreamTemplate(streamsEnvironment: Environment): RabbitStreamTemplate
     {
-        val template = RabbitStreamTemplate(streamsEnvironment, "generation_stream")
+        val template = RabbitStreamTemplate(streamsEnvironment, "post.enhancement.stream")
+        template.setMessageConverter(Jackson2JsonMessageConverter())
+
+        return template
+    }
+
+    @Bean
+    fun postTranslationStreamTemplate(streamsEnvironment: Environment): RabbitStreamTemplate
+    {
+        val template = RabbitStreamTemplate(streamsEnvironment, "post.translation.stream")
         template.setMessageConverter(Jackson2JsonMessageConverter())
 
         return template
