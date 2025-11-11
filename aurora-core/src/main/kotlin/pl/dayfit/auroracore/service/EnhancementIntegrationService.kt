@@ -18,20 +18,20 @@ class EnhancementIntegrationService(
     private val applicationEventPublisher: ApplicationEventPublisher,
     streamsEnvironment: Environment,
 ) {
-private val consumer = streamsEnvironment.consumerBuilder()
-    .stream("post.enhancement.stream")
-    .offset(OffsetSpecification.next())
-    .messageHandler { _, record ->
-        run {
-            val json = String(record.bodyAsBinary, StandardCharsets.UTF_8)
+    private val consumer = streamsEnvironment.consumerBuilder()
+        .stream("post.enhancement.stream")
+        .offset(OffsetSpecification.next())
+        .messageHandler { _, record ->
+            run {
+                val json = String(record.bodyAsBinary, StandardCharsets.UTF_8)
 
-            applicationEventPublisher.publishEvent(
-                jacksonObjectMapper()
-                    .readValue(json, EnhanceDoneEvent::class.java)
-            )
+                applicationEventPublisher.publishEvent(
+                    jacksonObjectMapper()
+                        .readValue(json, EnhanceDoneEvent::class.java)
+                )
+            }
         }
-    }
-    .build()
+        .build()
 
     @PreDestroy
     private fun destroy() {
