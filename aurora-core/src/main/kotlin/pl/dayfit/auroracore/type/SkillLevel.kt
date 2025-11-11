@@ -1,13 +1,13 @@
 package pl.dayfit.auroracore.type
 
-enum class SkillLevel(val label: String) {
-    BEGINNER("Beginner"),
-    INTERMEDIATE("Intermediate"),
-    ADVANCED("Advanced"),
-    EXPERT("Expert"),
-    MASTER("Master");
+import com.fasterxml.jackson.annotation.JsonProperty
 
-    override fun toString(): String {
-        return label
-    }
+enum class SkillLevel(val label: String) {
+    @JsonProperty("BEGINNER") BEGINNER("Beginner"),
+    @JsonProperty("INTERMEDIATE") INTERMEDIATE("Intermediate"),
+    @JsonProperty("ADVANCED") ADVANCED("Advanced"),
+    @JsonProperty("EXPERT") EXPERT("Expert"),
+    @JsonProperty("MASTER") MASTER("Master");
+
+    override fun toString(): String = label
 }

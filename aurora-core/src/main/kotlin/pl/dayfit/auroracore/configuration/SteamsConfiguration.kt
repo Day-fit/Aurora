@@ -11,6 +11,7 @@ import org.springframework.rabbit.stream.producer.RabbitStreamTemplate
 @Configuration
 @EnableConfigurationProperties(StreamsConfigurationProperties::class)
 class SteamsConfiguration {
+
     @Bean
     fun streamsEnvironment(config: StreamsConfigurationProperties): Environment
     {
@@ -27,9 +28,18 @@ class SteamsConfiguration {
     }
 
     @Bean
-    fun streamTemplate(streamsEnvironment: Environment): RabbitStreamTemplate
+    fun enhancementStreamTemplate(streamsEnvironment: Environment): RabbitStreamTemplate
     {
-        val template = RabbitStreamTemplate(streamsEnvironment, "enhancement_stream")
+        val template = RabbitStreamTemplate(streamsEnvironment, "enhancement.stream")
+        template.setMessageConverter(Jackson2JsonMessageConverter())
+
+        return template
+    }
+
+    @Bean
+    fun translateStreamTemplate(streamsEnvironment: Environment): RabbitStreamTemplate
+    {
+        val template = RabbitStreamTemplate(streamsEnvironment, "translation.stream")
         template.setMessageConverter(Jackson2JsonMessageConverter())
 
         return template
