@@ -30,13 +30,13 @@ export default function Header({isLogged}: {isLogged: boolean}) {
                 <nav className="hidden md:flex text-text-dark text-center justify-center">
                     <ul className="flex flex-row gap-6">
                         <li>
-                            <Link href="#" className="w-full">Home</Link>
+                            <Link href="/" className="w-full">Home</Link>
                         </li>
                         <li>
-                            <Link href="#" className="w-full">Create</Link>
+                            <Link href="/create" className="w-full">Create</Link>
                         </li>
                         <li>
-                            <Link href="#" className="w-full">Edit</Link>
+                            <Link href="/edit" className="w-full">Edit</Link>
                         </li>
                     </ul>
                 </nav>
