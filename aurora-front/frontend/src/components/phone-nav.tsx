@@ -7,13 +7,13 @@ export default function PhoneNav({isLogged} : { isLogged: boolean }) {
             <nav className="flex flex-col gap-2 text-center">
                 <ul className="flex flex-col gap-2">
                     <li>
-                        <Link href="#" className="w-full">Home</Link>
+                        <Link href="/" className="w-full">Home</Link>
                     </li>
                     <li>
-                        <Link href="#" className="w-full">Create</Link>
+                        <Link href="/create" className="w-full">Create</Link>
                     </li>
                     <li>
-                        <Link href="#" className="w-full">Edit</Link>
+                        <Link href="/edit" className="w-full">Edit</Link>
                     </li>
                 </ul>
             </nav>
