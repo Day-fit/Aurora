@@ -1,6 +1,15 @@
+import React from "react";
+
+export enum type {
+    reset = "reset",
+    submit = "submit",
+    button = "button",
+}
+
 export interface ButtonInterface {
     text?: string,
     className?: string,
-    icon?: React.ReactNode | string;
-    onClick?: () => void;
+    icon?: React.ReactNode | string,
+    onClick?: () => void,
+    type?: type
 }
