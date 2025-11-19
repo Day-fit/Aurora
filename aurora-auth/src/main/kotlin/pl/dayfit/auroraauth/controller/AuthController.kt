@@ -1,5 +1,6 @@
 package pl.dayfit.auroraauth.controller
 
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -20,7 +21,7 @@ class AuthController(val authService: AuthService) {
     }
 
     @PostMapping("/register")
-    fun register(@RequestBody registerDto: RegisterRequestDto): ResponseEntity<Map<String, String>> {
+    fun register(@RequestBody @Valid registerDto: RegisterRequestDto): ResponseEntity<Map<String, String>> {
         authService.handleRegistration(registerDto)
         return ResponseEntity.ok(
             mapOf("message" to "User registered successfully!")

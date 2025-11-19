@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import pl.dayfit.auroracore.dto.TranslationResumeDto
 import pl.dayfit.auroracore.event.TranslationRequestedEvent
 import pl.dayfit.auroracore.exception.ResumeNotGeneratedYetException
+import pl.dayfit.auroracore.exception.UuidInvalidException
 import pl.dayfit.auroracore.model.Resume
 import pl.dayfit.auroracore.repository.ResumeRepository
 import pl.dayfit.auroracore.type.LanguageType
@@ -17,8 +18,11 @@ class ResumeService (
     private val resumeRepository: ResumeRepository,
     private val translateStreamTemplate: RabbitStreamTemplate
 ) {
-    fun getResume(id: UUID): String {
-        val resume = resumeRepository.findById(id)
+    fun getResume(id: String): String {
+        val resume = resumeRepository.findById(
+            runCatching { UUID.fromString(id) }
+                .getOrElse { throw UuidInvalidException() }
+        )
             .orElseThrow{ NoSuchElementException("There is no resume with such a id") }
 
         val result = resume.generatedResult

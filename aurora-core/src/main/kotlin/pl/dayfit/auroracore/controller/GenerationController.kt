@@ -1,5 +1,6 @@
 package pl.dayfit.auroracore.controller
 
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PostMapping
@@ -14,7 +15,8 @@ import java.util.UUID
 class GenerationController(val generationService: GenerationService) {
 
     @PostMapping("/generate")
-    fun generate(@RequestBody requestDto: GenerationRequestDto, @AuthenticationPrincipal principal: Principal?): ResponseEntity<Map<String, String>> {
+    fun generate(@RequestBody @Valid requestDto: GenerationRequestDto,
+                 @AuthenticationPrincipal principal: Principal?): ResponseEntity<Map<String, String>> {
         val trackingId = generationService.requestGeneration(
             requestDto,
             UUID.fromString(
