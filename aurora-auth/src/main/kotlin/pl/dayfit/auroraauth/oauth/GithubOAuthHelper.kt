@@ -2,6 +2,12 @@ package pl.dayfit.auroraauth.oauth
 
 import org.springframework.http.*
 import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest
+import org.springframework.security.oauth2.client.endpoint.RestClientAuthorizationCodeTokenResponseClient
+import org.springframework.security.oauth2.client.registration.ClientRegistration
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationExchange
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationResponse
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.exchange
@@ -11,12 +17,21 @@ import pl.dayfit.auroraauth.repository.UserRepository
 import pl.dayfit.auroraauth.type.AuthProvider
 import kotlin.io.encoding.Base64
 
+
 @Component
-class GithubOAuthValidator(
+class GithubOAuthHelper(
     private val oauthRestTemplate: RestTemplate,
     private val properties: OAuthConfigurationProperties,
     private val userRepository: UserRepository
-) : OAuth2Validator {
+) : OAuth2Helper {
+    private val client = RestClientAuthorizationCodeTokenResponseClient()
+    private val clientRegistration = ClientRegistration.withRegistrationId("github")
+        .clientId(properties.githubClientId)
+        .clientSecret(properties.githubClientSecret)
+        .tokenUri(properties.githubTokenUri)
+        .redirectUri(properties.githubRedirectUri)
+        .scope(properties.githubScope)
+        .build()
 
     override fun validate(token: String): OAuthUser {
         val url = "https://api.github.com/applications/${properties.githubClientId}/token"
@@ -74,4 +89,28 @@ class GithubOAuthValidator(
     override fun supports(provider: AuthProvider): Boolean {
         return provider == AuthProvider.GITHUB
     }
+
+    override fun changeAuthorizationTokenToAccessToken(authorizationToken: String): String {
+        val request = OAuth2AuthorizationRequest.authorizationCode()
+            .authorizationUri(properties.githubTokenUri)
+            .clientId(properties.githubClientId)
+            .redirectUri(clientRegistration.redirectUri)
+            .scopes(clientRegistration.scopes)
+            .state("github-state")
+            .build()
+
+        val response = OAuth2AuthorizationResponse.success(authorizationToken)
+            .redirectUri(clientRegistration.redirectUri)
+            .state("github-state")
+            .build()
+
+        val exchange = OAuth2AuthorizationExchange(request, response)
+        val grant = OAuth2AuthorizationCodeGrantRequest(clientRegistration, exchange)
+
+        val tokenResponse = client.getTokenResponse(grant)
+            ?: throw IllegalStateException("GitHub token exchange failed")
+
+        return tokenResponse.accessToken.tokenValue
+    }
+
 }

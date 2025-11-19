@@ -10,14 +10,14 @@ import java.util.UUID
 @Service
 class OAuthService(
     private val oauthAuthenticationProvider: OAuth2Provider,
-    private val jwtGenerationService: JwtGenerationService
+    private val jwtGenerationService: JwtGenerationService,
 ) {
     fun handleLogin(oauthTokenExchangeDto: OAuthTokenExchangeDto): JwtTokenPairDto {
         val token = oauthAuthenticationProvider
             .authenticate(
                 OAuth2TokenCandidate(
-                    oauthTokenExchangeDto.provider!!,
-                    oauthTokenExchangeDto.accessToken!!
+                    oauthTokenExchangeDto.provider,
+                    oauthTokenExchangeDto.auhorizationCode
                 )
             )
 

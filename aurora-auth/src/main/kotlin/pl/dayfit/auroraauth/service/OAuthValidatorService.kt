@@ -1,18 +1,18 @@
 package pl.dayfit.auroraauth.service
 
 import org.springframework.stereotype.Service
-import pl.dayfit.auroraauth.oauth.OAuth2Validator
+import pl.dayfit.auroraauth.oauth.OAuth2Helper
 import pl.dayfit.auroraauth.oauth.domain.OAuthUser
 import pl.dayfit.auroraauth.type.AuthProvider
 import java.security.NoSuchProviderException
 
 @Service
 class OAuthValidatorService(
-    private val validators: List<OAuth2Validator>
+    private val validators: List<OAuth2Helper>
 ) {
     fun validate(token: String, provider: AuthProvider): OAuthUser
     {
-        val validator: OAuth2Validator? = validators.find {
+        val validator: OAuth2Helper? = validators.find {
             validator -> validator.supports(provider)
         }
 
@@ -20,6 +20,10 @@ class OAuthValidatorService(
             "Provider '${provider.name}' is not supported."
         )
 
-        return validator.validate(token)
+        return validator.validate(
+            validator.changeAuthorizationTokenToAccessToken(
+                token
+            )
+        )
     }
 }

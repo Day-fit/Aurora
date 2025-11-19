@@ -1,7 +1,6 @@
 package pl.dayfit.auroraauth.oauth
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.hibernate.query.results.Builders.entity
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -15,11 +14,11 @@ import pl.dayfit.auroraauth.repository.UserRepository
 import pl.dayfit.auroraauth.type.AuthProvider
 
 @Component
-class GoogleOAuthValidator(
+class GoogleOAuthHelper(
     private val properties: OAuthConfigurationProperties,
     private val userRepository: UserRepository,
     private val restTemplate: RestTemplate,
-) : OAuth2Validator {
+) : OAuth2Helper {
     override fun validate(token: String): OAuthUser {
         val headers = HttpHeaders().apply {
             setBearerAuth(token)
@@ -58,7 +57,13 @@ class GoogleOAuthValidator(
         )
     }
 
+
+
     override fun supports(provider: AuthProvider): Boolean {
         return provider == AuthProvider.GOOGLE
+    }
+
+    override fun changeAuthorizationTokenToAccessToken(authorizationToken: String): String {
+        TODO("Not yet implemented")
     }
 }
