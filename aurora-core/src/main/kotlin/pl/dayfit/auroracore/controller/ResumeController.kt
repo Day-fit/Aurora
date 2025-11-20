@@ -19,7 +19,7 @@ class ResumeController (
             return ResponseEntity.ok(
                 mapOf(
                         "result" to resumeService.getResume(
-                            UUID.fromString(id)
+                            id
                         )))
     }
 

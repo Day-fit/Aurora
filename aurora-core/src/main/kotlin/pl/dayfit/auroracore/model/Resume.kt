@@ -23,7 +23,7 @@ class Resume(
     var name: String,
     var surname: String,
     var age: Int,
-    @Column(length = 500)
+    @Column(length = 200)
     var title: String?,
     @OneToMany(cascade = [CascadeType.ALL], fetch = jakarta.persistence.FetchType.EAGER)
     var experiences: MutableList<Experience> = mutableListOf(),
