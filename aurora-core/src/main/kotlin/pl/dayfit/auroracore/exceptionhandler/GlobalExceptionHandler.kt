@@ -50,7 +50,7 @@ class GlobalExceptionHandler {
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(
-                mapOf("error" to "Request body in not valid JSON syntax")
+                mapOf("error" to "Request body is not valid JSON syntax")
             )
     }
 
