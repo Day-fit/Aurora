@@ -18,7 +18,7 @@ data class GenerationRequestDto (
     @NotBlank
     @Length(max = 200)
     val title: String,
-    @Email(message = "Given email in not valid")
+    @Email(message = "Given email is not valid")
     @NotBlank(message = "Email cannot be blank")
     val email: String,
     val website: String?,
