@@ -85,7 +85,7 @@ class GlobalExceptionHandler {
     fun handleUuidInvalidException(e: UuidInvalidException): ResponseEntity<Map<String, String>> {
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
-            .body(mapOf("error" to e.message!!))
+            .body(mapOf("error" to (e.message ?: "Invalid UUID")))
     }
 
     @ExceptionHandler(Exception::class)
