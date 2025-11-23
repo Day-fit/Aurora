@@ -26,4 +26,7 @@ class GenerationController(val generationService: GenerationService) {
             mapOf("trackingId" to trackingId.toString())
         )
     }
+
+    @PostMapping("/autogenerate")
+    fun autoGenerate()
 }
