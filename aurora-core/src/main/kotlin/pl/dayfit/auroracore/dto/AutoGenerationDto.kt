@@ -1,17 +1,12 @@
-package pl.dayfit.auroraai.event
+package pl.dayfit.auroracore.dto
 
-import jakarta.validation.constraints.Max
-import jakarta.validation.constraints.Min
 import pl.dayfit.auroracore.type.EducationDegree
 import pl.dayfit.auroracore.type.SkillLevel
 import java.time.Instant
 
-data class GenerationRequestDto (
-    val name: String,
-    val surname: String,
-    val age: Int,
-    val title: String,
-    val email: String,
+data class AutoGenerationDto (
+    val age: Int?,
+    val email: String?,
     val website: String?,
     val linkedIn: String?,
     val gitHub: String?,
@@ -21,12 +16,6 @@ data class GenerationRequestDto (
     val skills: List<Skill>,
     val experiences: List<Experience>,
     val achievements: List<Achievement>,
-
-    @Min(1)
-    @Max(1) //TODO: Add more versions
-    val templateVersion: Int,
-
-    val enhanced : Boolean = false
 )
 {
     data class Education (

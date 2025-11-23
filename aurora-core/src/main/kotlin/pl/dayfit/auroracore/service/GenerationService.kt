@@ -10,14 +10,19 @@ import org.springframework.context.event.EventListener
 import org.springframework.rabbit.stream.producer.RabbitStreamTemplate
 import org.springframework.stereotype.Service
 import pl.dayfit.auroracore.dto.GenerationRequestDto
+import pl.dayfit.auroracore.event.AutoGenerationRequestedEvent
 import pl.dayfit.auroracore.event.EnhanceRequestedEvent
 import pl.dayfit.auroracore.event.ResumeReadyToExport
+import pl.dayfit.auroracore.event.TrackerWaitingToStartEvent
 import pl.dayfit.auroracore.model.Achievement
 import pl.dayfit.auroracore.model.Education
 import pl.dayfit.auroracore.model.Experience
 import pl.dayfit.auroracore.model.Resume
 import pl.dayfit.auroracore.model.Skill
+import pl.dayfit.auroracore.model.redis.AutoGenerationTracker
 import pl.dayfit.auroracore.repository.ResumeRepository
+import pl.dayfit.auroracore.repository.redis.AutoGenerationTrackerRepository
+import pl.dayfit.auroracore.type.TrackerStatus
 import java.io.ByteArrayOutputStream
 import java.io.StringWriter
 import java.time.Instant
@@ -28,8 +33,10 @@ import kotlin.io.encoding.Base64
 @Service
 class GenerationService(
     private val resumeRepository: ResumeRepository,
-    private val freemarkerConfiguration: Configuration,
+    private val freeMarkerConfiguration: Configuration,
     private val applicationEventPublisher: ApplicationEventPublisher,
+    private val autoGenerationTrackerRepository: AutoGenerationTrackerRepository,
+    private val autoGenerationStreamTemplate: RabbitStreamTemplate,
     private val enhancementStreamTemplate: RabbitStreamTemplate,
 ) {
     private val logger = LoggerFactory.getLogger(GenerationService::class.java)
@@ -118,6 +125,31 @@ class GenerationService(
     }
 
     /**
+     * Puts a request in processing queue
+     */
+    fun requestAutoGeneration(): String {
+        val tracker = AutoGenerationTracker(
+            null,
+            TrackerStatus.STARTING,
+            null
+        )
+
+        val saved = autoGenerationTrackerRepository
+            .save(tracker)
+
+        val id = saved.uuid!!
+
+        applicationEventPublisher
+            .publishEvent(
+                TrackerWaitingToStartEvent(
+                    id
+                )
+            )
+
+        return id
+    }
+
+    /**
      * Generates a formatted resume document based on the specified event data.
      *
      * @param event The event containing the ID of the CV to be exported.
@@ -129,7 +161,7 @@ class GenerationService(
         val resume = resumeRepository.findById(event.id)
             .orElseThrow { NoSuchElementException("Resume not found") }
 
-        val template: Template = freemarkerConfiguration.getTemplate("resume${resume.templateVersion}.ftl")
+        val template: Template = freeMarkerConfiguration.getTemplate("resume${resume.templateVersion}.ftl")
         val data: MutableMap<String, Any> = HashMap()
 
         //Personal data

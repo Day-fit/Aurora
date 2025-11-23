@@ -27,6 +27,15 @@ class GenerationController(val generationService: GenerationService) {
         )
     }
 
+    /**
+     * Puts an request in processing queue
+     * @return tracking id
+     */
     @PostMapping("/autogenerate")
-    fun autoGenerate()
+    fun autoGenerate(): ResponseEntity<Map<String, String>> {
+        val trackingId = generationService.requestAutoGeneration()
+
+        return ResponseEntity.ok()
+            .body(mapOf("trackingId" to trackingId))
+    }
 }

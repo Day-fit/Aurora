@@ -1,47 +1,8 @@
 package pl.dayfit.auroracore.event
 
-import pl.dayfit.auroraai.type.EducationDegree
-import pl.dayfit.auroraai.type.SkillLevel
-import java.time.Instant
+import pl.dayfit.auroracore.dto.AutoGenerationDto
 
 data class AutoGenerationDoneEvent(
-    val age: Int?,
-    val email: String?,
-    val website: String?,
-    val linkedIn: String?,
-    val gitHub: String?,
-    val profileImage: String?,
-    val profileDescription: String?,
-    val education: List<Education>,
-    val skills: List<Skill>,
-    val experiences: List<Experience>,
-    val achievements: List<Achievement>,
+    val trackerId: String,
+    val result: AutoGenerationDto
 )
-{
-    data class Education (
-        val institution: String,
-        val major: String?,
-        val degree: EducationDegree,
-        val fromYear: Int,
-        val toYear: Int?
-    )
-
-    data class Experience (
-        val company: String,
-        val position: String,
-        val description: String?,
-        val startDate: Instant,
-        val endDate: Instant?
-    )
-
-    data class Achievement (
-        val title: String,
-        val description: String,
-        val year: Int?
-    )
-
-    data class Skill (
-        val name: String,
-        val level: SkillLevel
-    )
-}

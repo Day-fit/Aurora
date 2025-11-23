@@ -1,0 +1,10 @@
+package pl.dayfit.auroracore.event
+
+import pl.dayfit.auroracore.dto.InformationDto
+import pl.dayfit.auroracore.type.AutoGenerationSource
+
+data class AutoGenerationRequestedEvent (
+    val title: String, //adds more context for AI
+    val source: AutoGenerationSource,
+    val information: InformationDto,
+)
