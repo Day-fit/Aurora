@@ -3,8 +3,8 @@ package pl.dayfit.auroracore.configuration.properties
 import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "information.handlers")
-class InformationHandlersConfigurationProperties {
-    lateinit var githubPat: String
-    lateinit var githubUserInfoUri: String
-    lateinit var githubUserReposUri: String
-}
+data class InformationHandlersConfigurationProperties (
+    var githubPat: String?, //Might be null, but setting it is recommended
+    var githubUserInfoUri: String,
+    var githubUserReposUri: String
+)

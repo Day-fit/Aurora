@@ -35,7 +35,8 @@ class GenerationController(val generationService: GenerationService) {
     fun autoGenerate(): ResponseEntity<Map<String, String>> {
         val trackingId = generationService.requestAutoGeneration()
 
-        return ResponseEntity.ok()
-            .body(mapOf("trackingId" to trackingId))
+        return ResponseEntity.ok(
+            mapOf("trackingId" to trackingId)
+        )
     }
 }

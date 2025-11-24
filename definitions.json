@@ -47,7 +47,7 @@
     {
       "name": "post.enhancement.stream",
       "vhost": "/",
-      "durable": true,
+      "durable": false,
       "type": "stream",
       "arguments": {
         "x-queue-type": "stream",
@@ -57,8 +57,17 @@
     {
       "name": "post.translation.stream",
       "vhost": "/",
-      "durable": true,
+      "durable": false,
       "type": "stream",
+      "arguments": {
+        "x-queue-type": "stream",
+        "x-stream-max-segment-size-bytes": 536870912
+      }
+    },
+    {
+      "name": "post.autogeneration.stream",
+      "vhost": "/",
+      "durable": false,
       "arguments": {
         "x-queue-type": "stream",
         "x-stream-max-segment-size-bytes": 536870912
@@ -75,6 +84,15 @@
     },
     {
       "name": "translation.stream",
+      "vhost": "/",
+      "durable": true,
+      "arguments": {
+        "x-queue-type": "stream",
+        "x-stream-max-segment-size-bytes": 536870912
+      }
+    },
+    {
+      "name": "autogeneration.stream",
       "vhost": "/",
       "durable": true,
       "arguments": {
