@@ -4,6 +4,7 @@ import { FiX } from "react-icons/fi";
 import Input from "@/components/input";
 import { useFieldArray, useFormContext } from "react-hook-form";
 
+//
 export default function Skills() {
     const { control, register } = useFormContext(
 
