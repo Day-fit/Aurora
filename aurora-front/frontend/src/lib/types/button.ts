@@ -6,7 +6,7 @@ export enum type {
     button = "button",
 }
 
-export interface ButtonInterface {
+export default interface ButtonInterface {
     text?: string,
     className?: string,
     icon?: React.ReactNode | string,

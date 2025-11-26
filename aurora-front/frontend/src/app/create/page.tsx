@@ -12,12 +12,13 @@ export default function CreatePage() {
             surname: "",
             age: 0,
             experience: "",
-            skills: ["", "", ""],
+            skills: [{value: ""}, {value: ""}, {value: ""}],
             education: "",
             photo: null,
             description: "",
         }
     });
+    console.log("Parent render");
 
     return (
         <FormProvider {...methods}>

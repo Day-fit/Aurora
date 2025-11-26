@@ -1,6 +1,6 @@
 "use client";
 
-import temp from "@/../public/black-nyg.png";
+import temp from "@/../public/hero-picture.png";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 

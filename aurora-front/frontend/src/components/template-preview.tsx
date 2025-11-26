@@ -1,12 +1,12 @@
-import {useFormContext} from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 
 export default function TemplatePreview() {
 
-    const {watch} = useFormContext();
-    const template = watch("template");
-    return (
-        <>
-            {template === "1" && <p>dziala</p>}
-        </>
-    );
+    const { control } = useFormContext();
+
+    const name = useWatch({ control, name: "name" });
+    const description = useWatch({ control, name: "description" });
+
+
+    return <div>{name} - {description}</div>;
 }
