@@ -1,15 +1,10 @@
 package pl.dayfit.auroraai.event
 
+import pl.dayfit.auroraai.dto.InformationDto
 import pl.dayfit.auroraai.type.AutoGenerationSource
 
 data class AutoGenerationRequestedEvent(
-    val title: String, //for better understanding
+    val title: String, //adds more context for AI
     val source: AutoGenerationSource,
-    val description: String,
-    val helpers: List<HelperObject> //e. g repos from GitHub
-) {
-    data class HelperObject(
-        val name: String,
-        val value: String
-    )
-}
+    val information: InformationDto,
+)

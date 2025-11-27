@@ -26,17 +26,4 @@ class GenerationController(val generationService: GenerationService) {
             mapOf("trackingId" to trackingId.toString())
         )
     }
-
-    /**
-     * Puts an request in processing queue
-     * @return tracking id
-     */
-    @PostMapping("/autogenerate")
-    fun autoGenerate(): ResponseEntity<Map<String, String>> {
-        val trackingId = generationService.requestAutoGeneration()
-
-        return ResponseEntity.ok(
-            mapOf("trackingId" to trackingId)
-        )
-    }
 }

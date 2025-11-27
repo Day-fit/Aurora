@@ -21,21 +21,21 @@ class GitHubInformationWorker(
 
     private val headers = HttpHeaders().apply {
         props.githubPat.apply {
-            if (this != null)
+            if (this == null)
             {
+                logger.warn("GitHub PAT is not set, some information handlers might not work," +
+                        " request rate is limited")
                 return@apply
             }
 
-            logger.warn("GitHub PAT is not set, some information handlers might not work," +
-                    " request rate is limited")
+            setBearerAuth(props.githubPat!!)
         }
-
-        setBearerAuth(props.githubPat ?: "")
     }
 
     override fun processInformation(name: String): InformationDto {
         val userInfo = informationRestTemplate.exchange<Map<String, Any>>(
-            props.githubUserInfoUri + "/$name",
+            props.githubUserInfoUri
+                    .replace("{username}", name),
             HttpMethod.GET,
             HttpEntity<Void>(headers),
         )
@@ -64,7 +64,10 @@ class GitHubInformationWorker(
             ?.mapNotNull { it["name"] as? String }
             ?.map { repoName ->
                 val readmeResponse = informationRestTemplate.exchange<Map<String, Any>>(
-                    props.githubUserReposUri,
+                    props.githubReposContentUri
+                        .replace("{owner}", name)
+                        .replace("{repo}", repoName)
+                        .replace("{path}", "README.md"),
                     HttpMethod.GET,
                     HttpEntity<Void>(headers)
                 )

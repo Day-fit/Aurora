@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import pl.dayfit.auroracore.exception.ResumeNotGeneratedYetException
+import pl.dayfit.auroracore.exception.ResourceNotReadyYetException
 import java.util.NoSuchElementException
 
 @RestControllerAdvice
@@ -23,18 +23,8 @@ class GlobalExceptionHandler {
             )
     }
 
-    @ExceptionHandler(java.lang.Exception::class)
-    fun handleGenericException(e: Exception): ResponseEntity<Map<String, String>> {
-        logger.error("Unhandled exception: ", e)
-
-        return ResponseEntity.internalServerError()
-            .body(
-                mapOf("error" to "Internal server error")
-            )
-    }
-
-    @ExceptionHandler(ResumeNotGeneratedYetException::class)
-    fun handleResumeNotGeneratedYetException(e: ResumeNotGeneratedYetException): ResponseEntity<Map<String, String>> {
+    @ExceptionHandler(ResourceNotReadyYetException::class)
+    fun handleResumeNotGeneratedYetException(e: ResourceNotReadyYetException): ResponseEntity<Map<String, String>> {
         return ResponseEntity
             .status(HttpStatus.ACCEPTED)
             .body(
@@ -48,6 +38,16 @@ class GlobalExceptionHandler {
             .status(HttpStatus.NOT_FOUND)
             .body(
                 mapOf("error" to (e.message ?: "Not found"))
+            )
+    }
+
+    @ExceptionHandler(java.lang.Exception::class)
+    fun handleGenericException(e: Exception): ResponseEntity<Map<String, String>> {
+        logger.error("Unhandled exception: ", e)
+
+        return ResponseEntity.internalServerError()
+            .body(
+                mapOf("error" to "Internal server error")
             )
     }
 }

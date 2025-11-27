@@ -4,7 +4,7 @@ import org.springframework.rabbit.stream.producer.RabbitStreamTemplate
 import org.springframework.stereotype.Service
 import pl.dayfit.auroracore.dto.TranslationResumeDto
 import pl.dayfit.auroracore.event.TranslationRequestedEvent
-import pl.dayfit.auroracore.exception.ResumeNotGeneratedYetException
+import pl.dayfit.auroracore.exception.ResourceNotReadyYetException
 import pl.dayfit.auroracore.model.Resume
 import pl.dayfit.auroracore.repository.ResumeRepository
 import pl.dayfit.auroracore.type.LanguageType
@@ -22,7 +22,7 @@ class ResumeService (
             .orElseThrow{ NoSuchElementException("There is no resume with such a id") }
 
         val result = resume.generatedResult
-            ?: throw ResumeNotGeneratedYetException("Resume has not been generated yet")
+            ?: throw ResourceNotReadyYetException("Resume has not been generated yet")
 
         return Base64.encode(result)
     }

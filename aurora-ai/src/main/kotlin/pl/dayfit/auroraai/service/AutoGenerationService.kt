@@ -43,14 +43,15 @@ class AutoGenerationService(
     @EventListener
     fun handleAutoGeneration(event: AutoGenerationRequestedEvent)
     {
+        val information = event.information
         val params = ResponseCreateParams.builder()
             .model(ChatModel.GPT_4_1_NANO)
             .store(false)
             .input("""
                You are an expert resume writer. Your task is to automatically generate a resume for the following job:
                 - Title: ${event.title}
-                - Description (from ${event.source}: ${event.description}
-                - Additional info: ${event.helpers.map { 
+                - Description (from ${event.source}: ${information.description})
+                - Additional info: ${information.helpers.map{ 
                     "${it.name}: ${it.value},"
             }}
               Try to find as many details as possible, keep null if not found.

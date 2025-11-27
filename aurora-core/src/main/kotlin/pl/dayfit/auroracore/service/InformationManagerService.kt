@@ -1,7 +1,71 @@
 package pl.dayfit.auroracore.service
 
+import org.springframework.context.event.EventListener
+import org.springframework.rabbit.stream.producer.RabbitStreamTemplate
+import org.springframework.stereotype.Service
+import pl.dayfit.auroracore.dto.InformationDto
+import pl.dayfit.auroracore.event.AutoGenerationRequestedEvent
+import pl.dayfit.auroracore.event.TrackerWaitingToStartEvent
+import pl.dayfit.auroracore.information.InformationWorker
+import pl.dayfit.auroracore.repository.redis.AutoGenerationTrackerRepository
+import pl.dayfit.auroracore.type.AutoGenerationSource
+import pl.dayfit.auroracore.type.TrackerStatus
+
 /**
  * Service responsible for searching for information in a given source
  */
-class InformationManagerService {
+@Service
+class InformationManagerService(
+    private val workers: List<InformationWorker>,
+    private val trackerRepository: AutoGenerationTrackerRepository,
+    private val autoGenerationStreamTemplate: RabbitStreamTemplate
+) {
+    private val logger = org.slf4j.LoggerFactory.getLogger(InformationManagerService::class.java)
+
+    @EventListener
+    fun collectAndSendInformation(event: TrackerWaitingToStartEvent)
+    {
+        val tracker = trackerRepository
+            .findById(event.id)
+            .orElseThrow { IllegalStateException("Tracker not found, id ${event.id}") }
+
+        tracker.status = TrackerStatus.SEARCHING_INFORMATION
+
+        val information = runCatching {
+            handleCollectingInformation(
+                event.name,
+                event.source
+            )
+        }
+
+        if (information.isFailure){
+            tracker.status = TrackerStatus.FAILED
+            trackerRepository.save(tracker)
+            //TODO: Notify user about change of the state
+            logger.error("Failed to collect information for ${event.name} from ${event.source}, id ${event.id}")
+            return
+        }
+
+        trackerRepository.save(tracker)
+        //TODO: Notify user about change of the state
+
+        autoGenerationStreamTemplate.convertAndSend(
+            AutoGenerationRequestedEvent(
+                event.title,
+                event.source,
+                information.getOrThrow()
+            )
+        )
+
+        //TODO: Notify user about change of the state
+        tracker.status = TrackerStatus.PROCESSING_INFORMATION
+        trackerRepository.save(tracker)
+    }
+
+    private fun handleCollectingInformation(name: String, source: AutoGenerationSource): InformationDto
+    {
+        return workers.find { worker -> worker.supports(source) }
+            ?.processInformation(name)
+            ?: throw IllegalStateException("No worker found for source $source")
+    }
 }

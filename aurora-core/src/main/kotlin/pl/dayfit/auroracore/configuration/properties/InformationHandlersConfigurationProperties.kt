@@ -6,5 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class InformationHandlersConfigurationProperties (
     var githubPat: String?, //Might be null, but setting it is recommended
     var githubUserInfoUri: String,
-    var githubUserReposUri: String
+    var githubUserReposUri: String,
+    var githubReposContentUri: String
 )

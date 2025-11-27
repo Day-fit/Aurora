@@ -47,7 +47,7 @@
     {
       "name": "post.enhancement.stream",
       "vhost": "/",
-      "durable": false,
+      "durable": true,
       "type": "stream",
       "arguments": {
         "x-queue-type": "stream",
@@ -57,7 +57,7 @@
     {
       "name": "post.translation.stream",
       "vhost": "/",
-      "durable": false,
+      "durable": true,
       "type": "stream",
       "arguments": {
         "x-queue-type": "stream",
@@ -67,7 +67,7 @@
     {
       "name": "post.autogeneration.stream",
       "vhost": "/",
-      "durable": false,
+      "durable": true,
       "arguments": {
         "x-queue-type": "stream",
         "x-stream-max-segment-size-bytes": 536870912
