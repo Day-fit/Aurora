@@ -12,7 +12,7 @@ export default function CreatePage() {
             surname: "",
             age: 0,
             experience: "",
-            skills: [{value: ""}, {value: ""}, {value: ""}],
+            skills: [],
             education: "",
             photo: null,
             description: "",
@@ -22,8 +22,15 @@ export default function CreatePage() {
 
     return (
         <FormProvider {...methods}>
-            <CvForm />
-            <TemplatePreview />
+            <div className="flex flex-col lg:flex-row gap-8 items-start">
+                <div className="w-full lg:w-1/2 min-w-0">
+                    <CvForm />
+                </div>
+
+                <div className="w-full lg:w-1/2 min-w-0">
+                    <TemplatePreview />
+                </div>
+            </div>
         </FormProvider>
     )
 }

@@ -8,17 +8,19 @@ import React from "react";
 import { useFormContext } from "react-hook-form";
 
 export default function CvForm() {
-    const { register, handleSubmit } = useFormContext();
+    //need to add validation, error handling, submit handling via request
+
+    const { register, handleSubmit, reset } = useFormContext();
 
     const onSubmit = (data: any) => console.log(data);
 
     console.log("CvForm render");
 
     return (
-        <section className="relative overflow-hidden rounded-xl p-6 md:p-10 min-h-[60vh]">
+        <section className="relative overflow-hidden rounded-xl p-6 lg:p-10 min-h-[60vh]">
             <div className="bg-main-dark/80 backdrop-blur-sm rounded-xl p-6 md:p-12 flex flex-col md:flex-row gap-8 items-start text-text-dark shadow-2xl">
                 {/* Left: form (takes left half on md+) */}
-                <div className="w-full md:w-1/2">
+                <div className="w-full">
                     <header className="mb-6">
                         <h2 className="text-3xl md:text-4xl font-extrabold leading-tight bg-clip-text text-transparent bg-gradient-to-r from-aurora-blue-dark to-aurora-green-dark">
                             Create your CV
@@ -67,7 +69,7 @@ export default function CvForm() {
                                 type="text"
                                 name="name"
                                 placeholder="First name"
-                                className="border border-white/10 rounded-xl px-4 py-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
+                                className="border border-white/10 rounded-xl px-4 py-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-aurora-green-dark transition"
                             />
 
                             <Input
@@ -93,7 +95,7 @@ export default function CvForm() {
                                 type="text"
                                 name="education"
                                 placeholder="Degree / Institution"
-                                className="border border-white/10 rounded-xl px-4 py-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
+                                className="border border-white/10 rounded-xl px-4 py-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-aurora-green-dark transition"
                             />
                         </div>
 
@@ -102,7 +104,7 @@ export default function CvForm() {
                             textArea={true}
                             name="experience"
                             placeholder="Summarize your experience"
-                            className="border border-white/10 rounded-xl px-4 py-3 bg-transparent min-h-[100px] focus:outline-none focus:ring-2 focus:ring-aurora-green-dark transition"
+                            className="border border-white/10 rounded-xl px-4 py-3 bg-transparent min-h-[100px] focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
                         />
 
                         <div className="pt-1">
@@ -120,15 +122,13 @@ export default function CvForm() {
                         <div className="mt-3 flex gap-3">
                             <Button
                                 type={type.submit}
-                                className="flex-1 bg-aurora-blue-dark text-white px-6 py-3 rounded-lg shadow-xl hover:scale-105 transition-transform font-semibold"
+                                className="flex-1 bg-aurora-blue-dark text-white px-6 py-3 rounded-lg shadow-xl hover:scale-102 transition-transform font-semibold"
                                 text="Create CV"
                             />
                             <Button
                                 className="bg-transparent border border-white/8 text-text-dark px-4 py-3 rounded-lg hover:bg-aurora-green-dark hover:text-white transition"
                                 text="Reset"
-                                onClick={() => {
-                                    // keep reset lightweight; actual reset should use form methods if needed
-                                }}
+                                onClick={() => reset()}
                             />
                         </div>
                     </form>
