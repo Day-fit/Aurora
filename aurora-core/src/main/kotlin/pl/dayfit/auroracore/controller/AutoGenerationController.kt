@@ -17,7 +17,7 @@ class AutoGenerationController(
     private val autoGenerationService: AutoGenerationService
 ) {
     /**
-     * Puts an request in processing queue
+     * Puts a request in processing queue
      * @return tracking id
      */
     @PostMapping("/")

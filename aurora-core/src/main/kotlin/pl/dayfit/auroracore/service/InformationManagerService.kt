@@ -51,6 +51,7 @@ class InformationManagerService(
 
         autoGenerationStreamTemplate.convertAndSend(
             AutoGenerationRequestedEvent(
+                event.id,
                 event.title,
                 event.source,
                 information.getOrThrow()

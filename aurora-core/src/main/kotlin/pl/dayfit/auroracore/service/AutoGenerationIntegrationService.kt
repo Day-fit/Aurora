@@ -3,6 +3,7 @@ package pl.dayfit.auroracore.service
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.rabbitmq.stream.Environment
 import com.rabbitmq.stream.OffsetSpecification
+import jakarta.annotation.PreDestroy
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
@@ -20,18 +21,21 @@ class AutoGenerationIntegrationService(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val autoGenerationTrackerRepository: AutoGenerationTrackerRepository
 ) {
-    init {
-        streamsEnvironment.consumerBuilder()
-            .stream("post.autogeneration.stream")
-            .offset(OffsetSpecification.next())
-            .messageHandler { _, record ->
-                val json = String(record.bodyAsBinary, Charsets.UTF_8)
-                applicationEventPublisher.publishEvent(
-                    jacksonObjectMapper()
-                        .readValue(json, AutoGenerationDoneEvent::class.java)
-                )
-            }
-            .build()
+    private val consumer = streamsEnvironment.consumerBuilder()
+        .stream("post.autogeneration.stream")
+        .offset(OffsetSpecification.next())
+        .messageHandler { _, record ->
+            val json = String(record.bodyAsBinary, Charsets.UTF_8)
+            applicationEventPublisher.publishEvent(
+                jacksonObjectMapper()
+                    .readValue(json, AutoGenerationDoneEvent::class.java)
+            )
+        }
+        .build()
+
+    @PreDestroy
+    private fun destroy() {
+        consumer.close()
     }
 
     @EventListener

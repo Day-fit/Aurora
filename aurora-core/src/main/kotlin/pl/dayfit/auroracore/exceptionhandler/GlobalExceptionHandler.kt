@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import pl.dayfit.auroracore.exception.AutoGenerationFailedException
 import pl.dayfit.auroracore.exception.ResourceNotReadyYetException
 import java.util.NoSuchElementException
 
@@ -38,6 +39,14 @@ class GlobalExceptionHandler {
             .status(HttpStatus.NOT_FOUND)
             .body(
                 mapOf("error" to (e.message ?: "Not found"))
+            )
+    }
+
+    @ExceptionHandler(AutoGenerationFailedException::class)
+    fun handleAutoGenerationFailedException(e: AutoGenerationFailedException): ResponseEntity<Map<String, String>> {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(
+                mapOf("error" to (e.message ?: "Auto generation failed"))
             )
     }
 

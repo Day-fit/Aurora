@@ -4,6 +4,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import pl.dayfit.auroracore.dto.AutoGenerationDto
 import pl.dayfit.auroracore.event.TrackerWaitingToStartEvent
+import pl.dayfit.auroracore.exception.AutoGenerationFailedException
 import pl.dayfit.auroracore.exception.ResourceNotReadyYetException
 import pl.dayfit.auroracore.model.redis.AutoGenerationTracker
 import pl.dayfit.auroracore.repository.redis.AutoGenerationTrackerRepository
@@ -53,6 +54,11 @@ class AutoGenerationService(
         val tracker = autoGenerationTrackerRepository
             .findById(trackerId)
             .orElseThrow{ NoSuchElementException("No tracker with id $trackerId") }
+
+        if (tracker.status == TrackerStatus.FAILED)
+        {
+            throw AutoGenerationFailedException("Auto generation failed for tracker with id $trackerId. Please try again later.")
+        }
 
         if (tracker.result == null)
         {

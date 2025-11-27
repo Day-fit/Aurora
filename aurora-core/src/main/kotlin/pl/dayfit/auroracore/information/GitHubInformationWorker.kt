@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.web.client.exchange
 import pl.dayfit.auroracore.exception.InformationCollectingFailedException
+import kotlin.collections.filter
 import kotlin.io.encoding.Base64
 
 @Component
@@ -33,24 +34,11 @@ class GitHubInformationWorker(
     }
 
     override fun processInformation(name: String): InformationDto {
-        val userInfo = informationRestTemplate.exchange<Map<String, Any>>(
-            props.githubUserInfoUri
-                    .replace("{username}", name),
-            HttpMethod.GET,
-            HttpEntity<Void>(headers),
-        )
-
-        if (!userInfo.statusCode.is2xxSuccessful)
-        {
-            throw InformationCollectingFailedException("Could not fetch user info")
-        }
-
-        val bio = userInfo.body?.get("bio") as String?
-            ?: throw InformationCollectingFailedException("User has no bio")
+        val url = props.githubUserReposUri
+            .replace("{owner}", name)
 
         val userRepos = informationRestTemplate.exchange<List<Map<String, Any>>>(
-            props.githubUserReposUri
-                .replace("{owner}", name),
+            url,
             HttpMethod.GET,
             HttpEntity<Void>(headers)
         )
@@ -62,30 +50,40 @@ class GitHubInformationWorker(
 
         val readmes: List<InformationDto.InformationItem> = userRepos.body
             ?.mapNotNull { it["name"] as? String }
+            ?.filter {repoName -> repoName.equals(name, ignoreCase = true)}
             ?.map { repoName ->
-                val readmeResponse = informationRestTemplate.exchange<Map<String, Any>>(
-                    props.githubReposContentUri
-                        .replace("{owner}", name)
-                        .replace("{repo}", repoName)
-                        .replace("{path}", "README.md"),
-                    HttpMethod.GET,
-                    HttpEntity<Void>(headers)
-                )
-                val readmeContent = readmeResponse.body?.get("content") as? String
-                val decodedReadme = readmeContent?.let { String(Base64.decode(it)) } ?: ""
                 InformationDto.InformationItem(
                     repoName,
-                    decodedReadme
+                    fetchReadmeContent(name, repoName)
                 )
             } ?: emptyList()
 
         return InformationDto(
-            bio,
+            fetchReadmeContent(name, name), // username/username README.md is used as a profile description
                 readmes
         )
     }
 
     override fun supports(source: AutoGenerationSource): Boolean {
         return source == AutoGenerationSource.GITHUB
+    }
+
+    private fun fetchReadmeContent(owner: String, repo: String): String {
+        val readmeResponse = informationRestTemplate.exchange<Map<String, Any>>(
+            props.githubReposContentUri
+                .replace("{owner}", owner)
+                .replace("{repo}", repo)
+                .replace("{path}", "README.md"),
+            HttpMethod.GET,
+            HttpEntity<Void>(headers)
+        )
+
+        if (!readmeResponse.statusCode.is2xxSuccessful)
+        {
+            throw InformationCollectingFailedException("Could not fetch README.md from $owner/$repo")
+        }
+
+        val readmeContent = readmeResponse.body?.get("content") as? String
+        return readmeContent?.let { Base64.decode(it.replace("\n", "").trim()).decodeToString() } ?: ""
     }
 }

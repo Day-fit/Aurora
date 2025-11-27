@@ -6,7 +6,7 @@ services:
       - 'POSTGRES_PASSWORD=${DB_PASSWORD:-secret}'
       - 'POSTGRES_USER=${DB_USER}'
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql
     ports:
       - '5432:5432'
 
