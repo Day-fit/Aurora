@@ -1,11 +1,8 @@
 package pl.dayfit.auroracore.service
 
-import com.rabbitmq.stream.Consumer
-import com.rabbitmq.stream.Environment
-import com.rabbitmq.stream.OffsetSpecification
+import com.itextpdf.html2pdf.HtmlConverter
 import freemarker.template.Configuration
 import freemarker.template.Template
-import jakarta.annotation.PostConstruct
 import jakarta.transaction.Transactional
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
@@ -13,7 +10,6 @@ import org.springframework.context.event.EventListener
 import org.springframework.rabbit.stream.producer.RabbitStreamTemplate
 import org.springframework.stereotype.Service
 import pl.dayfit.auroracore.dto.GenerationRequestDto
-import pl.dayfit.auroracore.event.EnhanceDoneEvent
 import pl.dayfit.auroracore.event.EnhanceRequestedEvent
 import pl.dayfit.auroracore.event.ResumeReadyToExport
 import pl.dayfit.auroracore.model.Achievement
@@ -22,9 +18,8 @@ import pl.dayfit.auroracore.model.Experience
 import pl.dayfit.auroracore.model.Resume
 import pl.dayfit.auroracore.model.Skill
 import pl.dayfit.auroracore.repository.ResumeRepository
-import tools.jackson.databind.ObjectMapper
+import java.io.ByteArrayOutputStream
 import java.io.StringWriter
-import java.nio.charset.StandardCharsets
 import java.time.Instant
 import java.util.NoSuchElementException
 import java.util.UUID
@@ -35,37 +30,17 @@ class GenerationService(
     private val resumeRepository: ResumeRepository,
     private val freemarkerConfiguration: Configuration,
     private val applicationEventPublisher: ApplicationEventPublisher,
-    private val streamTemplate: RabbitStreamTemplate,
-    private val streamsEnvironment: Environment,
-    private val objectMapper: ObjectMapper,
-    private val enhanceIntegrationService: EnhanceIntegrationService
+    private val enhancementStreamTemplate: RabbitStreamTemplate,
 ) {
     private val logger = LoggerFactory.getLogger(GenerationService::class.java)
-    private lateinit var consumer: Consumer
-
-    @PostConstruct
-    fun init()
-    {
-        consumer = streamsEnvironment.consumerBuilder()
-            .stream("generation_stream")
-            .offset(OffsetSpecification.next())
-            .messageHandler { _, record ->
-                run {
-                    val json = String(record.bodyAsBinary, StandardCharsets.UTF_8)
-                    enhanceIntegrationService.saveEnhancedResume(
-                        this.mapToEvent(json)
-                    )
-                }
-            }
-            .build()
-    }
 
     @Transactional
-    fun requestGeneration(requestDto: GenerationRequestDto, userId: UUID)
+    fun requestGeneration(requestDto: GenerationRequestDto, userId: UUID): UUID
     {
         val resume = Resume(
             null,
             userId,
+            null,
             requestDto.name,
             requestDto.surname,
             requestDto.age,
@@ -78,13 +53,13 @@ class GenerationService(
                     it.startDate,
                     it.endDate,
                     it.description
-                )},
+                )}.toMutableList(),
             requestDto.skills.map {
                 Skill(
                     null,
                     it.name,
                     it.level
-                ) },
+                ) }.toMutableList(),
             requestDto.education.map {
                 Education(
                     null,
@@ -94,7 +69,7 @@ class GenerationService(
                     it.fromYear,
                     it.toYear
                 )
-            },
+            }.toMutableList(),
             requestDto.achievements.map {
                 Achievement(
                     null,
@@ -102,7 +77,7 @@ class GenerationService(
                     it.description,
                     it.year
                 )
-            },
+            }.toMutableList(),
             requestDto.profileImage?.let { Base64.decode(it) },
 
             requestDto.profileDescription,
@@ -110,6 +85,7 @@ class GenerationService(
             requestDto.website,
             requestDto.gitHub,
             requestDto.linkedIn,
+            null,
             requestDto.templateVersion,
             Instant.now(),
         )
@@ -122,10 +98,10 @@ class GenerationService(
                 ResumeReadyToExport(resume.id!!)
             )
             logger.trace("Resume ready to export: {}", resume.id)
-            return
+            return resume.id!!
         }
 
-        streamTemplate.convertAndSend(
+        enhancementStreamTemplate.convertAndSend(
             EnhanceRequestedEvent(
                 resume.id!!,
                 requestDto.title,
@@ -138,6 +114,7 @@ class GenerationService(
         )
 
         logger.trace("Resume ready to export: {}", resume.id)
+        return resume.id!!
     }
 
     /**
@@ -147,7 +124,7 @@ class GenerationService(
      * @return The generated resume as a string.
      */
     @EventListener
-    fun generateResume(event: ResumeReadyToExport): String
+    fun generateResume(event: ResumeReadyToExport)
     {
         val resume = resumeRepository.findById(event.id)
             .orElseThrow { NoSuchElementException("Resume not found") }
@@ -157,7 +134,7 @@ class GenerationService(
 
         //Personal data
         data["name"] = resume.name
-        data["title"] = resume.title
+        data["title"] = resume.title!!
         data["surname"] = resume.surname
         data["age"] = resume.age
 
@@ -172,22 +149,24 @@ class GenerationService(
         resume.linkedIn?.let { data["linkedIn"] = it }
 
         //Other information
-        resume.education?.let { data["education"] = it }
-        resume.skills?.let { data["skills"] = it }
-        resume.achievements?.let { data["achievements"] = it}
-        resume.experiences?.let { data["experiences"] = it}
+        resume.education.let { data["education"] = it }
+        resume.skills.let { data["skills"] = it }
+        resume.achievements.let { data["achievements"] = it}
+        resume.experiences.let { data["experiences"] = it}
 
         StringWriter().use {
             out -> template.process(data, out)
-            return out.toString()
-        }
-    }
 
-    private fun mapToEvent(json: String): EnhanceDoneEvent
-    {
-        return objectMapper.readValue(
-            json,
-            EnhanceDoneEvent::class.java
-        )
+            ByteArrayOutputStream().use { outPdf ->
+                HtmlConverter.convertToPdf(
+                    out.toString(),
+                    outPdf
+                )
+
+                resume.generatedResult = outPdf.toByteArray()
+            }
+        }
+
+        resumeRepository.save(resume)
     }
 }

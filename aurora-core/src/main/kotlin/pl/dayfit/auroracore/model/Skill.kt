@@ -7,7 +7,7 @@ import jakarta.persistence.Id
 import pl.dayfit.auroracore.type.SkillLevel
 
 @Entity
-class Skill (
+data class Skill (
     @Id
     @GeneratedValue(GenerationType.IDENTITY)
     var id: Long?,

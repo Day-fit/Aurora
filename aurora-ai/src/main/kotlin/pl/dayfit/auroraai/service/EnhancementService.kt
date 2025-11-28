@@ -1,5 +1,6 @@
 package pl.dayfit.auroraai.service
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.openai.client.OpenAIClient
 import com.openai.models.ChatModel
 import com.openai.models.responses.ResponseCreateParams
@@ -14,15 +15,14 @@ import org.springframework.stereotype.Service
 import pl.dayfit.auroraai.dto.EnhanceRequestDto
 import pl.dayfit.auroraai.event.EnhanceDoneEvent
 import pl.dayfit.auroraai.event.EnhanceRequestedEvent
-import pl.dayfit.auroraai.exception.AiEnhancementFailedException
-import tools.jackson.databind.ObjectMapper
+import pl.dayfit.auroraai.exception.EnhancementFailedException
 import java.nio.charset.StandardCharsets
 
 @Service
 class EnhancementService(
-    val client: OpenAIClient, val streamsEnvironment: Environment,
-    private val objectMapper: ObjectMapper,
-    private val streamTemplate: RabbitStreamTemplate,
+    private val client: OpenAIClient,
+    private val streamsEnvironment: Environment,
+    private val generationStreamTemplate: RabbitStreamTemplate,
     private val applicationEventPublisher: ApplicationEventPublisher
 ) {
     lateinit var consumer: Consumer
@@ -31,7 +31,7 @@ class EnhancementService(
     @PostConstruct
     fun init() {
         consumer = streamsEnvironment.consumerBuilder()
-            .stream("enhancement_stream")
+            .stream("enhancement.stream")
             .offset(OffsetSpecification.next())
             .messageHandler { _, record ->
                 run {
@@ -47,7 +47,7 @@ class EnhancementService(
     }
 
     @EventListener
-    fun enhance(event: EnhanceRequestedEvent)
+    private fun enhance(event: EnhanceRequestedEvent)
     {
         val params = ResponseCreateParams.builder()
             .model(ChatModel.GPT_4O_MINI)
@@ -59,6 +59,7 @@ class EnhancementService(
             - Description: ${event.description}
             
             Focus on maximizing the resume’s attractiveness and impact while staying completely truthful. Highlight the most relevant experience, measurable achievements, and key skills that best match the job requirements.
+            Avoid redundant buzzwords and information that are worthless.
             
             Achievements to emphasize: ${event.achievementDescriptions.joinToString(", ")}
             Key skills to feature: ${event.skillsNames.joinToString(", ")}
@@ -77,10 +78,10 @@ class EnhancementService(
             .flatMap { message -> message.content().stream() }
             .map { content -> content.outputText() }
             .findFirst()
-            .orElseThrow { AiEnhancementFailedException("Enhancement failed.") }
+            .orElseThrow { EnhancementFailedException("Enhancement failed.") }
             .get()
 
-        streamTemplate.convertAndSend(
+        generationStreamTemplate.convertAndSend(
             EnhanceDoneEvent(
                 event.id,
                 response.newTitle,
@@ -95,7 +96,7 @@ class EnhancementService(
 
     private fun mapToEvent(json: String): EnhanceRequestedEvent
     {
-        return objectMapper.readValue(
+        return jacksonObjectMapper().readValue(
             json,
             EnhanceRequestedEvent::class.java
         )

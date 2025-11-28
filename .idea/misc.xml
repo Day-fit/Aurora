@@ -6,6 +6,8 @@
       <list>
         <option value="$PROJECT_DIR$/aurora-core/pom.xml" />
         <option value="$PROJECT_DIR$/aurora-ai/pom.xml" />
+        <option value="$PROJECT_DIR$/aurora-auth/pom.xml" />
+        <option value="$PROJECT_DIR$/aurora-auth-lib/pom.xml" />
       </list>
     </option>
   </component>
