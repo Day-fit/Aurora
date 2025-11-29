@@ -1,7 +1,7 @@
 "use client";
 
 import Button from "@/components/button";
-import { type } from "@/lib/types/button";
+import { ButtonType } from "@/lib/types/button";
 import Skills from "@/components/skill";
 import Input from "@/components/input";
 import React from "react";
@@ -90,6 +90,7 @@ export default function CvForm() {
                                 className="border border-white/10 rounded-xl px-4 py-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
                             />
 
+                            {/*change to objects, so that we can add multiple education entries (e.g. multiple schools) - maybe even multiple degrees per school?*/}
                             <Input
                                 label="Education"
                                 type="text"
@@ -99,6 +100,7 @@ export default function CvForm() {
                             />
                         </div>
 
+                        {/*change to objects, so that we can add multiple experience entries (e.g. multiple jobs) - maybe even multiple positions per job?*/}
                         <Input
                             label="Experience"
                             textArea={true}
@@ -108,6 +110,7 @@ export default function CvForm() {
                         />
 
                         <div className="pt-1">
+                            {/*change to objects, so that we can add multiple skills entries (e.g. multiple languages) and its level (e.g. fluent, intermediate, beginner) - maybe even multiple skills per language?*/}
                             <Skills />
                         </div>
 
@@ -121,7 +124,7 @@ export default function CvForm() {
 
                         <div className="mt-3 flex gap-3">
                             <Button
-                                type={type.submit}
+                                type={ButtonType.submit}
                                 className="flex-1 bg-aurora-blue-dark text-white px-6 py-3 rounded-lg shadow-xl hover:scale-102 transition-transform font-semibold"
                                 text="Create CV"
                             />

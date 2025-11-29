@@ -1,6 +1,6 @@
 import React from "react";
 
-export enum type {
+export enum ButtonType {
     reset = "reset",
     submit = "submit",
     button = "button",
@@ -11,5 +11,5 @@ export default interface ButtonInterface {
     className?: string,
     icon?: React.ReactNode | string,
     onClick?: () => void,
-    type?: type
+    type?: ButtonType
 }

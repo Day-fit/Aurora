@@ -1,12 +1,14 @@
 "use client";
 
 import Button from "@/components/button";
-import { type } from "@/lib/types/button";
+import { ButtonType } from "@/lib/types/button";
 import { FiX, FiPlus, FiHash } from "react-icons/fi";
 import { useFieldArray, useFormContext, Controller } from "react-hook-form";
 import React from "react";
 
 export default function Skills() {
+
+
     const { control } = useFormContext();
 
     const { fields, append, remove } = useFieldArray({
@@ -31,7 +33,7 @@ export default function Skills() {
                             <FiHash className="text-2xl" />
                             <p className="max-w-xs">You haven't added any skills yet. Click the button below to add your first skill.</p>
                             <Button
-                                type={type.button}
+                                type={ButtonType.button}
                                 onClick={() => append({ value: "" })}
                                 className="inline-flex items-center gap-2 bg-gradient-to-r from-aurora-blue-dark to-aurora-green-dark text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
                                 text="Add your first skill"
@@ -58,7 +60,7 @@ export default function Skills() {
                                     />
 
                                     <Button
-                                        type={type.button}
+                                        type={ButtonType.button}
                                         aria-label={`Remove skill ${index + 1}`}
                                         onClick={() => remove(index)}
                                         className="flex items-center justify-center w-9 h-9 rounded-full text-text-dark/80 bg-white/3 hover:bg-red-600 hover:text-white transition"
@@ -68,7 +70,7 @@ export default function Skills() {
                             ))}
                             <div className="pt-1">
                                 <Button
-                                    type={type.button}
+                                    type={ButtonType.button}
                                     onClick={() => append({ value: "" })}
                                     className="inline-flex items-center gap-2 bg-gradient-to-r from-aurora-blue-dark to-aurora-green-dark text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
                                     text="Add new skill"
