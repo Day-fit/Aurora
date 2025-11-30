@@ -14,20 +14,20 @@ import pl.dayfit.auroracore.event.EnhanceRequestedEvent
 import pl.dayfit.auroracore.event.ResumeReadyToExport
 import pl.dayfit.auroracore.model.Achievement
 import pl.dayfit.auroracore.model.Education
-import pl.dayfit.auroracore.model.Experience
+import pl.dayfit.auroracore.model.PersonalPortfolio
+import pl.dayfit.auroracore.model.WorkExperience
 import pl.dayfit.auroracore.model.Resume
 import pl.dayfit.auroracore.model.Skill
-import pl.dayfit.auroracore.repository.ResumeRepository
+import pl.dayfit.auroracore.service.cache.ResumeCacheService
 import java.io.ByteArrayOutputStream
 import java.io.StringWriter
 import java.time.Instant
-import java.util.NoSuchElementException
 import java.util.UUID
 import kotlin.io.encoding.Base64
 
 @Service
 class GenerationService(
-    private val resumeRepository: ResumeRepository,
+    private val resumeCacheService: ResumeCacheService,
     private val freeMarkerConfiguration: Configuration,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val enhancementStreamTemplate: RabbitStreamTemplate,
@@ -46,7 +46,7 @@ class GenerationService(
             requestDto.age,
             requestDto.title,
             requestDto.experiences.map {
-                Experience(
+                WorkExperience(
                         null,
                     it.company,
                     it.position,
@@ -54,6 +54,13 @@ class GenerationService(
                     it.endDate,
                     it.description
                 )}.toMutableList(),
+            requestDto.personalPortfolio.map {
+                PersonalPortfolio(
+                    null,
+                    it.name,
+                    it.description
+                )
+            }.toMutableList(),
             requestDto.skills.map {
                 Skill(
                     null,
@@ -90,7 +97,7 @@ class GenerationService(
             Instant.now(),
         )
 
-        resumeRepository.save(resume)
+        resumeCacheService.saveResume(resume)
 
         if (!requestDto.enhanced)
         {
@@ -126,8 +133,8 @@ class GenerationService(
     @EventListener
     fun generateResume(event: ResumeReadyToExport)
     {
-        val resume = resumeRepository.findById(event.id)
-            .orElseThrow { NoSuchElementException("Resume not found") }
+        val resume = resumeCacheService
+            .getResumeById(event.id)
 
         val template: Template = freeMarkerConfiguration.getTemplate("resume${resume.templateVersion}.ftl")
         val data: MutableMap<String, Any> = HashMap()
@@ -152,7 +159,7 @@ class GenerationService(
         resume.education.let { data["education"] = it }
         resume.skills.let { data["skills"] = it }
         resume.achievements.let { data["achievements"] = it}
-        resume.experiences.let { data["experiences"] = it}
+        resume.workExperiences.let { data["experiences"] = it}
 
         StringWriter().use {
             out -> template.process(data, out)
@@ -167,6 +174,6 @@ class GenerationService(
             }
         }
 
-        resumeRepository.save(resume)
+        resumeCacheService.saveResume(resume)
     }
 }

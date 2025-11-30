@@ -50,6 +50,7 @@ class AutoGenerationService(
      * @throws ResourceNotReadyYetException when tracker result is null
      * @return Auto generation result
      */
+    @Throws(NoSuchElementException::class, ResourceNotReadyYetException::class)
     fun getAutoGenerationResult(trackerId: String): AutoGenerationDto {
         val tracker = autoGenerationTrackerRepository
             .findById(trackerId)

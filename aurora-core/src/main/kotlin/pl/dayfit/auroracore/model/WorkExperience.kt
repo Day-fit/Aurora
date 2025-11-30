@@ -8,7 +8,7 @@ import java.time.Instant
 import java.util.UUID
 
 @Entity
-data class Experience(
+data class WorkExperience(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,

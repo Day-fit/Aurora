@@ -15,7 +15,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
-import pl.dayfit.auroraauthlib.auth.entrypoint.AuroraAuthenticationEntryPoint
 import pl.dayfit.auroraauthlib.auth.provider.MicroserviceAuthProvider
 import pl.dayfit.auroraauthlib.configuration.properties.CorsConfigurationProperties
 import pl.dayfit.auroraauthlib.configuration.properties.PublicPathsConfigurationProperties
@@ -46,7 +45,6 @@ class SecurityConfiguration {
         microserviceJwtFilter: MicroserviceJwtFilter,
         corsConfigurationSource: CorsConfigurationSource,
         publicPathsConfigurationProperties: PublicPathsConfigurationProperties,
-        authenticationEntryPoint: AuroraAuthenticationEntryPoint
     ): SecurityFilterChain {
         val paths = publicPathsConfigurationProperties.paths.toTypedArray()
 
@@ -63,7 +61,6 @@ class SecurityConfiguration {
                     .requestMatchers(*paths).permitAll()
                     .anyRequest().authenticated()
             }
-            .exceptionHandling { it.authenticationEntryPoint(authenticationEntryPoint) }
             .build()
     }
 

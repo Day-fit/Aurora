@@ -9,12 +9,12 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import pl.dayfit.auroracore.event.EnhanceDoneEvent
 import pl.dayfit.auroracore.event.ResumeReadyToExport
-import pl.dayfit.auroracore.repository.ResumeRepository
+import pl.dayfit.auroracore.service.cache.ResumeCacheService
 import java.nio.charset.StandardCharsets
 
 @Service
 class EnhancementIntegrationService(
-    val resumeRepository: ResumeRepository,
+    private val resumeCacheService: ResumeCacheService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     streamsEnvironment: Environment,
 ) {
@@ -41,8 +41,7 @@ class EnhancementIntegrationService(
     @EventListener
     fun handleEnhancedResume(event: EnhanceDoneEvent)
     {
-        val resume = resumeRepository.findById(event.id)
-            .orElseThrow{ IllegalStateException("Resume not found, but should be present") }
+        val resume = resumeCacheService.getResumeById(event.id)
 
         resume.title = event.newTitle
         resume.description = event.newDescription
@@ -54,7 +53,7 @@ class EnhancementIntegrationService(
             .forEach{ (skill, name) -> skill.name = name
         }
 
-        resumeRepository.saveAndFlush(resume)
+        resumeCacheService.saveResume(resume)
         applicationEventPublisher.publishEvent(
             ResumeReadyToExport(resume.id!!)
         )

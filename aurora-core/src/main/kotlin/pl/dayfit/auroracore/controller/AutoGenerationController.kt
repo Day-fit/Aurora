@@ -33,6 +33,14 @@ class AutoGenerationController(
         )
     }
 
+    /**
+     * Retrieves the auto-generation result for a specific tracking ID.
+     *
+     * @param trackingId the unique identifier used to track the auto-generation process
+     * @return a ResponseEntity containing the auto-generation result wrapped as an AutoGenerationDto
+     * @throws NoSuchElementException if no tracker exists for the given trackingId
+     * @throws pl.dayfit.auroracore.exception.ResourceNotReadyYetException if the tracker result is not yet available
+     */
     @GetMapping("/{trackingId}")
     fun getAutoGenerationResults(@PathVariable trackingId: String): ResponseEntity<AutoGenerationDto> {
         return ResponseEntity.ok(

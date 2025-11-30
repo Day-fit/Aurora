@@ -9,12 +9,12 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import pl.dayfit.auroracore.event.ResumeReadyToExport
 import pl.dayfit.auroracore.event.TranslationDoneEvent
-import pl.dayfit.auroracore.repository.ResumeRepository
+import pl.dayfit.auroracore.service.cache.ResumeCacheService
 import java.nio.charset.StandardCharsets
 
 @Service
 class TranslationIntegrationService(
-    val resumeRepository: ResumeRepository,
+    private val resumeCacheService: ResumeCacheService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     streamsEnvironment: Environment,
 ) {
@@ -42,18 +42,16 @@ class TranslationIntegrationService(
     @EventListener
     private fun handleTranslatedResume(event: TranslationDoneEvent)
     {
-        val resume = resumeRepository.findById(
-            event.resume.id
-        ).orElseThrow { IllegalStateException("Resume not found") }
+        val resume = resumeCacheService.getResumeById(event.resume.id)
 
         val translationResult = event.resume
         resume.title = translationResult.title
         resume.description = translationResult.description
 
-        resume.experiences.zip(translationResult.experiencePositions)
+        resume.workExperiences.zip(translationResult.experiencePositions)
             .forEach { (experience, position) -> experience.position = position}
 
-        resume.experiences.zip(translationResult.experienceDescriptions)
+        resume.workExperiences.zip(translationResult.experienceDescriptions)
             .forEach { (experience, description) -> experience.description = description }
 
         resume.achievements.zip(translationResult.achievementsTitles)
@@ -68,7 +66,7 @@ class TranslationIntegrationService(
         resume.skills.zip(translationResult.skillsNames)
             .forEach { (skill, skillName) -> skill.name = skillName }
 
-        resumeRepository.saveAndFlush(resume)
+        resumeCacheService.saveResume(resume)
 
         applicationEventPublisher.publishEvent(
             ResumeReadyToExport(resume.id!!)

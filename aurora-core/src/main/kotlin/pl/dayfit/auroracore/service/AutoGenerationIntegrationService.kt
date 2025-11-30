@@ -1,6 +1,6 @@
 package pl.dayfit.auroracore.service
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.rabbitmq.stream.Environment
 import com.rabbitmq.stream.OffsetSpecification
 import jakarta.annotation.PreDestroy
@@ -19,7 +19,8 @@ import pl.dayfit.auroracore.type.TrackerStatus
 class AutoGenerationIntegrationService(
     streamsEnvironment: Environment,
     private val applicationEventPublisher: ApplicationEventPublisher,
-    private val autoGenerationTrackerRepository: AutoGenerationTrackerRepository
+    private val autoGenerationTrackerRepository: AutoGenerationTrackerRepository,
+    private val rabbitObjectMapper: ObjectMapper
 ) {
     private val consumer = streamsEnvironment.consumerBuilder()
         .stream("post.autogeneration.stream")
@@ -27,7 +28,7 @@ class AutoGenerationIntegrationService(
         .messageHandler { _, record ->
             val json = String(record.bodyAsBinary, Charsets.UTF_8)
             applicationEventPublisher.publishEvent(
-                jacksonObjectMapper()
+                rabbitObjectMapper
                     .readValue(json, AutoGenerationDoneEvent::class.java)
             )
         }

@@ -20,19 +20,13 @@ class GitHubInformationWorker(
 ) : InformationWorker {
     private val logger = org.slf4j.LoggerFactory.getLogger(this::class.java)
 
-    private val headers = HttpHeaders().apply {
-        props.githubPat.apply {
-            if (this == null)
-            {
-                logger.warn("GitHub PAT is not set, some information handlers might not work," +
-                        " request rate is limited")
-                return@apply
-            }
+private val headers: HttpHeaders = HttpHeaders().apply {
+        val pat = if(props.githubPat?.isBlank() == false)
+            props.githubPat!!
+            else return@apply
 
-            setBearerAuth(props.githubPat!!)
-        }
+        setBearerAuth(pat)
     }
-
     override fun processInformation(name: String): InformationDto {
         val url = props.githubUserReposUri
             .replace("{owner}", name)
