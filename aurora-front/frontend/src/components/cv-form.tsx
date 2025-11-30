@@ -6,6 +6,7 @@ import Skills from "@/components/skill";
 import Input from "@/components/input";
 import React from "react";
 import { useFormContext } from "react-hook-form";
+import Education from "@/components/education";
 
 export default function CvForm() {
     //need to add validation, error handling, submit handling via request
@@ -81,6 +82,7 @@ export default function CvForm() {
                             />
                         </div>
 
+                        {/*
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <Input
                                 label="Age"
@@ -90,24 +92,27 @@ export default function CvForm() {
                                 className="border border-white/10 rounded-xl px-4 py-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
                             />
 
-                            {/*change to objects, so that we can add multiple education entries (e.g. multiple schools) - maybe even multiple degrees per school?*/}
-                            <Input
-                                label="Education"
-                                type="text"
-                                name="education"
-                                placeholder="Degree / Institution"
-                                className="border border-white/10 rounded-xl px-4 py-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-aurora-green-dark transition"
-                            />
-                        </div>
-
-                        {/*change to objects, so that we can add multiple experience entries (e.g. multiple jobs) - maybe even multiple positions per job?*/}
                         <Input
-                            label="Experience"
-                            textArea={true}
-                            name="experience"
-                            placeholder="Summarize your experience"
-                            className="border border-white/10 rounded-xl px-4 py-3 bg-transparent min-h-[100px] focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
+                            label="Education"
+                            type="text"
+                            name="education"
+                            placeholder="Degree / Institution"
+                            className="border border-white/10 rounded-xl px-4 py-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-aurora-green-dark transition"
                         />
+                </div>
+
+                <Input
+                    label="Experience"
+                    textArea={true}
+                    name="experience"
+                    placeholder="Summarize your experience"
+                    className="border border-white/10 rounded-xl px-4 py-3 bg-transparent min-h-[100px] focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
+                />
+                */}
+                        <div className="pt-1">
+                            {/*change to objects, so that we can add multiple skills entries (e.g. multiple languages) and its level (e.g. fluent, intermediate, beginner) - maybe even multiple skills per language?*/}
+                            <Education />
+                        </div>
 
                         <div className="pt-1">
                             {/*change to objects, so that we can add multiple skills entries (e.g. multiple languages) and its level (e.g. fluent, intermediate, beginner) - maybe even multiple skills per language?*/}
