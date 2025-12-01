@@ -13,6 +13,7 @@ export default function Education() {
         name: "education",
     });
 
+    console.log(fields);
     return (
         <div className="w-full">
             <label className="text-left mb-1 font-bold">Education</label>
@@ -144,7 +145,7 @@ export default function Education() {
                             <div className="pt-1">
                                 <Button
                                     type={ButtonType.button}
-                                    onClick={() => append({institution: "", major: "", degree: EducationDegree.LOWER_SECONDARY_SCHOOL, fromYear: undefined, toYear: null})}
+                                    onClick={() => append({institution: "", major: "", degree: EducationDegree.LOWER_SECONDARY_SCHOOL, fromYear: undefined, toYear: undefined})}
                                     className="inline-flex items-center gap-2 bg-gradient-to-r from-aurora-blue-dark to-aurora-green-dark text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
                                     text="Add new education"
                                     icon={<FiPlus />}

@@ -9,6 +9,8 @@ import { formSchema } from "@/lib/types/form";
 
 export default function CreatePage() {
 
+    {/*remember to change all undefined to null in the formSchema*/}
+
     const methods = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {

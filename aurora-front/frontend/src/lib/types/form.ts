@@ -51,11 +51,9 @@ export const ExperienceSchema = z.object({
 });
 
 export const AchievementSchema = z.object({
-    institution: z.string(),
-    major: z.string().nullable(),
-    degree: EducationDegreeEnum,
-    fromYear: z.number(),
-    toYear: z.number().nullable(),
+    title: z.string(),
+    description: z.string().nullable(),
+    year: z.number().nullable()
 });
 
 export const SkillSchema = z.object({
@@ -63,9 +61,11 @@ export const SkillSchema = z.object({
     level: SkillLevelEnum
 });
 export const EducationSchema = z.object({
-    title: z.string(),
-    description: z.string().nullable(),
-    year: z.number().nullable()
+    institution: z.string(),
+    major: z.string().nullable(),
+    degree: EducationDegreeEnum,
+    fromYear: z.number(),
+    toYear: z.number().nullable(),
 });
 
 export const formSchema = z.object({
