@@ -7,6 +7,7 @@ import Input from "@/components/input";
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import Education from "@/components/education";
+import Experience from "@/components/experience";
 
 export default function CvForm() {
     //need to add validation, error handling, submit handling via request
@@ -112,6 +113,10 @@ export default function CvForm() {
                         <div className="pt-1">
                             {/*change to objects, so that we can add multiple skills entries (e.g. multiple languages) and its level (e.g. fluent, intermediate, beginner) - maybe even multiple skills per language?*/}
                             <Education />
+                        </div>
+                        <div className="pt-1">
+                            {/*change to objects, so that we can add multiple skills entries (e.g. multiple languages) and its level (e.g. fluent, intermediate, beginner) - maybe even multiple skills per language?*/}
+                            <Experience />
                         </div>
 
                         <div className="pt-1">

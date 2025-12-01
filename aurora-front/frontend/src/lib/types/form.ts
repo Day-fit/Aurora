@@ -37,10 +37,9 @@ export const SkillLevelEnum = z.enum(SkillLevel);
 export const EducationDegreeEnum = z.enum(EducationDegree);
 const InstantSchema = z
     .string()
-    .refine(
-        (val) => !isNaN(Date.parse(val)),
-        "Invalid Instant format"
-    );
+    .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/, "Invalid Instant format")
+    .refine(val => !isNaN(Date.parse(val)), "Invalid date value");
+
 
 export const ExperienceSchema = z.object({
     company: z.string().min(1, "Company name is required"),

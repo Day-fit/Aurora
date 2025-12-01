@@ -91,7 +91,13 @@ export default function Skills() {
                             <div className="pt-1">
                                 <Button
                                     type={ButtonType.button}
-                                    onClick={() => append({ name: "", level: SkillLevel.BEGINNER })}
+                                    onClick={
+                                        () => {
+                                            if(fields.length >= 5) return
+
+                                            append({ name: "", level: SkillLevel.BEGINNER })
+                                        }
+                                    }
                                     className="inline-flex items-center gap-2 bg-gradient-to-r from-aurora-blue-dark to-aurora-green-dark text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
                                     text="Add new skill"
                                     icon={<FiPlus />}
