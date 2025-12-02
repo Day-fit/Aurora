@@ -8,6 +8,7 @@ import React from "react";
 import { useFormContext } from "react-hook-form";
 import Education from "@/components/education";
 import Experience from "@/components/experience";
+import Achievement from "@/components/achievement";
 
 export default function CvForm() {
     //need to add validation, error handling, submit handling via request
@@ -59,7 +60,7 @@ export default function CvForm() {
                                 </label>
                                 <input
                                     type="file"
-                                    {...register("photo")}
+                                    {...register("profileImage")}
                                     className="w-full bg-transparent border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-aurora-green-dark transition"
                                 />
                             </div>
@@ -83,37 +84,53 @@ export default function CvForm() {
                             />
                         </div>
 
-                        {/*
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <Input
                                 label="Age"
                                 type="number"
                                 name="age"
-                                placeholder="Age"
+                                placeholder="Your age"
                                 className="border border-white/10 rounded-xl px-4 py-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
                             />
+                            <Input
+                                label="Email"
+                                type="email"
+                                name="email"
+                                placeholder="Email address"
+                                className="border border-white/10 rounded-xl px-4 py-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <Input
+                                label="GitHub"
+                                type="text"
+                                name="gitHub"
+                                placeholder="Your gitHub account"
+                                className="border border-white/10 rounded-xl px-4 py-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
+                            />
+                            <Input
+                                label="linkedIn"
+                                type="text"
+                                name="linkedIn"
+                                placeholder="Your linkedIn account"
+                                className="border border-white/10 rounded-xl px-4 py-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
+                            />
+                        </div>
 
                         <Input
-                            label="Education"
+                            label="Website"
                             type="text"
-                            name="education"
-                            placeholder="Degree / Institution"
-                            className="border border-white/10 rounded-xl px-4 py-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-aurora-green-dark transition"
+                            name="website"
+                            placeholder="Your website"
+                            className="border border-white/10 rounded-xl px-4 py-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
                         />
-                </div>
 
-                <Input
-                    label="Experience"
-                    textArea={true}
-                    name="experience"
-                    placeholder="Summarize your experience"
-                    className="border border-white/10 rounded-xl px-4 py-3 bg-transparent min-h-[100px] focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
-                />
-                */}
                         <div className="pt-1">
                             {/*change to objects, so that we can add multiple skills entries (e.g. multiple languages) and its level (e.g. fluent, intermediate, beginner) - maybe even multiple skills per language?*/}
                             <Education />
                         </div>
+
                         <div className="pt-1">
                             {/*change to objects, so that we can add multiple skills entries (e.g. multiple languages) and its level (e.g. fluent, intermediate, beginner) - maybe even multiple skills per language?*/}
                             <Experience />
@@ -124,10 +141,15 @@ export default function CvForm() {
                             <Skills />
                         </div>
 
+                        <div className="pt-1">
+                            {/*change to objects, so that we can add multiple skills entries (e.g. multiple languages) and its level (e.g. fluent, intermediate, beginner) - maybe even multiple skills per language?*/}
+                            <Achievement />
+                        </div>
+
                         <Input
-                            label="Description"
+                            label="ProfileDescription"
                             textArea={true}
-                            name="description"
+                            name="profileDescription"
                             placeholder="A short professional summary"
                             className="border border-white/10 rounded-xl px-4 py-3 bg-transparent min-h-[80px] focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
                         />

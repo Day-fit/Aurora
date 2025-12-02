@@ -115,7 +115,7 @@ export default function Experience() {
                                                     <input
                                                         {...field}
                                                         value={field.value ?? ""}
-                                                        type="date"
+                                                        type="datetime-local"
                                                         className="w-full bg-transparent placeholder:text-text-dark/40 text-text-dark px-3 py-2 rounded-md border border-white/5 focus:border-white/20 focus:outline-none focus:ring-0 transition-colors"
                                                     />
                                                 )}
@@ -133,7 +133,7 @@ export default function Experience() {
                                                     <input
                                                         {...field}
                                                         value={field.value ?? ""}
-                                                        type="date"
+                                                        type="datetime-local"
                                                         className="w-full bg-transparent placeholder:text-text-dark/40 text-text-dark px-3 py-2 rounded-md border border-white/5 focus:border-white/20 focus:outline-none focus:ring-0 transition-colors"
                                                     />
                                                 )}

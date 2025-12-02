@@ -16,19 +16,19 @@ export default function CreatePage() {
         defaultValues: {
             template: TemplateType.template1,
             title: "",
+            name: "",
+            surname: "",
+            age: undefined,
             email: "",
             website: "",
             linkedIn: "",
             gitHub: "",
-            name: "",
-            surname: "",
-            description: "",
-            age: 0,
+            profileDescription: "",
+            profileImage: null,
             experience: [],
             achievements: [],
             skills: [],
             education: [],
-            photo: null,
         }
     });
 

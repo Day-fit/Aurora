@@ -79,7 +79,7 @@ export const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
     surname: z.string().min(1, "Surname is required"),
 
-    description: z.string().nullable(),
+    profileDescription: z.string().nullable(),
     age: z.number().min(0, "Age cannot be negative"),
 
     experience: z.array(ExperienceSchema),
@@ -87,7 +87,7 @@ export const formSchema = z.object({
     skills: z.array(SkillSchema),
     education: z.array(EducationSchema),
 
-    photo: z.instanceof(File).nullable(),
+    profileImage: z.instanceof(File).nullable(),
 });
 
 export type FormValues = z.infer<typeof formSchema>;
