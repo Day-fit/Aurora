@@ -17,16 +17,7 @@ export default function Education() {
 
     return (
         <div className="w-full">
-            <label className="text-left mb-1 font-bold">Education</label>
             <div className="flex flex-col gap-3">
-                <div
-                    className={
-                        "flex flex-col gap-2 " +
-                        "border border-white/10 rounded-xl p-6 " +
-                        "focus-within:border-white/20 focus-within:ring-2 focus-within:ring-aurora-green-dark/75 " +
-                        "focus-within:shadow-lg transition"
-                    }
-                >
                     {fields.length === 0 ? (
                         <div className="flex flex-col items-center justify-center gap-3 py-6 text-center text-text-dark/70" role="status" aria-live="polite">
                             <FiHash className="text-2xl" />
@@ -167,8 +158,6 @@ export default function Education() {
                             </div>
                         </>
                     )}
-                </div>
-
             </div>
         </div>
     );
