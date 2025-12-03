@@ -3,21 +3,36 @@
 import CvForm from "@/components/cv-form";
 import TemplatePreview from "@/components/template-preview";
 import {FormProvider, useForm} from "react-hook-form";
+import {TemplateType} from "@/lib/types/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { formSchema } from "@/lib/types/form";
 
 export default function CreatePage() {
+
+    {/*remember to change all undefined to null in the formSchema*/}
+
     const methods = useForm({
+        resolver: zodResolver(formSchema),
         defaultValues: {
-            template: "1",
+            template: TemplateType.template1,
+            title: "",
             name: "",
             surname: "",
-            age: 0,
-            experience: "",
+            age: undefined,
+            email: "",
+            website: "",
+            linkedIn: "",
+            gitHub: "",
+            profileDescription: "",
+            profileImage: null,
+            experience: [],
+            achievements: [],
             skills: [],
-            education: "",
-            photo: null,
-            description: "",
+            education: [],
         }
     });
+
+
     console.log("Parent render");
 
     return (

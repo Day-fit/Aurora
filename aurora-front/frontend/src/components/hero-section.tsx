@@ -4,11 +4,7 @@ import Image from "next/image";
 
 export default function HeroSection() {
     return (
-        <section className="relative overflow-hidden rounded-xl p-10 md:p-16 min-h-[calc(100vh-80px)]">
-            {/* Decorative blobs */}
-            <div className="pointer-events-none absolute -left-24 -top-10 w-80 h-80 rounded-full bg-gradient-to-tr from-aurora-blue-dark/40 to-aurora-green-dark/30 blur-3xl opacity-30 transform rotate-12 animate-pulse" />
-            <div className="pointer-events-none absolute -right-24 -bottom-10 w-96 h-96 rounded-full bg-gradient-to-br from-aurora-green-dark/30 to-aurora-blue-dark/20 blur-3xl opacity-25 transform -rotate-6" />
-
+        <section className="rounded-xl p-10 md:p-16 min-h-[calc(100vh-80px)]">
             <div className="bg-main-dark/80 backdrop-blur-sm rounded-xl p-8 md:p-12 flex flex-col md:flex-row gap-10 items-center text-text-dark shadow-2xl">
                 <div className="md:w-1/2 space-y-6">
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">

@@ -1,16 +1,22 @@
 "use client";
 
 import Button from "@/components/button";
-import { type } from "@/lib/types/button";
+import { ButtonType } from "@/lib/types/button";
 import Skills from "@/components/skill";
-import Input from "@/components/input";
 import React from "react";
 import { useFormContext } from "react-hook-form";
+import Education from "@/components/education";
+import Experience from "@/components/experience";
+import Achievement from "@/components/achievement";
+import FormSection from "@/components/form-section";
+import PersonalInfo from "@/components/personal-info";
+import ProfileLinks from "@/components/profile-links";
+import FormStyling from "@/components/form-styling";
 
 export default function CvForm() {
     //need to add validation, error handling, submit handling via request
 
-    const { register, handleSubmit, reset } = useFormContext();
+    const { handleSubmit, reset } = useFormContext();
 
     const onSubmit = (data: any) => console.log(data);
 
@@ -34,94 +40,37 @@ export default function CvForm() {
                         className="w-full flex flex-col gap-4"
                         onSubmit={handleSubmit(onSubmit)}
                     >
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div className="relative">
-                                <label className="absolute -top-3 left-3 bg-main-dark/80 px-2 text-xs text-text-dark/80 rounded">
-                                    Template
-                                </label>
-                                <select
-                                    className="w-full bg-transparent border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
-                                    {...register("template", { required: true })}
-                                >
-                                    <option value="1">Template 1</option>
-                                    <option value="2">Template 2</option>
-                                    <option value="3">Template 3</option>
-                                    <option value="4">Template 4</option>
-                                    <option value="5">Template 5</option>
-                                </select>
-                            </div>
+                        <FormSection title="Personal information">
+                            <PersonalInfo />
+                        </FormSection>
 
-                            <div className="relative">
-                                <label className="absolute -top-3 left-3 bg-main-dark/80 px-2 text-xs text-text-dark/80 rounded">
-                                    Photo
-                                </label>
-                                <input
-                                    type="file"
-                                    {...register("photo")}
-                                    className="w-full bg-transparent border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-aurora-green-dark transition"
-                                />
-                            </div>
-                        </div>
+                        <FormSection title="Your online profiles">
+                            <ProfileLinks />
+                        </FormSection>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <Input
-                                label="Name"
-                                type="text"
-                                name="name"
-                                placeholder="First name"
-                                className="border border-white/10 rounded-xl px-4 py-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-aurora-green-dark transition"
-                            />
+                        <FormSection title="Your education">
+                            <Education />
+                        </FormSection>
 
-                            <Input
-                                label="Surname"
-                                type="text"
-                                name="surname"
-                                placeholder="Last name"
-                                className="border border-white/10 rounded-xl px-4 py-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
-                            />
-                        </div>
+                        <FormSection title="Your experience">
+                            <Experience />
+                        </FormSection>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <Input
-                                label="Age"
-                                type="number"
-                                name="age"
-                                placeholder="Age"
-                                className="border border-white/10 rounded-xl px-4 py-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
-                            />
-
-                            <Input
-                                label="Education"
-                                type="text"
-                                name="education"
-                                placeholder="Degree / Institution"
-                                className="border border-white/10 rounded-xl px-4 py-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-aurora-green-dark transition"
-                            />
-                        </div>
-
-                        <Input
-                            label="Experience"
-                            textArea={true}
-                            name="experience"
-                            placeholder="Summarize your experience"
-                            className="border border-white/10 rounded-xl px-4 py-3 bg-transparent min-h-[100px] focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
-                        />
-
-                        <div className="pt-1">
+                        <FormSection title="Your skills">
                             <Skills />
-                        </div>
+                        </FormSection>
 
-                        <Input
-                            label="Description"
-                            textArea={true}
-                            name="description"
-                            placeholder="A short professional summary"
-                            className="border border-white/10 rounded-xl px-4 py-3 bg-transparent min-h-[80px] focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
-                        />
+                        <FormSection title="Your achievements">
+                            <Achievement />
+                        </FormSection>
+
+                        <FormSection title="Styling options">
+                            <FormStyling />
+                        </FormSection>
 
                         <div className="mt-3 flex gap-3">
                             <Button
-                                type={type.submit}
+                                type={ButtonType.submit}
                                 className="flex-1 bg-aurora-blue-dark text-white px-6 py-3 rounded-lg shadow-xl hover:scale-102 transition-transform font-semibold"
                                 text="Create CV"
                             />
@@ -131,6 +80,7 @@ export default function CvForm() {
                                 onClick={() => reset()}
                             />
                         </div>
+
                     </form>
                 </div>
 

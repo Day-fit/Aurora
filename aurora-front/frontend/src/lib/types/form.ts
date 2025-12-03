@@ -1,26 +1,93 @@
-import React from "react";
+import { z } from "zod";
 
-export enum templateType{
+export enum TemplateType{
     template1 = 1,
     template2 = 2,
     template3 = 3,
     template4 = 4,
     template5 = 5
 }
-
-export interface FormValues {
-    template: templateType,
-    name: string,
-    surname: string,
-    age: number,
-    experience: string,
-    skills: string[],
-    education: string,
-    photo: File | null,
-    description: string
+export enum SkillLevel{
+    BEGINNER = "BEGINNER",
+    INTERMEDIATE = "INTERMEDIATE",
+    FLUENT = "FLUENT",
+    EXPERT = "EXPERT",
+    MASTER = "MASTER"
 }
 
-export interface FormProps {
-    formData: FormValues,
-    setFormData: React.Dispatch<React.SetStateAction<FormValues>>
+export enum EducationDegree{
+    LOWER_SECONDARY_SCHOOL = "LOWER_SECONDARY_SCHOOL",
+    UPPER_SECONDARY_SCHOOL = "UPPER_SECONDARY_SCHOOL",
+    VOCATIONAL_SCHOOL = "VOCATIONAL_SCHOOL",
+    HIGH_SCHOOL = "HIGH_SCHOOL",
+    TECHNICAL_COLLEGE = "TECHNICAL_COLLEGE",
+    COLLEGE = "COLLEGE",
+    UNIVERSITY = "UNIVERSITY",
+    ASSOCIATE_DEGREE = "ASSOCIATE_DEGREE",
+    BACHELOR_DEGREE = "BACHELOR_DEGREE",
+    MASTER_DEGREE = "MASTER_DEGREE",
+    DOCTORAL_DEGREE = "DOCTORAL_DEGREE",
+    POSTDOCTORAL = "POSTDOCTORAL",
+    PROFESSIONAL_CERTIFICATE = "PROFESSIONAL_CERTIFICATE",
+    OTHER = "OTHER"
 }
+
+export const TemplateTypeEnum = z.enum(TemplateType);
+export const SkillLevelEnum = z.enum(SkillLevel);
+export const EducationDegreeEnum = z.enum(EducationDegree);
+const InstantSchema = z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/, "Invalid Instant format")
+    .refine(val => !isNaN(Date.parse(val)), "Invalid date value");
+
+
+export const ExperienceSchema = z.object({
+    company: z.string().min(1, "Company name is required"),
+    position: z.string().min(1, "Position is required"),
+    description: z.string().nullable(),
+    startDate: InstantSchema,
+    endDate: InstantSchema.nullable(),
+});
+
+export const AchievementSchema = z.object({
+    title: z.string(),
+    description: z.string().nullable(),
+    year: z.number().nullable()
+});
+
+export const SkillSchema = z.object({
+    name: z.string().min(1, "Skill name is required"),
+    level: SkillLevelEnum
+});
+export const EducationSchema = z.object({
+    institution: z.string(),
+    major: z.string().nullable(),
+    degree: EducationDegreeEnum,
+    fromYear: z.number(),
+    toYear: z.number().nullable(),
+});
+
+export const formSchema = z.object({
+    template: TemplateTypeEnum,
+
+    title: z.string().min(1, "Title is required"),
+    email: z.email("Invalid email"),
+    website: z.url("Invalid URL").optional().or(z.literal("")),
+    linkedIn: z.url("Invalid URL").optional().or(z.literal("")),
+    gitHub: z.url("Invalid URL").optional().or(z.literal("")),
+
+    name: z.string().min(1, "Name is required"),
+    surname: z.string().min(1, "Surname is required"),
+
+    profileDescription: z.string().nullable(),
+    age: z.number().min(0, "Age cannot be negative"),
+
+    experience: z.array(ExperienceSchema),
+    achievements: z.array(AchievementSchema),
+    skills: z.array(SkillSchema),
+    education: z.array(EducationSchema),
+
+    profileImage: z.instanceof(File).nullable(),
+});
+
+export type FormValues = z.infer<typeof formSchema>;
