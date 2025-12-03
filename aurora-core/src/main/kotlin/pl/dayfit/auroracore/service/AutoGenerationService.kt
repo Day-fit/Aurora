@@ -31,6 +31,7 @@ class AutoGenerationService(
 
         val id = saved.id!!
 
+
         applicationEventPublisher
             .publishEvent(
                 TrackerWaitingToStartEvent(

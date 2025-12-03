@@ -12,10 +12,11 @@ data class AutoGenerationDto (
     val gitHub: String?,
     val profileImage: String?,
     val profileDescription: String?,
-    val education: List<Education>,
-    val skills: List<Skill>,
-    val experiences: List<Experience>,
-    val achievements: List<Achievement>,
+    val education: List<Education> = emptyList(),
+    val skills: List<Skill> = emptyList(),
+    val workExperiences: List<WorkExperience> = emptyList(),
+    val personalPortfolios: List<PersonalPortfolio> = emptyList(),
+    val achievements: List<Achievement> = emptyList(),
 )
 {
     data class Education (
@@ -26,12 +27,17 @@ data class AutoGenerationDto (
         val toYear: Int?
     )
 
-    data class Experience (
+    data class WorkExperience (
         val company: String,
         val position: String,
         val description: String?,
         val startDate: Instant,
         val endDate: Instant?
+    )
+
+    data class PersonalPortfolio (
+        val name: String,
+        val description: String
     )
 
     data class Achievement (

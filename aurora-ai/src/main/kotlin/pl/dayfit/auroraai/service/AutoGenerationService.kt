@@ -54,68 +54,41 @@ private val consumer = streamsEnvironment.consumerBuilder()
         }
 
         val prompt = """
-            You are an expert resume writer with STRICT constraints on facts.
-
-            Goal:
-            - Create an AutoGenerationDto representing a strong, concise resume tailored to this job:
-              - Job title: ${event.title}
-            - Use ALL SOURCE DATA provided below (profile information, descriptions, projects, notes, etc.).
-            - Carefully scan the entire source, do NOT limit yourself to the first paragraph or section.
-
-            Experience & Education:
-            - For EXPERIENCE: choose the 3–4 strongest, most relevant roles/projects/activities
-              that BEST match the job and show the candidate's skills and impact.
-            - For EDUCATION: extract any explicit education-related information (schools, degrees, courses, certificates).
-            - You MAY rephrase, summarize and combine information from multiple places in the source,
-              but you MUST NOT invent new facts.
-
-            VERY IMPORTANT – KEEP CRUCIAL TECH DETAILS:
-            - If the source mentions specific technologies, protocols, algorithms, frameworks, or libraries
-              (for example: "end-to-end encrypted messenger using X3DH"),
-              you MUST:
-              - keep these names in the final description (e.g. "end-to-end encrypted messenger using X3DH"),
-              - NOT replace them with more generic or different technologies
-                (e.g. do NOT turn "X3DH" into "STOMP" or another protocol).
-            - Prefer to highlight advanced or rare technologies (cryptography, security protocols, distributed systems, etc.)
-              because they are attractive for a resume.
-            - You may add short clarifications, e.g. "end-to-end encrypted messenger using the X3DH key agreement protocol",
-              but the core names MUST stay exactly as in the source.
-
-            Hard constraints (NO HALLUCINATIONS):
-            - Do NOT create:
-              - fake company names,
-              - fake school names,
-              - fake dates,
-              - fake technologies or tools,
-              - fake URLs, profile images, emails, or phone numbers.
-            - If a specific field cannot be supported by the source data, set it to null.
-            - Do NOT use generic placeholder values like:
-              - "example.com/image"
-              - "john.doe@example.com"
-              - dummy phone numbers, addresses or links.
-
-            Output:
-            - Return ONLY a JSON object that matches the AutoGenerationDto schema.
-            - Fields may be:
-              - directly copied from the source,
-              - or paraphrased/combined summaries of what is in the source,
-              - or null if the information is missing.
-            - Make sure descriptions of projects/experience explicitly mention the key technologies found in the source.
-
-            SOURCE DATA (may contain: descriptions of work, projects, studies, technologies, bio text, etc.):
-            - Job description/source: ${event.source}
-            - Description:
-              ${information.description}
-
-            - Additional info:
-            $helpersFormatted
-
-            END OF SOURCE DATA
+        You are an information mapper. Follow STRICT factual rules.
+        
+        GOAL
+        - First choose best WORK EXPERIENCE/PORTFOLIO/EDUCATION
+        - Create an AutoGenerationDto JSON for job: ${event.title}
+        - Use ALL SOURCE DATA.
+        - Sort data by importance (best first, worst last).
+        
+        RULES
+        - WORK EXPERIENCE: pick max 3–4 strongest (if any).
+        - PORTFOLIO: pick max 3–4 strongest personal projects/repos (for given work); each must have a factual description based ONLY on source data. No placeholders.
+        - EDUCATION: include only explicitly stated items.
+        - Preserve ALL exact tech names (protocols (e. g X3DH), algorithms (e. g AES256), frameworks (e. g Flask), libraries). No replacements. Highlight advanced/rare tech.
+        
+        CONSTRAINTS
+        - NO hallucinations: no invented companies, schools, dates, tech, URLs, contacts, images.
+        - No generic placeholders of any kind.
+        - Content may be copied or paraphrased from source; empty string MUST be used for missing data.
+        - Project/experience descriptions MUST include mentioned technologies.
+        - No duplicates.
+        - Do not put PORTFOLIO related data into WORK EXPERIENCE
+        - If cannot be distinct if data if PORTFOLIO or WORK EXPERIENCE assume it's PORTFOLIO.
+        - Do not put data into PORTFOLIO and WORK EXPERIENCE at the same time.  
+        
+        SOURCE DATA:
+        SOURCE OF DATA: ${event.source}
+        Description: ${information.description}
+        Additional: $helpersFormatted
+        END
         """.trimIndent()
+
+
         val params = ResponseCreateParams.builder()
-            .model(ChatModel.GPT_4O_MINI)
+            .model(ChatModel.GPT_5_NANO)
             .store(false)
-            .temperature(0.0)
             .input(prompt)
             .text(AutoGenerationDto::class.java)
             .build()

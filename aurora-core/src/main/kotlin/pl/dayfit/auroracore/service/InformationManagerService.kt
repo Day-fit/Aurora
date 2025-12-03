@@ -2,6 +2,7 @@ package pl.dayfit.auroracore.service
 
 import org.springframework.context.event.EventListener
 import org.springframework.rabbit.stream.producer.RabbitStreamTemplate
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import pl.dayfit.auroracore.dto.InformationDto
 import pl.dayfit.auroracore.event.AutoGenerationRequestedEvent
@@ -22,6 +23,7 @@ class InformationManagerService(
 ) {
     private val logger = org.slf4j.LoggerFactory.getLogger(InformationManagerService::class.java)
 
+    @Async
     @EventListener
     fun collectAndSendInformation(event: TrackerWaitingToStartEvent)
     {
@@ -42,7 +44,7 @@ class InformationManagerService(
             tracker.status = TrackerStatus.FAILED
             trackerRepository.save(tracker)
             //TODO: Notify user about change of the state
-            logger.error("Failed to collect information for ${event.name} from ${event.source}, id ${event.id}")
+            logger.error("Failed to collect information for ${event.name} from ${event.source}, id ${event.id}", information.exceptionOrNull())
             return
         }
 
