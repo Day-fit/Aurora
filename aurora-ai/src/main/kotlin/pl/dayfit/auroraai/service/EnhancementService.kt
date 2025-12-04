@@ -4,7 +4,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.openai.client.OpenAIClient
 import com.openai.models.ChatModel
 import com.openai.models.responses.ResponseCreateParams
-import com.rabbitmq.stream.Consumer
 import com.rabbitmq.stream.Environment
 import com.rabbitmq.stream.OffsetSpecification
 import jakarta.annotation.PostConstruct
@@ -22,15 +21,14 @@ import java.nio.charset.StandardCharsets
 class EnhancementService(
     private val client: OpenAIClient,
     private val streamsEnvironment: Environment,
-    private val generationStreamTemplate: RabbitStreamTemplate,
+    private val postGenerationStreamTemplate: RabbitStreamTemplate,
     private val applicationEventPublisher: ApplicationEventPublisher
 ) {
-    lateinit var consumer: Consumer
     private val logger = org.slf4j.LoggerFactory.getLogger(EnhancementService::class.java)
 
     @PostConstruct
     fun init() {
-        consumer = streamsEnvironment.consumerBuilder()
+        streamsEnvironment.consumerBuilder()
             .stream("enhancement.stream")
             .offset(OffsetSpecification.next())
             .messageHandler { _, record ->
@@ -46,6 +44,12 @@ class EnhancementService(
             .build()
     }
 
+    /**
+     * Enhances resume with provided data.
+     * @param event The event containing id, title, description, achievement descriptions and skills names.
+     * @throws EnhancementFailedException If enhancement fails.
+     * Handles sending generated data to `post.enhancement.stream` stream.
+     */
     @EventListener
     private fun enhance(event: EnhanceRequestedEvent)
     {
@@ -81,7 +85,7 @@ class EnhancementService(
             .orElseThrow { EnhancementFailedException("Enhancement failed.") }
             .get()
 
-        generationStreamTemplate.convertAndSend(
+        postGenerationStreamTemplate.convertAndSend(
             EnhanceDoneEvent(
                 event.id,
                 response.newTitle,

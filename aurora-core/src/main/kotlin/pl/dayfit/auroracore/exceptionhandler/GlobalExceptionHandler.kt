@@ -7,7 +7,8 @@ import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import pl.dayfit.auroracore.exception.ResumeNotGeneratedYetException
+import pl.dayfit.auroracore.exception.AutoGenerationFailedException
+import pl.dayfit.auroracore.exception.ResourceNotReadyYetException
 import pl.dayfit.auroracore.exception.UuidInvalidException
 import java.security.NoSuchProviderException
 import java.util.NoSuchElementException
@@ -27,8 +28,8 @@ class GlobalExceptionHandler {
             )
     }
 
-    @ExceptionHandler(ResumeNotGeneratedYetException::class)
-    fun handleResumeNotGeneratedYetException(e: ResumeNotGeneratedYetException): ResponseEntity<Map<String, String>> {
+    @ExceptionHandler(ResourceNotReadyYetException::class)
+    fun handleResumeNotGeneratedYetException(e: ResourceNotReadyYetException): ResponseEntity<Map<String, String>> {
         return ResponseEntity
             .status(HttpStatus.ACCEPTED)
             .body(
@@ -42,6 +43,14 @@ class GlobalExceptionHandler {
             .status(HttpStatus.NOT_FOUND)
             .body(
                 mapOf("error" to (e.message ?: "Not found"))
+            )
+    }
+
+    @ExceptionHandler(AutoGenerationFailedException::class)
+    fun handleAutoGenerationFailedException(e: AutoGenerationFailedException): ResponseEntity<Map<String, String>> {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(
+                mapOf("error" to (e.message ?: "Auto generation failed"))
             )
     }
 

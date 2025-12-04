@@ -26,7 +26,9 @@ class Resume(
     @Column(length = 200)
     var title: String?,
     @OneToMany(cascade = [CascadeType.ALL], fetch = jakarta.persistence.FetchType.EAGER)
-    var experiences: MutableList<Experience> = mutableListOf(),
+    var workExperiences: MutableList<WorkExperience> = mutableListOf(),
+    @OneToMany(cascade = [CascadeType.ALL], fetch = jakarta.persistence.FetchType.EAGER)
+    var personalPortfolios: MutableList<PersonalPortfolio> = mutableListOf(),
     @OneToMany(cascade = [CascadeType.ALL], fetch = jakarta.persistence.FetchType.EAGER)
     var skills: MutableList<Skill> = mutableListOf(),
     @OneToMany(cascade = [CascadeType.ALL], fetch = jakarta.persistence.FetchType.EAGER)

@@ -65,6 +65,15 @@
       }
     },
     {
+      "name": "post.autogeneration.stream",
+      "vhost": "/",
+      "durable": true,
+      "arguments": {
+        "x-queue-type": "stream",
+        "x-stream-max-segment-size-bytes": 536870912
+      }
+    },
+    {
       "name": "enhancement.stream",
       "vhost": "/",
       "durable": true,
@@ -75,6 +84,15 @@
     },
     {
       "name": "translation.stream",
+      "vhost": "/",
+      "durable": true,
+      "arguments": {
+        "x-queue-type": "stream",
+        "x-stream-max-segment-size-bytes": 536870912
+      }
+    },
+    {
+      "name": "autogeneration.stream",
       "vhost": "/",
       "durable": true,
       "arguments": {

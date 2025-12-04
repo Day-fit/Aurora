@@ -30,6 +30,7 @@ data class GenerationRequestDto (
     val skills: List<Skill>,
     val experiences: List<Experience>,
     val achievements: List<Achievement>,
+    val personalPortfolio: List<PersonalPortfolio>,
 
     @Min(1)
     @Max(1) //TODO: Add more versions
@@ -69,5 +70,10 @@ data class GenerationRequestDto (
         @NotBlank(message = "Skill name cannot be blank")
         val name: String,
         val level: SkillLevel
+    )
+
+    data class PersonalPortfolio (
+        val name: String,
+        val description: String
     )
 }
