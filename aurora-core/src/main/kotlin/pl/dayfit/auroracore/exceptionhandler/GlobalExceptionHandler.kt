@@ -3,10 +3,14 @@ package pl.dayfit.auroracore.exceptionhandler
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import pl.dayfit.auroracore.exception.AutoGenerationFailedException
 import pl.dayfit.auroracore.exception.ResourceNotReadyYetException
+import pl.dayfit.auroracore.exception.UuidInvalidException
+import java.security.NoSuchProviderException
 import java.util.NoSuchElementException
 
 @RestControllerAdvice
@@ -50,13 +54,56 @@ class GlobalExceptionHandler {
             )
     }
 
-    @ExceptionHandler(java.lang.Exception::class)
-    fun handleGenericException(e: Exception): ResponseEntity<Map<String, String>> {
-        logger.error("Unhandled exception: ", e)
-
-        return ResponseEntity.internalServerError()
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun handleJsonParseException(): ResponseEntity<Map<String, String>> {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
             .body(
-                mapOf("error" to "Internal server error")
+                mapOf("error" to "Request body is not valid JSON syntax")
             )
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleValidationException(ex: MethodArgumentNotValidException): ResponseEntity<Map<String, String?>> {
+
+        val errors = ex.bindingResult?.fieldErrors?.associate { fieldError ->
+            fieldError.field to fieldError.defaultMessage
+        }
+
+        if (errors == null)
+        {
+            return ResponseEntity
+                .badRequest()
+                .body(
+                    mapOf("error" to "Validation failed, something is wrong with your request")
+                )
+        }
+
+        return ResponseEntity
+            .badRequest()
+            .body(errors)
+    }
+
+    @ExceptionHandler(NoSuchProviderException::class)
+    fun handleNoSuchProviderException(): ResponseEntity<Map<String, String>> {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(mapOf("error" to "Given provider is not supported"))
+    }
+
+    @ExceptionHandler(UuidInvalidException::class)
+    fun handleUuidInvalidException(e: UuidInvalidException): ResponseEntity<Map<String, String>> {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(mapOf("error" to (e.message ?: "Invalid UUID")))
+    }
+
+    @ExceptionHandler(Exception::class)
+    fun handleGenericException(ex: Exception): ResponseEntity<Map<String, String>>
+    {
+        logger.error("Unhandled exception has been thrown: ", ex)
+
+        return ResponseEntity
+            .internalServerError()
+            .body(mapOf("error" to "Internal server error"))
     }
 }
