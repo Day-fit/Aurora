@@ -71,7 +71,7 @@ services:
     volumes:
       - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
       - ./definitions-dev.json:/etc/rabbitmq/definitions.json:ro
-      - rabbitmq:/var/lib/rabbitmq
+      - rabbitmq_dev:/var/lib/rabbitmq
     command: >
       bash -c "rabbitmq-plugins enable --offline rabbitmq_stream && rabbitmq-server"
     profiles:
