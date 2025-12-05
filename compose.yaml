@@ -59,6 +59,8 @@ services:
       - rabbitmq:/var/lib/rabbitmq
     command: >
       bash -c "rabbitmq-plugins enable --offline rabbitmq_stream && rabbitmq-server"
+    profiles:
+      - "!dev"
 
   rabbitmq-dev:
     image: 'rabbitmq:4.1.0-management-alpine'
@@ -72,6 +74,8 @@ services:
       - rabbitmq:/var/lib/rabbitmq
     command: >
       bash -c "rabbitmq-plugins enable --offline rabbitmq_stream && rabbitmq-server"
+    profiles:
+      - "dev"
 
 volumes:
   postgres:
