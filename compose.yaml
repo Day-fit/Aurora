@@ -81,3 +81,4 @@ volumes:
   postgres:
   minio:
   rabbitmq:
+  rabbitmq_dev:
