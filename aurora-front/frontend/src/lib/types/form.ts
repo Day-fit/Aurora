@@ -35,6 +35,7 @@ export enum EducationDegree{
 export const TemplateTypeEnum = z.enum(TemplateType);
 export const SkillLevelEnum = z.enum(SkillLevel);
 export const EducationDegreeEnum = z.enum(EducationDegree);
+
 const InstantSchema = z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/, "Invalid Instant format")
