@@ -3,6 +3,7 @@ import { FiHash, FiPlus, FiX } from "react-icons/fi";
 import Button from "@/components/button";
 import { ButtonType } from "@/lib/types/button";
 import React from "react";
+import Input from "@/components/input";
 
 export default function Achievement() {
     const { control } = useFormContext();
@@ -56,18 +57,14 @@ export default function Achievement() {
 
                                 {/* Title */}
                                 <div className="flex flex-col gap-1 pr-8">
-                                    <label className="text-xs text-text-dark/50 uppercase font-bold tracking-wider ml-1">
-                                        Title
-                                    </label>
                                     <Controller
                                         control={control}
                                         name={`achievements.${index}.title`}
-                                        render={({ field }) => (
-                                            <input
-                                                {...field}
-                                                type="text"
+                                        render={() => (
+                                            <Input
+                                                label="Title"
+                                                name={`achievements.${index}.title`}
                                                 placeholder="Achievement title"
-                                                className="w-full bg-transparent placeholder:text-text-dark/40 text-text-dark px-3 py-2 rounded-md border border-white/5 focus:border-white/20 focus:outline-none focus:ring-0 transition-colors"
                                             />
                                         )}
                                     />
@@ -76,36 +73,30 @@ export default function Achievement() {
                                 {/* Year + Description */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="flex flex-col gap-1">
-                                        <label className="text-xs text-text-dark/50 uppercase font-bold tracking-wider ml-1">
-                                            Year
-                                        </label>
                                         <Controller
                                             control={control}
                                             name={`achievements.${index}.year`}
-                                            render={({ field }) => (
-                                                <input
-                                                    {...field}
-                                                    type="number"
-                                                    value={field.value ?? ""}
+                                            render={() => (
+                                                <Input
+                                                    label="Year"
+                                                    name={`achievements.${index}.year`}
                                                     placeholder="Year"
-                                                    className="w-full bg-transparent placeholder:text-text-dark/40 text-text-dark px-3 py-2 rounded-md border border-white/5 focus:border-white/20 focus:outline-none focus:ring-0 transition-colors"
+                                                    type="number"
                                                 />
                                             )}
                                         />
                                     </div>
 
                                     <div className="flex flex-col gap-1">
-                                        <label className="text-xs text-text-dark/50 uppercase font-bold tracking-wider ml-1">
-                                            Description
-                                        </label>
                                         <Controller
                                             control={control}
                                             name={`achievements.${index}.description`}
-                                            render={({ field }) => (
-                                                <textarea
-                                                    {...field}
+                                            render={() => (
+                                                <Input
+                                                    label="Description"
+                                                    name={`achievements.${index}.description`}
                                                     placeholder="Description"
-                                                    className="w-full bg-transparent placeholder:text-text-dark/40 text-text-dark px-3 py-2 rounded-md border border-white/5 focus:border-white/20 focus:outline-none focus:ring-0 transition-colors"
+                                                    textArea={true}
                                                 />
                                             )}
                                         />

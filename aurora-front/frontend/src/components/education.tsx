@@ -4,6 +4,7 @@ import Button from "@/components/button";
 import {ButtonType} from "@/lib/types/button";
 import React from "react";
 import {EducationDegree} from "@/lib/types/form";
+import Input from "@/components/input";
 
 export default function Education() {
     const { control } = useFormContext();
@@ -48,17 +49,14 @@ export default function Education() {
                                 </div>
 
                                 <div className="flex flex-col gap-1 pr-8">
-                                    <label className="text-xs text-text-dark/50 uppercase font-bold tracking-wider ml-1">Institution</label>
                                     <Controller
                                         control={control}
                                         name={`education.${index}.institution`}
-                                        render={({ field }) => (
-                                            <input
-                                                {...field}
-                                                type="text"
+                                        render={() => (
+                                            <Input
                                                 placeholder="e.g. Harvard University, Technical College"
-                                                className="w-full bg-transparent placeholder:text-text-dark/40 text-text-dark px-3 py-2 rounded-md border border-white/5 focus:border-white/20 focus:outline-none focus:ring-0 transition-colors"
-                                                required
+                                                label="Institution"
+                                                name={`education.${index}.institution`}
                                             />
                                         )}
                                     />
@@ -66,38 +64,42 @@ export default function Education() {
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="flex flex-col gap-1">
-                                        <label className="text-xs text-text-dark/50 uppercase font-bold tracking-wider ml-1">Major</label>
                                         <Controller
                                             control={control}
                                             name={`education.${index}.major`}
-                                            render={({ field }) => (
-                                                <input
-                                                    {...field}
-                                                    type="text"
+                                            render={() => (
+                                                <Input
                                                     placeholder="e.g. Computer Science"
-                                                    className="w-full bg-transparent placeholder:text-text-dark/40 text-text-dark px-3 py-2 rounded-md border border-white/5 focus:border-white/20 focus:outline-none focus:ring-0 transition-colors"
-                                                    required
+                                                    label="Major"
+                                                    name={`education.${index}.major`}
                                                 />
                                             )}
                                         />
                                     </div>
                                     <div className="flex flex-col gap-1">
-                                        <label className="text-xs text-text-dark/50 uppercase font-bold tracking-wider ml-1">Degree</label>
                                         <Controller
                                             control={control}
                                             name={`education.${index}.degree`}
                                             render={({ field }) => (
                                                 <select
                                                     {...field}
-                                                    className="w-full bg-transparent text-text-dark px-3 py-2 rounded-md border border-white/5 focus:border-white/20 focus:outline-none focus:ring-0 cursor-pointer hover:text-aurora-green-dark transition-colors"
-                                                    required
+                                                    className="w-full bg-transparent border border-white/10 rounded-xl px-4 py-3 text-text-dark focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition cursor-pointer  "
                                                 >
                                                     {Object.values(EducationDegree).map((degree) => (
-                                                        <option key={degree} value={degree} className="bg-main-dark text-text-dark">
-                                                            {degree.split('_').map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(' ')}
+                                                        <option
+                                                            key={degree}
+                                                            value={degree}
+                                                            className="bg-main-dark text-text-dark"
+                                                        >
+                                                            {degree
+                                                                .split('_')
+                                                                .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+                                                                .join(' ')
+                                                            }
                                                         </option>
                                                     ))}
                                                 </select>
+
                                             )}
                                         />
                                     </div>
@@ -105,34 +107,29 @@ export default function Education() {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="flex flex-col gap-1">
-                                        <label className="text-xs text-text-dark/50 uppercase font-bold tracking-wider ml-1">From Year</label>
                                         <Controller
                                             control={control}
                                             name={`education.${index}.fromYear`}
-                                            render={({ field }) => (
-                                                <input
-                                                    {...field}
-                                                    value={field.value ?? ""}
+                                            render={() => (
+                                                <Input
                                                     type="number"
                                                     placeholder="YYYY"
-                                                    className="w-full bg-transparent placeholder:text-text-dark/40 text-text-dark px-3 py-2 rounded-md border border-white/5 focus:border-white/20 focus:outline-none focus:ring-0 transition-colors"
-                                                    required
+                                                    label="From Year"
+                                                    name={`education.${index}.fromYear`}
                                                 />
                                             )}
                                         />
                                     </div>
                                     <div className="flex flex-col gap-1">
-                                        <label className="text-xs text-text-dark/50 uppercase font-bold tracking-wider ml-1">To Year</label>
                                         <Controller
                                             control={control}
                                             name={`education.${index}.toYear`}
-                                            render={({ field }) => (
-                                                <input
-                                                    {...field}
-                                                    value={field.value ?? ""}
+                                            render={() => (
+                                                <Input
+                                                    name={`education.${index}.toYear`}
+                                                    label="To Year"
                                                     type="number"
                                                     placeholder="YYYY"
-                                                    className="w-full bg-transparent placeholder:text-text-dark/40 text-text-dark px-3 py-2 rounded-md border border-white/5 focus:border-white/20 focus:outline-none focus:ring-0 transition-colors"
                                                 />
                                             )}
                                         />

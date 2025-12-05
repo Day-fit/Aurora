@@ -11,5 +11,6 @@ export default interface ButtonInterface {
     className?: string,
     icon?: React.ReactNode | string,
     onClick?: () => void,
-    type?: ButtonType
+    type?: ButtonType,
+    disabled?: boolean
 }

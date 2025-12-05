@@ -16,11 +16,15 @@ import FormStyling from "@/components/form-styling";
 export default function CvForm() {
     //need to add validation, error handling, submit handling via request
 
-    const { handleSubmit, reset } = useFormContext();
+    const {
+        handleSubmit,
+        reset,
+        formState: { isSubmitting },
+    } = useFormContext();
 
     const onSubmit = (data: any) => console.log(data);
 
-    console.log("CvForm render");
+    console.log("isSubmitting: ", isSubmitting);
 
     return (
         <section className="relative overflow-hidden rounded-xl p-6 lg:p-10 min-h-[60vh]">
@@ -72,7 +76,8 @@ export default function CvForm() {
                             <Button
                                 type={ButtonType.submit}
                                 className="flex-1 bg-aurora-blue-dark text-white px-6 py-3 rounded-lg shadow-xl hover:scale-102 transition-transform font-semibold"
-                                text="Create CV"
+                                disabled={isSubmitting}
+                                text={isSubmitting ? "Creating..." : "Create CV"}
                             />
                             <Button
                                 className="bg-transparent border border-white/8 text-text-dark px-4 py-3 rounded-lg hover:bg-aurora-green-dark hover:text-white transition"
