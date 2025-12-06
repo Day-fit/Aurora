@@ -6,7 +6,6 @@ services:
     healthcheck:
       test: [ 'CMD', 'curl', '-f', 'http://localhost:8081/actuator/health' ]
       retries: 3
-      start_interval: 3s
       timeout: 5s
       interval: 10s
     ports:
@@ -42,7 +41,6 @@ services:
     healthcheck:
       test: [ 'CMD', 'curl', '-f', 'http://localhost:8083/actuator/health' ]
       retries: 3
-      start_interval: 3s
       timeout: 5s
       interval: 10s
     depends_on:
@@ -92,7 +90,6 @@ services:
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:8082/actuator/health']
       retries: 3
-      start_interval: 3s
       timeout: 5s
       interval: 10s
     environment:
