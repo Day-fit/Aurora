@@ -32,6 +32,8 @@ services:
     labels:
       - 'com.centurylinklabs.watchtower.enable=true'
       - 'com.centurylinklabs.watchtower.reboot-if-changed=true'
+    profiles:
+      - prod
 
   aurora-auth:
     image: 'ghcr.io/dayfit/aurora-auth:latest'
@@ -76,6 +78,8 @@ services:
     labels:
       - 'com.centurylinklabs.watchtower.enable=true'
       - 'com.centurylinklabs.watchtower.reboot-if-changed=true'
+    profiles:
+      - prod
 
   aurora-ai:
     image: 'ghcr.io/dayfit/aurora-ai:latest'
@@ -101,6 +105,8 @@ services:
     labels:
       - 'com.centurylinklabs.watchtower.enable=true'
       - 'com.centurylinklabs.watchtower.reboot-if-changed=true'
+    profiles:
+      - prod
 
   postgres:
     image: 'postgres:latest'
@@ -167,7 +173,7 @@ services:
     command: >
       bash -c "rabbitmq-plugins enable --offline rabbitmq_stream && rabbitmq-server"
     profiles:
-      - '!dev'
+      - 'prod'
     labels:
       - 'com.centurylinklabs.watchtower.enable=true'
 
