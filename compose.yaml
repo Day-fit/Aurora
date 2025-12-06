@@ -22,6 +22,9 @@ services:
       - 'JWKS_SUPPLIER_URI=${JWKS_SUPPLIER_URI}'
       - 'CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}'
       - 'GITHUB_PAT=${GITHUB_PAT}'
+    labels:
+      - 'com.centurylinklabs.watchtower.enable=true'
+      - 'com.centurylinklabs.watchtower.reboot-if-changed=true'
 
   aurora-auth:
     image: 'ghcr.io/dayfit/aurora-auth:latest'
@@ -56,6 +59,9 @@ services:
       - 'JWKS_SUPPLIER_URI=${JWKS_SUPPLIER_URI}'
       - 'CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}'
       - 'GITHUB_PAT=${GITHUB_PAT}'
+    labels:
+      - 'com.centurylinklabs.watchtower.enable=true'
+      - 'com.centurylinklabs.watchtower.reboot-if-changed=true'
 
   aurora-ai:
     image: 'ghcr.io/dayfit/aurora-ai:latest'
@@ -71,6 +77,9 @@ services:
       - 'RABBITMQ_HOST=${RABBITMQ_HOST}'
       - 'RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}'
       - 'RABBITMQ_USER=${RABBITMQ_USER}'
+    labels:
+      - 'com.centurylinklabs.watchtower.enable=true'
+      - 'com.centurylinklabs.watchtower.reboot-if-changed=true'
 
   postgres:
     image: 'postgres:latest'
@@ -89,6 +98,8 @@ services:
       - 'REDIS_PASSWORD=${REDIS_PASSWORD}'
     ports:
       - '6379:6379'
+    labels:
+      - 'com.centurylinklabs.watchtower.enable=true'
 
   minio:
     image: minio/minio:latest
@@ -96,8 +107,8 @@ services:
       - 'MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}'
       - 'MINIO_SECRET_KEY=${MINIO_SECRET_KEY}'
     ports:
-      - "9000:9000"
-      - "9090:9090"
+      - '9000:9000'
+      - '9090:9090'
     command: [ "server", "--console-address", ":9090", "/data"]
     volumes:
     - minio:/data
@@ -106,6 +117,8 @@ services:
       interval: 5s
       timeout: 2s
       retries: 12
+    labels:
+      - 'com.centurylinklabs.watchtower.enable=true'
 
   create-buckets:
     image: minio/mc:latest
@@ -118,14 +131,14 @@ services:
         mc mb -p local/jwks || true &&
         mc mb -p local/resumes || true
       "
-    restart: "no"
+    restart: 'no'
 
   rabbitmq:
     image: 'rabbitmq:4.1.0-management-alpine'
     ports:
-      - "5672:5672"
-      - "15672:15672"
-      - "5552:5552"
+      - '5672:5672'
+      - '15672:15672'
+      - '5552:5552'
     volumes:
       - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
       - ./definitions.json:/etc/rabbitmq/definitions.json:ro
@@ -133,7 +146,9 @@ services:
     command: >
       bash -c "rabbitmq-plugins enable --offline rabbitmq_stream && rabbitmq-server"
     profiles:
-      - "!dev"
+      - '!dev'
+    labels:
+      - 'com.centurylinklabs.watchtower.enable=true'
 
   rabbitmq-dev:
     image: 'rabbitmq:4.1.0-management-alpine'
@@ -148,12 +163,16 @@ services:
     command: >
       bash -c "rabbitmq-plugins enable --offline rabbitmq_stream && rabbitmq-server"
     profiles:
-      - "dev"
+      - 'dev'
 
   watchtower:
     image: containrrr/watchtower:1.7.1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    command: --label-enable --cleanup --interval 300
+    restart: unless-stopped
+    profiles:
+      - '!dev'
 
 volumes:
   postgres:
