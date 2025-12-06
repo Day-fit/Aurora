@@ -1,11 +1,17 @@
 import React from "react";
 import {useFormContext} from "react-hook-form";
-
+import Input from "@/components/input";
 export default function FormStyling() {
     const { register } = useFormContext();
     return(
         <div className="grid grid-cols-1 gap-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                <Input
+                    name="title"
+                    label="Title"
+                    type="text"
+                    placeholder="Your CV title"
+                />
                 <div className="relative">
                     <label className="absolute -top-3 left-3 bg-main-dark/80 px-2 text-xs text-text-dark/80 rounded">
                         Template
@@ -20,17 +26,6 @@ export default function FormStyling() {
                         <option value="4" className="bg-main-dark text-text-dark">Template 4</option>
                         <option value="5" className="bg-main-dark text-text-dark">Template 5</option>
                     </select>
-                </div>
-
-                <div className="relative">
-                    <label className="absolute -top-3 left-3 bg-main-dark/80 px-2 text-xs text-text-dark/80 rounded">
-                        Photo
-                    </label>
-                    <input
-                        type="file"
-                        {...register("profileImage")}
-                        className="w-full bg-transparent border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-aurora-green-dark transition"
-                    />
                 </div>
             </div>
         </div>

@@ -12,12 +12,14 @@ export default React.memo(function InputInner({
 
     const {
         register,
-        formState: { errors }
+        getFieldState,
+        formState
     } = useFormContext();
 
-    const fieldError = errors?.[name]?.message as string | undefined;
+    const fieldError = getFieldState(name, formState).error?.message;
     const reg = register(name, options);
 
+    console.log(formState.errors);
     return (
         <div className="relative w-full flex flex-col">
             {label && (

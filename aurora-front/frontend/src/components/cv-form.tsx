@@ -12,6 +12,7 @@ import FormSection from "@/components/form-section";
 import PersonalInfo from "@/components/personal-info";
 import ProfileLinks from "@/components/profile-links";
 import FormStyling from "@/components/form-styling";
+import PersonalPortfolio from "@/components/personal-portfolio";
 
 export default function CvForm() {
     //need to add validation, error handling, submit handling via request
@@ -44,8 +45,16 @@ export default function CvForm() {
                         className="w-full flex flex-col gap-4"
                         onSubmit={handleSubmit(onSubmit)}
                     >
+                        <FormSection title="Styling options">
+                            <FormStyling />
+                        </FormSection>
+
                         <FormSection title="Personal information">
                             <PersonalInfo />
+                        </FormSection>
+
+                        <FormSection title="Your portfolio">
+                            <PersonalPortfolio />
                         </FormSection>
 
                         <FormSection title="Your online profiles">
@@ -56,7 +65,7 @@ export default function CvForm() {
                             <Education />
                         </FormSection>
 
-                        <FormSection title="Your experience">
+                        <FormSection title="Your work experience">
                             <Experience />
                         </FormSection>
 
@@ -66,10 +75,6 @@ export default function CvForm() {
 
                         <FormSection title="Your achievements">
                             <Achievement />
-                        </FormSection>
-
-                        <FormSection title="Styling options">
-                            <FormStyling />
                         </FormSection>
 
                         <div className="mt-3 flex gap-3">

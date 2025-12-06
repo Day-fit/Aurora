@@ -13,6 +13,7 @@ export default function CreatePage() {
 
     const methods = useForm<FormValues>({
         resolver: zodResolver(formSchema),
+        mode: "onSubmit",
         defaultValues: {
             template: TemplateType.template1,
             title: "",
@@ -29,6 +30,7 @@ export default function CreatePage() {
             achievements: [],
             skills: [],
             education: [],
+            personalPortfolio: []
         }
     });
 

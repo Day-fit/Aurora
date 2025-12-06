@@ -116,6 +116,7 @@ export default function Education() {
                                                     placeholder="YYYY"
                                                     label="From Year"
                                                     name={`education.${index}.fromYear`}
+                                                    options={{valueAsNumber: true}}
                                                 />
                                             )}
                                         />
@@ -130,6 +131,7 @@ export default function Education() {
                                                     label="To Year"
                                                     type="number"
                                                     placeholder="YYYY"
+                                                    options={{valueAsNumber: true}}
                                                 />
                                             )}
                                         />
