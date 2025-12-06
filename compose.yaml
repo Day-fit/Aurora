@@ -2,6 +2,13 @@ services:
   aurora-core:
     image: 'ghcr.io/dayfit/aurora-core:latest'
     container_name: core
+    restart: unless-stopped
+    healthcheck:
+      test: [ 'CMD', 'curl', '-f', 'http:://localhost:8081/actuator/health' ]
+      retries: 3
+      start_interval: 3s
+      timeout: 5s
+      interval: 10s
     ports:
       - '8081:8081'
     depends_on:
@@ -29,6 +36,13 @@ services:
   aurora-auth:
     image: 'ghcr.io/dayfit/aurora-auth:latest'
     container_name: auth
+    restart: unless-stopped
+    healthcheck:
+      test: [ 'CMD', 'curl', '-f', 'http:://localhost:8083/actuator/health' ]
+      retries: 3
+      start_interval: 3s
+      timeout: 5s
+      interval: 10s
     depends_on:
       - postgres
       - rabbitmq
@@ -68,8 +82,15 @@ services:
     container_name: ai
     ports:
       - '8082:8082'
+    restart: unless-stopped
     depends_on:
       - 'rabbitmq'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http:://localhost:8082/actuator/health']
+      retries: 3
+      start_interval: 3s
+      timeout: 5s
+      interval: 10s
     environment:
       - 'OPENAI_API_KEY=${OPENAI_API_KEY}'
       - 'OPENAI_ORGANIZATION=${OPENAI_ORGANIZATION}'
