@@ -36,6 +36,7 @@ jobs:
           context: .
           file: ./dockerfiles/dockerfile-${{ matrix.service }}
           push: true
+          platforms: linux/amd64,linux/arm64/v8
           tags: ghcr.io/day-fit/aurora-${{ matrix.service }}:latest
           secrets: |
             gh_name=${{ github.actor }}
