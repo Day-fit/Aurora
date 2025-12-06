@@ -196,7 +196,7 @@ services:
     command: --label-enable --cleanup --interval 300
     restart: unless-stopped
     profiles:
-      - '!dev'
+      - 'prod'
 
 volumes:
   postgres:
