@@ -13,6 +13,13 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>aurora-core</name>
     <description>aurora-core</description>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>Aurora authentication starter</name>
+            <url>https://maven.pkg.github.com/day-fit/Aurora</url>
+        </repository>
+    </distributionManagement>
     <url/>
     <licenses>
         <license/>

@@ -1,4 +1,77 @@
 services:
+  aurora-core:
+    image: 'ghcr.io/dayfit/aurora-core:latest'
+    container_name: core
+    ports:
+      - '8081:8081'
+    depends_on:
+      - postgres
+      - redis
+      - minio
+      - rabbitmq
+      - aurora-ai
+      - aurora-auth
+    environment:
+      - 'RABBITMQ_HOST=${RABBITMQ_HOST}'
+      - 'RABBITMQ_USER=${RABBITMQ_USER}'
+      - 'RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}'
+      - 'DB_USER=${DB_USER}'
+      - 'DB_PASSWORD=${DB_PASSWORD}'
+      - 'DB_URL=${DB_URL}'
+      - 'DB_NAME=${DB_NAME}'
+      - 'JWKS_SUPPLIER_URI=${JWKS_SUPPLIER_URI}'
+      - 'CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}'
+      - 'GITHUB_PAT=${GITHUB_PAT}'
+
+  aurora-auth:
+    image: 'ghcr.io/dayfit/aurora-auth:latest'
+    container_name: auth
+    depends_on:
+      - postgres
+      - rabbitmq
+      - minio
+      - redis
+    ports:
+      - '8083:8083'
+    environment:
+      - 'RABBITMQ_HOST=${RABBITMQ_HOST}'
+      - 'RABBITMQ_USER=${RABBITMQ_USER}'
+      - 'RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}'
+      - 'DB_USER=${DB_USER}'
+      - 'DB_PASSWORD=${DB_PASSWORD}'
+      - 'DB_URL=${DB_URL}'
+      - 'DB_NAME=${DB_NAME}'
+      - 'MINIO_HOST=${MINIO_HOST}'
+      - 'MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}'
+      - 'MINIO_SECRET_KEY=${MINIO_SECRET_KEY}'
+      - 'REDIS_HOST=${REDIS_HOST}'
+      - 'REDIS_PASSWORD=${REDIS_PASSWORD}'
+      - 'APPLE_CLIENT_ID=${APPLE_CLIENT_ID}'
+      - 'APPLE_CLIENT_SECRET=${APPLE_CLIENT_SECRET}'
+      - 'APPLE_JWKS_URI=${APPLE_JWKS_URI}'
+      - 'GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}'
+      - 'GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}'
+      - 'GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}'
+      - 'GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}'
+      - 'JWKS_SUPPLIER_URI=${JWKS_SUPPLIER_URI}'
+      - 'CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}'
+      - 'GITHUB_PAT=${GITHUB_PAT}'
+
+  aurora-ai:
+    image: 'ghcr.io/dayfit/aurora-ai:latest'
+    container_name: ai
+    ports:
+      - '8082:8082'
+    depends_on:
+      - 'rabbitmq'
+    environment:
+      - 'OPENAI_API_KEY=${OPENAI_API_KEY}'
+      - 'OPENAI_ORGANIZATION=${OPENAI_ORGANIZATION}'
+      - 'OPENAI_PROJECT=${OPENAI_PROJECT}'
+      - 'RABBITMQ_HOST=${RABBITMQ_HOST}'
+      - 'RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}'
+      - 'RABBITMQ_USER=${RABBITMQ_USER}'
+
   postgres:
     image: 'postgres:latest'
     environment:
@@ -76,6 +149,11 @@ services:
       bash -c "rabbitmq-plugins enable --offline rabbitmq_stream && rabbitmq-server"
     profiles:
       - "dev"
+
+  watchtower:
+    image: containrrr/watchtower:1.7.1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
   postgres:
