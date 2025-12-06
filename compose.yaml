@@ -4,7 +4,7 @@ services:
     container_name: core
     restart: unless-stopped
     healthcheck:
-      test: [ 'CMD', 'curl', '-f', 'http:://localhost:8081/actuator/health' ]
+      test: [ 'CMD', 'curl', '-f', 'http://localhost:8081/actuator/health' ]
       retries: 3
       start_interval: 3s
       timeout: 5s
@@ -38,7 +38,7 @@ services:
     container_name: auth
     restart: unless-stopped
     healthcheck:
-      test: [ 'CMD', 'curl', '-f', 'http:://localhost:8083/actuator/health' ]
+      test: [ 'CMD', 'curl', '-f', 'http://localhost:8083/actuator/health' ]
       retries: 3
       start_interval: 3s
       timeout: 5s
@@ -86,7 +86,7 @@ services:
     depends_on:
       - 'rabbitmq'
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http:://localhost:8082/actuator/health']
+      test: ['CMD', 'curl', '-f', 'http://localhost:8082/actuator/health']
       retries: 3
       start_interval: 3s
       timeout: 5s
