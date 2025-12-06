@@ -1,4 +1,4 @@
-FROM maven:3.9.11-amazoncorretto-25-debian-trixie
+FROM amazoncorretto:21-alpine3.22-jdk
 
 COPY ./aurora-ai/ /aurora/
 

@@ -1,0 +1,14 @@
+FROM amazoncorretto:21-alpine3.22-jdk
+
+COPY ./aurora-auth/ /aurora/
+
+WORKDIR /aurora
+
+RUN \
+    chmod +x ./mvnw && \
+    ./mvnw clean package -DskipTests && \
+    mv /aurora/target/aurora-auth-*.jar /aurora/aurora-auth.jar
+
+CMD ["java", "-jar", "/aurora/aurora-auth.jar"]
+
+EXPOSE 8083
