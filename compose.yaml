@@ -84,7 +84,7 @@ services:
       - '8082:8082'
     restart: unless-stopped
     depends_on:
-      - 'rabbitmq'
+      - rabbitmq
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:8082/actuator/health']
       retries: 3
