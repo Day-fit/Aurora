@@ -1,6 +1,6 @@
 FROM amazoncorretto:21-alpine3.22-jdk
 
-COPY ./aurora-ai/ /aurora/
+COPY aurora-ai/ /aurora/
 
 WORKDIR /aurora
 
