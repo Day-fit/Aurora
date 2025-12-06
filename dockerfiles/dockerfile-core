@@ -5,7 +5,7 @@ WORKDIR /aurora
 RUN chmod +x ./mvnw && \
     ./mvnw clean package -DskipTests
 
-FROM amazoncorretto:21-alpine3.22-jre
+FROM amazoncorretto:21-al2023-headless
 COPY --from=build /aurora/target/aurora-core-*.jar /aurora/aurora-core.jar
 CMD ["java", "-jar", "/aurora/aurora-core.jar"]
 EXPOSE 8081
