@@ -1,14 +1,11 @@
-FROM amazoncorretto:21-alpine3.22-jdk
+FROM amazoncorretto:21-alpine3.22-jdk AS build
 
 COPY aurora-auth/ /aurora/
-
 WORKDIR /aurora
+RUN chmod +x ./mvnw && \
+    ./mvnw clean package -DskipTests
 
-RUN \
-    chmod +x ./mvnw && \
-    ./mvnw clean package -DskipTests && \
-    mv /aurora/target/aurora-auth-*.jar /aurora/aurora-auth.jar
-
+FROM amazoncorretto:21-alpine3.22-jre
+COPY --from=build /aurora/target/aurora-auth-*.jar /aurora/aurora-auth.jar
 CMD ["java", "-jar", "/aurora/aurora-auth.jar"]
-
 EXPOSE 8083
