@@ -32,7 +32,7 @@ jobs:
           context: .
           file: ./dockerfiles/dockerfile-${{ matrix.service }}
           push: true
-          tags: ghcr.io/dayfit/aurora-${{ matrix.service }}:latest
+          tags: ghcr.io/day-fit/aurora-${{ matrix.service }}:latest
           secrets: |
             gh_name=${{ github.actor }}
             github_token=${{ secrets.GITHUB_TOKEN }}

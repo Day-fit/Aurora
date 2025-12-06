@@ -14,7 +14,7 @@ RUN --mount=type=secret,id=gh_name \
 "      <password>$(cat /run/secrets/github_token)</password>" \
 "    </server>" \
 "  </servers>" \
-"</settings>" > /tmp/settings.xml' \
+"</settings>" > /tmp/settings.xml'
 
 RUN chmod +x ./mvnw && \
     ./mvnw clean package -DskipTests -s /tmp/settings.xml
