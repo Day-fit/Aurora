@@ -8,4 +8,4 @@ RUN chmod +x ./mvnw && \
 FROM amazoncorretto:21-alpine3.22-jre
 COPY --from=build /aurora/target/aurora-core-*.jar /aurora/aurora-core.jar
 CMD ["java", "-jar", "/aurora/aurora-core.jar"]
-EXPOSE 8082
+EXPOSE 8081
