@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        service: [core, ai]
+        service: [core, ai, auth]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -25,6 +25,24 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+
+      - name: Setup Maven
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml <<EOF
+          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+          http://maven.apache.org/xsd/settings-1.0.0.xsd">
+          <servers>
+          <server>
+          <id>github</id>
+          <username>${{ github.actor }}</username>
+          <password>${{ secrets.GITHUB_TOKEN }}</password>
+          </server>
+          </servers>
+          </settings>
+          EOF
 
       - name: Build and push
         uses: docker/build-push-action@v3

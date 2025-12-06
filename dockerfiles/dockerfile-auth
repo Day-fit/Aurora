@@ -1,11 +1,11 @@
 FROM amazoncorretto:21-alpine3.22-jdk AS build
 
-COPY aurora-core/ /aurora/
+COPY aurora-auth/ /aurora/
 WORKDIR /aurora
 RUN chmod +x ./mvnw && \
     ./mvnw clean package -DskipTests
 
 FROM amazoncorretto:21-alpine3.22-jre
-COPY --from=build /aurora/target/aurora-core-*.jar /aurora/aurora-core.jar
-CMD ["java", "-jar", "/aurora/aurora-core.jar"]
-EXPOSE 8081
+COPY --from=build /aurora/target/aurora-auth-*.jar /aurora/aurora-auth.jar
+CMD ["java", "-jar", "/aurora/aurora-auth.jar"]
+EXPOSE 8083
