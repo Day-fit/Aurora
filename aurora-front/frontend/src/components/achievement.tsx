@@ -56,20 +56,21 @@ export default function Achievement() {
                                 </div>
 
                                 {/* Title */}
-                                <div className="flex flex-col gap-1 pr-8">
-                                    <Controller
-                                        control={control}
-                                        name={`achievements.${index}.title`}
-                                        render={() => (
-                                            <Input
-                                                label="Title"
-                                                name={`achievements.${index}.title`}
-                                                placeholder="Achievement title"
-                                            />
-                                        )}
-                                    />
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="flex flex-col gap-1 pr-8">
+                                        <Controller
+                                            control={control}
+                                            name={`achievements.${index}.title`}
+                                            render={() => (
+                                                <Input
+                                                    label="Title"
+                                                    name={`achievements.${index}.title`}
+                                                    placeholder="Achievement title"
+                                                />
+                                            )}
+                                        />
+                                    </div>
                                 </div>
-
                                 {/* Year + Description */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="flex flex-col gap-1">
@@ -80,6 +81,7 @@ export default function Achievement() {
                                                 <Input
                                                     label="Year"
                                                     name={`achievements.${index}.year`}
+                                                    options={{ valueAsNumber: true }}
                                                     placeholder="Year"
                                                     type="number"
                                                 />

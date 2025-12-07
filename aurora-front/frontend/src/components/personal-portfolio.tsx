@@ -10,7 +10,7 @@ export default function PersonalPortfolio() {
 
     const { fields, append, remove } = useFieldArray({
         control,
-        name: "experience",
+        name: "personalPortfolio",
     });
 
     return (
@@ -23,20 +23,17 @@ export default function PersonalPortfolio() {
                         aria-live="polite"
                     >
                         <FiHash className="text-2xl" />
-                        <p className="max-w-xs">You haven't added any experience yet. Click the button below to add your first role.</p>
+                        <p className="max-w-xs">You haven't added any personal portfolio yet. Click the button below to add your first role.</p>
                         <Button
                             type={ButtonType.button}
                             onClick={() =>
                                 append({
-                                    company: "",
-                                    position: "",
-                                    startDate: "",
-                                    endDate: "",
+                                    name: "",
                                     description: "",
                                 })
                             }
                             className="inline-flex items-center gap-2 bg-gradient-to-r from-aurora-blue-dark to-aurora-green-dark text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
-                            text="Add experience"
+                            text="Add your portfolio"
                             icon={<FiPlus />}
                         />
                     </div>
@@ -64,7 +61,7 @@ export default function PersonalPortfolio() {
                                             name={`personalPortfolio.${index}.name`}
                                             render={() => (
                                                 <Input
-                                                    name={`experience.${index}.startDate`}
+                                                    name={`personalPortfolio.${index}.name`}
                                                     label="Name"
                                                     placeholder="e.g. Personal Portfolio"
                                                 />
@@ -74,18 +71,15 @@ export default function PersonalPortfolio() {
                                 </div>
 
                                 <div className="flex flex-col gap-1">
-                                    <label className="text-xs text-text-dark/50 uppercase font-bold tracking-wider ml-1">
-                                        Description
-                                    </label>
                                     <Controller
                                         control={control}
                                         name={`personalPortfolio.${index}.description`}
-                                        render={({ field }) => (
-                                            <textarea
-                                                {...field}
-                                                value={field.value ?? ""}
-                                                placeholder="Summarize your main responsibilities and achievements..."
-                                                className="w-full bg-transparent placeholder:text-text-dark/40 text-text-dark px-3 py-2 rounded-md border border-white/5 focus:border-white/20 focus:outline-none focus:ring-0 transition-colors min-h-[100px]"
+                                        render={() => (
+                                            <Input
+                                                textArea={true}
+                                                label="Description"
+                                                name={`personalPortfolio.${index}.description`}
+                                                placeholder="Describe your personal portfolio..."
                                             />
                                         )}
                                     />
@@ -97,10 +91,7 @@ export default function PersonalPortfolio() {
                                 type={ButtonType.button}
                                 onClick={() =>
                                     append({
-                                        company: "",
-                                        position: "",
-                                        startDate: "",
-                                        endDate: "",
+                                        name: "",
                                         description: "",
                                     })
                                 }

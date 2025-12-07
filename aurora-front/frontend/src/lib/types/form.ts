@@ -59,7 +59,7 @@ export const EducationDegreeEnum = z.enum(
 
 const urlSchema = z
     .union([
-        z.string().url().refine(
+        z.url().refine(
             (url) => url.startsWith("http://") || url.startsWith("https://"),
             "URL must start with http:// or https://"
         ),
@@ -85,9 +85,9 @@ export const ExperienceSchema = z.object({
 });
 
 export const AchievementSchema = z.object({
-    title: z.string(),
-    description: z.string().nullable(),
-    year: z.number().nullable()
+    title: z.string().min(1,"Achievement title cannot be blank"),
+    description: z.string().min(1,"Achievement title cannot be blank"),
+    year: z.number().min(1900).max(new Date().getFullYear()).nullable()
 });
 
 export const SkillSchema = z.object({
@@ -105,7 +105,7 @@ export const EducationSchema = z.object({
 
 export const PersonalPortfolioSchema = z.object({
     name: z.string().min(1, "Name is required"),
-    description: z.string().nullable(),
+    description: z.string().min(1, "Description is required"),
 });
 
 /* ------------------ ROOT FORM ------------------ */

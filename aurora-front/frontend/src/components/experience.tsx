@@ -3,6 +3,7 @@ import { FiHash, FiPlus, FiX } from "react-icons/fi";
 import Button from "@/components/button";
 import { ButtonType } from "@/lib/types/button";
 import React from "react";
+import Input from "@/components/input";
 
 export default function Experience() {
     const { control } = useFormContext();
@@ -57,38 +58,28 @@ export default function Experience() {
                                 </div>
 
                                 <div className="flex flex-col gap-1 pr-8">
-                                    <label className="text-xs text-text-dark/50 uppercase font-bold tracking-wider ml-1">
-                                        Company
-                                    </label>
                                     <Controller
                                         control={control}
                                         name={`experience.${index}.company`}
-                                        render={({ field }) => (
-                                            <input
-                                                {...field}
-                                                value={field.value ?? ""}
-                                                type="text"
+                                        render={() => (
+                                            <Input
                                                 placeholder="e.g. Google, Startup Inc."
-                                                className="w-full bg-transparent placeholder:text-text-dark/40 text-text-dark px-3 py-2 rounded-md border border-white/5 focus:border-white/20 focus:outline-none focus:ring-0 transition-colors"
+                                                name={`experience.${index}.company`}
+                                                label="Company"
                                             />
                                         )}
                                     />
                                 </div>
 
                                 <div className="flex flex-col gap-1">
-                                    <label className="text-xs text-text-dark/50 uppercase font-bold tracking-wider ml-1">
-                                        Position
-                                    </label>
                                     <Controller
                                         control={control}
                                         name={`experience.${index}.position`}
-                                        render={({ field }) => (
-                                            <input
-                                                {...field}
-                                                value={field.value ?? ""}
-                                                type="text"
+                                        render={() => (
+                                            <Input
+                                                label="Position"
+                                                name={`experience.${index}.position`}
                                                 placeholder="e.g. Senior Frontend Engineer"
-                                                className="w-full bg-transparent placeholder:text-text-dark/40 text-text-dark px-3 py-2 rounded-md border border-white/5 focus:border-white/20 focus:outline-none focus:ring-0 transition-colors"
                                             />
                                         )}
                                     />
@@ -96,36 +87,30 @@ export default function Experience() {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="flex flex-col gap-1">
-                                        <label className="text-xs text-text-dark/50 uppercase font-bold tracking-wider ml-1">
-                                            Start Date
-                                        </label>
                                         <Controller
                                             control={control}
                                             name={`experience.${index}.startDate`}
-                                            render={({ field }) => (
-                                                <input
-                                                    {...field}
-                                                    value={field.value ?? ""}
+                                            render={() => (
+                                                <Input
+                                                    name={`experience.${index}.startDate`}
+                                                    label="Start Date"
+                                                    placeholder="e.g. 2021-01-01"
                                                     type="datetime-local"
-                                                    className="w-full bg-transparent placeholder:text-text-dark/40 text-text-dark px-3 py-2 rounded-md border border-white/5 focus:border-white/20 focus:outline-none focus:ring-0 transition-colors"
                                                 />
                                             )}
                                         />
                                     </div>
 
                                     <div className="flex flex-col gap-1">
-                                        <label className="text-xs text-text-dark/50 uppercase font-bold tracking-wider ml-1">
-                                            End Date
-                                        </label>
                                         <Controller
                                             control={control}
                                             name={`experience.${index}.endDate`}
-                                            render={({ field }) => (
-                                                <input
-                                                    {...field}
-                                                    value={field.value ?? ""}
+                                            render={() => (
+                                                <Input
+                                                    name={`experience.${index}.endDate`}
+                                                    label="End Date"
+                                                    placeholder="e.g. 2023-01-01"
                                                     type="datetime-local"
-                                                    className="w-full bg-transparent placeholder:text-text-dark/40 text-text-dark px-3 py-2 rounded-md border border-white/5 focus:border-white/20 focus:outline-none focus:ring-0 transition-colors"
                                                 />
                                             )}
                                         />
@@ -133,18 +118,15 @@ export default function Experience() {
                                 </div>
 
                                 <div className="flex flex-col gap-1">
-                                    <label className="text-xs text-text-dark/50 uppercase font-bold tracking-wider ml-1">
-                                        Description
-                                    </label>
                                     <Controller
                                         control={control}
                                         name={`experience.${index}.description`}
-                                        render={({ field }) => (
-                                            <textarea
-                                                {...field}
-                                                value={field.value ?? ""}
+                                        render={() => (
+                                            <Input
+                                                name={`experience.${index}.description`}
+                                                label="Description"
                                                 placeholder="Summarize your main responsibilities and achievements..."
-                                                className="w-full bg-transparent placeholder:text-text-dark/40 text-text-dark px-3 py-2 rounded-md border border-white/5 focus:border-white/20 focus:outline-none focus:ring-0 transition-colors min-h-[100px]"
+                                                textArea={true}
                                             />
                                         )}
                                     />

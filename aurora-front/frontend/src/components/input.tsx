@@ -7,6 +7,7 @@ export default React.memo(function InputInner({
                                                   name,
                                                   options = {},
                                                   textArea = false,
+                                                  className,
                                                   ...props
                                               }: Props) {
 
@@ -36,7 +37,7 @@ export default React.memo(function InputInner({
                 />
             ) : (
                 <input
-                    className="w-full bg-transparent border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"
+                    className={className ? className : "w-full bg-transparent border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition"}
                     {...reg}
                     {...props}
                 />

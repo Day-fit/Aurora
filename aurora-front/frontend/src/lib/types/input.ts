@@ -7,4 +7,5 @@ export default interface Props extends React.InputHTMLAttributes<HTMLInputElemen
     options?: RegisterOptions;
     textArea?: boolean;
     errorMsg?: string;
+    className?: string;
 }
