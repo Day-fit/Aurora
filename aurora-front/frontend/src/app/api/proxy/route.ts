@@ -5,14 +5,15 @@ export async function POST(req: NextRequest) {
     try {
         const { endpoint, body } = await req.json();
 
-        const { status, data } = await callBackend(endpoint, 'POST', body);
+        const { status, data } = await callBackend({endpoint, body});
 
-        // Example: if backend returns token, set cookie
-        if (status === 200 && (data as any).token) {
+        if ((data as any).accessToken) {
             const response = NextResponse.json(data);
-            response.cookies.set('token', (data as any).token, { httpOnly: true, path: '/' });
+            response.cookies.set('accessToken', (data as any).accessToken, { httpOnly: true, path: '/' });
+            response.cookies.set('refreshToken', (data as any).refreshToken, { httpOnly: true, path: '/' });
             return response;
         }
+
 
         return NextResponse.json(data, { status });
     } catch (error) {

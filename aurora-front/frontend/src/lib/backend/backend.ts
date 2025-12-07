@@ -1,18 +1,12 @@
-export interface BackendResponse<T = any> {
-    status: number;
-    data: T;
-}
+import {BackendResponse, RequestMethod, RequestType} from "@/lib/types/backend";
 
-export async function callBackend<T = any>(
-    endpoint: string,
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'POST',
-    body: any = null,
-    token: string | null = null
-): Promise<BackendResponse<T>> {
+export async function callBackend<T = any>({method = RequestMethod.POST, endpoint, token = null, body = null}: RequestType):
+    Promise<BackendResponse<T>> {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
+    //add this if it will be useful in the future
+    //if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    const res = await fetch(`http://localhost:8080/${endpoint}`, {
+    const res = await fetch(endpoint, {
         method,
         headers,
         body: body ? JSON.stringify(body) : null,
