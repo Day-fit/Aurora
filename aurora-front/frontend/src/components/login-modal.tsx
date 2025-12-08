@@ -1,37 +1,69 @@
 "use client";
 
-import LoginForm from "@/components/login-form";
 import * as Dialog from "@radix-ui/react-dialog";
+import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
-export default function LoginDialog() {
+export default function LoginDialog({children} : {children: React.ReactNode}) {
+    const router = useRouter();
 
     return (
-        <Dialog.Root>
-            <Dialog.Trigger asChild>
-                <button className="px-4 py-2 bg-aurora-blue-dark text-white rounded hover:bg-aurora-green-dark transition">
-                    Log in
-                </button>
-            </Dialog.Trigger>
-
+        <Dialog.Root
+            defaultOpen
+            onOpenChange={(isOpen) => {
+                if (!isOpen) {
+                    router.push('/');
+                }
+            }}
+        >
             <Dialog.Portal>
-                <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
-                <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-main-dark text-text-dark rounded-lg p-8 shadow-2xl max-w-md w-[90vw] max-h-[85vh] overflow-y-auto">
-                    <Dialog.Close asChild>
-                        <button
-                            className="absolute right-4 top-4 text-text-dark/70 hover:text-text-dark text-xl transition"
-                            aria-label="Close"
-                        >
-                            ✕
-                        </button>
-                    </Dialog.Close>
+                <Dialog.Overlay asChild>
+                    <motion.div
+                        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[120px] opacity-40"
+                        style={{
+                            background: "radial-gradient(circle at center, #6A5ACD, #000000)",
+                        }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 0.4 }}
+                        transition={{ duration: 1.2 }}
+                    />
+                </Dialog.Overlay>
 
-                    <Dialog.Title className="text-2xl font-bold mb-6 text-heading-dark">
-                        Login
-                    </Dialog.Title>
+                <Dialog.Content asChild>
+                    <motion.div
+                        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-main-dark text-text-dark rounded-xl p-8 shadow-2xl max-w-lg w-[90vw] max-h-[85vh] overflow-y-auto border border-gray-700"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                    >
+                        <Dialog.Title className="text-3xl font-bold mb-2 text-heading-dark text-center">
+                            Welcome Back
+                        </Dialog.Title>
+                        <p className="text-text-dark/60 text-center mb-6">
+                            Log in to continue your journey
+                        </p>
 
-                    <LoginForm />
+                        <div className="space-y-4">
+                            {children}
+                        </div>
+
+                        {/* Footer: Login button + Register text */}
+                        <div className="mt-6 flex flex-col items-center gap-2 text-center">
+                            <p className="text-sm text-text-dark/70">
+                                Don't have an account?{" "}
+                                <span
+                                    className="text-aurora-blue-dark hover:text-aurora-green-dark cursor-pointer underline"
+                                    onClick={() => router.push('/register')}
+                                >
+                                    Register here
+                                </span>
+                            </p>
+                        </div>
+                    </motion.div>
                 </Dialog.Content>
             </Dialog.Portal>
         </Dialog.Root>
     );
 }
+
