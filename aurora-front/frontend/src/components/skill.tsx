@@ -8,8 +8,6 @@ import React from "react";
 import {SkillLevel} from "@/lib/types/form";
 
 export default function Skills() {
-
-
     const { control, getFieldState, formState } = useFormContext();
 
     const { fields, append, remove } = useFieldArray({

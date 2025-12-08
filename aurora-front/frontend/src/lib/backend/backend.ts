@@ -3,8 +3,7 @@ import {BackendResponse, RequestMethod, RequestType} from "@/lib/types/backend";
 export async function callBackend<T = any>({method = RequestMethod.POST, endpoint, token = null, body = null}: RequestType):
     Promise<BackendResponse<T>> {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    //add this if it will be useful in the future
-    //if (token) headers['Authorization'] = `Bearer ${token}`;
+    if (token) headers['Authorization'] = `Bearer ${token}`;
 
     const res = await fetch(endpoint, {
         method,
