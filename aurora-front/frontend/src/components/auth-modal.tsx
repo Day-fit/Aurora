@@ -1,10 +1,12 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
-import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
+import {motion} from "framer-motion";
+import {useRouter} from "next/navigation";
+import React from "react";
+import {AuthModalProps, AuthMode} from "@/lib/types/auth";
 
-export default function LoginDialog({children} : {children: React.ReactNode}) {
+export default function AuthModal({mode, children} : AuthModalProps) {
     const router = useRouter();
 
     return (
@@ -51,12 +53,13 @@ export default function LoginDialog({children} : {children: React.ReactNode}) {
                         {/* Footer: Login button + Register text */}
                         <div className="mt-6 flex flex-col items-center gap-2 text-center">
                             <p className="text-sm text-text-dark/70">
-                                Don't have an account?{" "}
+                                {mode == AuthMode.register ? "Don't have " : "Don't have "}an account?{" "}
                                 <span
                                     className="text-aurora-blue-dark hover:text-aurora-green-dark cursor-pointer underline"
-                                    onClick={() => router.push('/register')}
+                                    onClick={() => router.push(`/auth/${mode == AuthMode.login ? AuthMode.register : AuthMode.login}`)}
                                 >
-                                    Register here
+                                    {/*later chane to have first letter uppercase*/}
+                                    {mode == AuthMode.login ? AuthMode.register : AuthMode.login} here
                                 </span>
                             </p>
                         </div>
