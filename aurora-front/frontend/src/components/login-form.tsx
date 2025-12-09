@@ -7,6 +7,8 @@ import Input from "@/components/input";
 import Button from "@/components/button";
 import { ButtonType } from "@/lib/types/button";
 import * as Dialog from "@radix-ui/react-dialog";
+import login from "@/lib/backend/login"
+import { useSearchParams, useRouter } from 'next/navigation';
 
 export default function LoginForm() {
     const method = useForm<LoginValues>({
@@ -18,16 +20,24 @@ export default function LoginForm() {
         },
     });
 
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectTo = searchParams.get('redirectTo') || '/'; // fallback to home
+
     const onSubmit = async (data: LoginValues) => {
         try {
             const result = await login(data.identifier, data.password);
             console.log("Login successful:", result);
-            // Handle successful login (store token, redirect, etc.)
-        } catch (error) {
-            console.error("Login failed:", error);
-            // Handle error (show error message to user)
+
+            router.push(redirectTo);
+
+        } catch (error: any) {
+            const message = error?.message || 'Login failed. Please try again.';
+            console.error(message);
+            alert(message);
         }
     };
+
 
     return (
         <FormProvider {...method}>
@@ -64,25 +74,4 @@ export default function LoginForm() {
             </form>
         </FormProvider>
     );
-}
-
-async function login(identifier: string, password: string) {
-    const res = await fetch("/api/proxy", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            endpoint: "/api/v1/auth/login",
-            body: {
-                identifier,
-                password,
-                provider: "LOCAL",
-            },
-        }),
-    });
-
-    if (!res.ok) {
-        throw new Error("Login failed");
-    }
-
-    return res.json();
 }

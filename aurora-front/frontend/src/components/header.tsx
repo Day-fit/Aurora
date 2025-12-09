@@ -4,6 +4,8 @@ import PhoneNav from "@/components/phone-nav";
 import Link from "next/link";
 import {isLoggedInServer} from "@/lib/backend/auth";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function Header() {
     const isLogged = await isLoggedInServer();
@@ -52,7 +54,6 @@ export default async function Header() {
                     ) : (
                         <Button
                             text="Log out"
-                            className="bg-frame-dark text-heading-dark hover:bg-aurora-green-dark transition-colors"
                         />
                     )}
                 </div>

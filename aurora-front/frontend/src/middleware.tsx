@@ -5,8 +5,13 @@ import type { NextRequest } from "next/server";
 export function middleware(req: NextRequest) {
     const accessToken = req.cookies.get("accessToken")?.value;
 
-    if (!accessToken && (req.nextUrl.pathname.startsWith("/create") || req.nextUrl.pathname.startsWith("/edit"))) {
-        return NextResponse.redirect(new URL("/auth/login", req.url));
+    const protectedPaths = ["/create", "/edit"];
+    const isProtected = protectedPaths.some(path => req.nextUrl.pathname.startsWith(path));
+
+    if (!accessToken && isProtected) {
+        const loginUrl = new URL("/auth/login", req.url);
+        loginUrl.searchParams.set("redirectTo", req.nextUrl.pathname); // add redirect info
+        return NextResponse.redirect(loginUrl);
     }
 
     return NextResponse.next();

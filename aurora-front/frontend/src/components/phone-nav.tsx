@@ -21,14 +21,8 @@ export default function PhoneNav({isLogged} : { isLogged: boolean }) {
             <div className="flex flex-col gap-2 mt-2">
                 {!isLogged ? (
                     <>
-                        <Button
-                            text="Log in"
-                            className="text-heading-dark"
-                        />
-                        <Button
-                            text="Sign in"
-                            className="text-heading-dark"
-                        />
+                        <Link href="/auth/login" className="w-full">Log in</Link>
+                        <Link href="/auth/register" className="w-full">Sign in</Link>
                     </>
                 ) : (
                     <Button

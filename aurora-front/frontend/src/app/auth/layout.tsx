@@ -17,7 +17,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     }, [pathname]);
 
     return (
-        <AuthModal mode={mode} setMode={setMode}>
+        <AuthModal mode={mode}>
             {children}
         </AuthModal>
     );

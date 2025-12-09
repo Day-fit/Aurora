@@ -1,4 +1,4 @@
-import React, {Dispatch, SetStateAction} from "react";
+import React from "react";
 
 export enum AuthMode{
     register = 'register',
@@ -8,5 +8,4 @@ export enum AuthMode{
 export interface AuthModalProps{
     mode: AuthMode,
     children: React.ReactNode,
-    setMode: Dispatch<SetStateAction<AuthMode>>
 }
