@@ -17,7 +17,7 @@ export default async function Header() {
 
             <header className="flex flex-row items-center justify-between m-2 rounded-2xl bg-main-dark text-text-dark p-3 shadow-md">
                 <div className="flex flex-row items-center gap-2">
-                    <img src="/logo.png" alt="logo" className="w-8 h-8" /> {/* Replace with actual logo and use next.js image*/}
+                    <img src="../../public/hero-picture.png" alt="logo" className="w-8 h-8" /> {/* Replace with actual logo and use next.js image*/}
                     <h1 className="text-heading-dark font-semibold text-lg">Aurora</h1>
                 </div>
 

@@ -7,31 +7,38 @@ import Input from "@/components/input";
 import Button from "@/components/button";
 import { ButtonType } from "@/lib/types/button";
 import * as Dialog from "@radix-ui/react-dialog";
+import {useRouter, useSearchParams} from "next/navigation";
+import login from "@/lib/backend/login";
+import register from "@/lib/backend/register";
 
 export default function RegisterForm() {
     const method = useForm<RegisterValues>({
         mode: "onSubmit",
         resolver: zodResolver(RegisterSchema),
         defaultValues: {
-            identifier: "",
+            username: "",
             email: "",
             password: "",
         },
     });
 
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectTo = searchParams.get('redirectTo') || '/';
+
     const onSubmit = async (data: RegisterValues) => {
         try {
-            const result = await registerUser({
-                identifier: data.identifier,
-                email: data.email,
-                password: data.password,
-            });
+            await register(data.username, data.email, data.password);
+            const identifier = data.username;
 
-            console.log("Registration successful:", result);
-            // Handle success (auto-login, redirect, modal close, etc.)
-        } catch (error) {
-            console.error("Registration failed:", error);
-            // Display error UI
+            await login(identifier, data.password);
+
+            router.push(redirectTo);
+
+        } catch (error: any) {
+            const message = error?.message || 'Login failed. Please try again.';
+            console.error(message);
+            alert(message);
         }
     };
 
@@ -61,7 +68,6 @@ export default function RegisterForm() {
                     type="password"
                 />
 
-                {/* Register button */}
                 <Button
                     type={ButtonType.submit}
                     className="mt-2 bg-aurora-blue-dark text-white px-6 py-3 rounded-lg hover:bg-aurora-green-dark transition font-semibold"
@@ -73,7 +79,6 @@ export default function RegisterForm() {
                     }
                 />
 
-                {/* Cancel button */}
                 <Dialog.Close asChild>
                     <Button
                         type={ButtonType.button}
@@ -84,34 +89,4 @@ export default function RegisterForm() {
             </form>
         </FormProvider>
     );
-}
-
-async function registerUser({
-                                identifier,
-                                email,
-                                password,
-                            }: {
-    identifier: string;
-    email: string;
-    password: string;
-}) {
-    const res = await fetch("/api/proxy", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            endpoint: "/api/v1/auth/register",
-            body: {
-                identifier,
-                email,
-                password,
-                provider: "LOCAL",
-            },
-        }),
-    });
-
-    if (!res.ok) {
-        throw new Error("Registration failed");
-    }
-
-    return res.json();
 }
