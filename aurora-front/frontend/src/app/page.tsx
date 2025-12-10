@@ -1,6 +1,6 @@
-import HeroSection from "@/components/hero-section";
-import ResumeRoadmap from "@/components/resume-roadmap";
-import TemplatesSlider from "@/components/templates-slider";
+import HeroSection from "@/components/home/hero-section";
+import ResumeRoadmap from "@/components/home/resume-roadmap";
+import TemplatesSlider from "@/components/home/slider/templates-slider";
 
 
 export default function Home() {

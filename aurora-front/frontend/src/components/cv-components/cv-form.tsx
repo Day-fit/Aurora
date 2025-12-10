@@ -2,17 +2,17 @@
 
 import Button from "@/components/button";
 import { ButtonType } from "@/lib/types/button";
-import Skills from "@/components/skill";
+import Skills from "@/components/cv-components/skill";
 import React from "react";
 import { useFormContext } from "react-hook-form";
-import Education from "@/components/education";
-import Experience from "@/components/experience";
-import Achievement from "@/components/achievement";
-import FormSection from "@/components/form-section";
-import PersonalInfo from "@/components/personal-info";
-import ProfileLinks from "@/components/profile-links";
-import FormStyling from "@/components/form-styling";
-import PersonalPortfolio from "@/components/personal-portfolio";
+import Education from "@/components/cv-components/education";
+import Experience from "@/components/cv-components/experience";
+import Achievement from "@/components/cv-components/achievement";
+import FormSection from "@/components/cv-components/form-section";
+import PersonalInfo from "@/components/cv-components/personal-info";
+import ProfileLinks from "@/components/cv-components/profile-links";
+import FormStyling from "@/components/cv-components/form-styling";
+import PersonalPortfolio from "@/components/cv-components/personal-portfolio";
 
 export default function CvForm() {
     //need to add validation, error handling, submit handling via request

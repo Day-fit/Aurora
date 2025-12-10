@@ -10,10 +10,10 @@ export default function PhoneNav({isLogged} : { isLogged: boolean }) {
                         <Link href="/" className="w-full">Home</Link>
                     </li>
                     <li>
-                        <Link href="/create" className="w-full">Create</Link>
+                        <Link href="/cv/create" className="w-full">Create</Link>
                     </li>
                     <li>
-                        <Link href="/edit" className="w-full">Edit</Link>
+                        <Link href="/cv" className="w-full">Edit</Link>
                     </li>
                 </ul>
             </nav>
