@@ -46,6 +46,7 @@ class JwtGenerationService(private val jwtConfigurationProperties: JwtConfigurat
                 if (tokenType == TokenType.ACCESS) Date(System.currentTimeMillis() + jwtConfigurationProperties.accessTokenValidity.inWholeMilliseconds)
                 else Date(System.currentTimeMillis() + jwtConfigurationProperties.refreshTokenValidity.inWholeMilliseconds)
             )
+            .issuer("aurora-auth")
             .claim("type", tokenType.name)
             .build()
 

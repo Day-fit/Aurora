@@ -3,6 +3,7 @@ package pl.dayfit.auroracore.service
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import pl.dayfit.auroracore.dto.AutoGenerationDto
+import pl.dayfit.auroracore.event.StatusChangedEvent
 import pl.dayfit.auroracore.event.TrackerWaitingToStartEvent
 import pl.dayfit.auroracore.exception.AutoGenerationFailedException
 import pl.dayfit.auroracore.exception.ResourceNotReadyYetException
@@ -10,6 +11,7 @@ import pl.dayfit.auroracore.model.redis.AutoGenerationTracker
 import pl.dayfit.auroracore.repository.redis.AutoGenerationTrackerRepository
 import pl.dayfit.auroracore.type.AutoGenerationSource
 import pl.dayfit.auroracore.type.TrackerStatus
+import java.util.UUID
 
 @Service
 class AutoGenerationService(
@@ -19,9 +21,10 @@ class AutoGenerationService(
     /**
      * Puts a request in processing queue
      */
-    fun requestAutoGeneration(title: String, name: String, source: AutoGenerationSource): String {
+    fun requestAutoGeneration(title: String, name: String, source: AutoGenerationSource, ownerId: UUID): String {
         val tracker = AutoGenerationTracker(
             null,
+            ownerId,
             TrackerStatus.STARTING,
             null
         )
@@ -31,11 +34,20 @@ class AutoGenerationService(
 
         val id = saved.id!!
 
+        applicationEventPublisher
+            .publishEvent(
+                StatusChangedEvent(
+                    ownerId,
+                    id,
+                    saved.status,
+                )
+            )
 
         applicationEventPublisher
             .publishEvent(
                 TrackerWaitingToStartEvent(
                     id,
+                    ownerId,
                     name,
                     title,
                     source
@@ -46,9 +58,9 @@ class AutoGenerationService(
     }
 
     /**
-     * Tries to get result from tracker with tracker id
+     * Tries to get a result from a tracker with tracker id
      * @throws NoSuchElementException when tracker with given id does not exist
-     * @throws ResourceNotReadyYetException when tracker result is null
+     * @throws ResourceNotReadyYetException when the tracker result is null
      * @return Auto generation result
      */
     @Throws(NoSuchElementException::class, ResourceNotReadyYetException::class)

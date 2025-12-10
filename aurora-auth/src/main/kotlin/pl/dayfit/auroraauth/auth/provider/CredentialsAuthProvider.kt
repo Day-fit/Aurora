@@ -2,6 +2,7 @@ package pl.dayfit.auroraauth.auth.provider
 
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.authentication.AuthenticationProvider
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.core.Authentication
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
@@ -27,7 +28,7 @@ class CredentialsAuthProvider(
             ) as UserDetailsImpl
 
         if (!passwordEncoder.matches(candidate.password, userDetails.password)) {
-            throw AccessDeniedException("Username or password is incorrect")
+            throw BadCredentialsException("Username or password is incorrect")
         }
 
         if (!userDetails.isAccountNonLocked) {

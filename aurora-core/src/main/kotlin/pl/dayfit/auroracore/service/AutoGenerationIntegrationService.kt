@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import pl.dayfit.auroracore.event.AutoGenerationDoneEvent
+import pl.dayfit.auroracore.event.StatusChangedEvent
 import pl.dayfit.auroracore.repository.redis.AutoGenerationTrackerRepository
 import pl.dayfit.auroracore.type.TrackerStatus
 
@@ -48,5 +49,14 @@ class AutoGenerationIntegrationService(
         tracker.status = TrackerStatus.DONE
         tracker.result = event.result
         autoGenerationTrackerRepository.save(tracker)
+
+        applicationEventPublisher
+            .publishEvent(
+                StatusChangedEvent(
+                    tracker.ownerId,
+                    tracker.id!!,
+                    tracker.status
+                )
+            )
     }
 }
