@@ -12,15 +12,20 @@ import FormSection from "@/components/form-section";
 import PersonalInfo from "@/components/personal-info";
 import ProfileLinks from "@/components/profile-links";
 import FormStyling from "@/components/form-styling";
+import PersonalPortfolio from "@/components/personal-portfolio";
 
 export default function CvForm() {
     //need to add validation, error handling, submit handling via request
 
-    const { handleSubmit, reset } = useFormContext();
+    const {
+        handleSubmit,
+        reset,
+        formState: { isSubmitting },
+    } = useFormContext();
 
     const onSubmit = (data: any) => console.log(data);
 
-    console.log("CvForm render");
+    console.log("isSubmitting: ", isSubmitting);
 
     return (
         <section className="relative overflow-hidden rounded-xl p-6 lg:p-10 min-h-[60vh]">
@@ -40,8 +45,16 @@ export default function CvForm() {
                         className="w-full flex flex-col gap-4"
                         onSubmit={handleSubmit(onSubmit)}
                     >
+                        <FormSection title="Styling options">
+                            <FormStyling />
+                        </FormSection>
+
                         <FormSection title="Personal information">
                             <PersonalInfo />
+                        </FormSection>
+
+                        <FormSection title="Your portfolio">
+                            <PersonalPortfolio />
                         </FormSection>
 
                         <FormSection title="Your online profiles">
@@ -52,7 +65,7 @@ export default function CvForm() {
                             <Education />
                         </FormSection>
 
-                        <FormSection title="Your experience">
+                        <FormSection title="Your work experience">
                             <Experience />
                         </FormSection>
 
@@ -64,15 +77,12 @@ export default function CvForm() {
                             <Achievement />
                         </FormSection>
 
-                        <FormSection title="Styling options">
-                            <FormStyling />
-                        </FormSection>
-
                         <div className="mt-3 flex gap-3">
                             <Button
                                 type={ButtonType.submit}
                                 className="flex-1 bg-aurora-blue-dark text-white px-6 py-3 rounded-lg shadow-xl hover:scale-102 transition-transform font-semibold"
-                                text="Create CV"
+                                disabled={isSubmitting}
+                                text={isSubmitting ? "Creating..." : "Create CV"}
                             />
                             <Button
                                 className="bg-transparent border border-white/8 text-text-dark px-4 py-3 rounded-lg hover:bg-aurora-green-dark hover:text-white transition"

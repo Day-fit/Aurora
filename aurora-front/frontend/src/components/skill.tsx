@@ -8,9 +8,7 @@ import React from "react";
 import {SkillLevel} from "@/lib/types/form";
 
 export default function Skills() {
-
-
-    const { control } = useFormContext();
+    const { control, getFieldState, formState } = useFormContext();
 
     const { fields, append, remove } = useFieldArray({
         control,
@@ -43,11 +41,14 @@ export default function Skills() {
                                     control={control}
                                     name={`skills.${index}.name`}
                                     render={({ field }) => (
-                                        <input
-                                            {...field}
-                                            placeholder="e.g. Java, Spring Boot, PHP"
-                                            className="flex-grow min-w-[120px] bg-transparent placeholder:text-text-dark/40 text-text-dark px-2 py-1 rounded-md border-none focus:outline-none focus:ring-0"
-                                        />
+                                        <>
+                                            <input
+                                                {...field}
+                                                placeholder="e.g. Java, Spring Boot, PHP"
+                                                className="flex-grow min-w-[120px] bg-transparent placeholder:text-text-dark/40 text-text-dark px-2 py-1 rounded-md border-none focus:outline-none focus:ring-0"
+                                            />
+                                            <p className="text-red-800 text-sm mt-1">{getFieldState(`skills.${index}.name`, formState).error?.message}</p>
+                                        </>
                                     )}
                                 />
 

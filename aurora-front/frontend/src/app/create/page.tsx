@@ -5,14 +5,15 @@ import TemplatePreview from "@/components/template-preview";
 import {FormProvider, useForm} from "react-hook-form";
 import {TemplateType} from "@/lib/types/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { formSchema } from "@/lib/types/form";
+import { formSchema, FormValues } from "@/lib/types/form";
 
 export default function CreatePage() {
 
     {/*remember to change all undefined to null in the formSchema*/}
 
-    const methods = useForm({
+    const methods = useForm<FormValues>({
         resolver: zodResolver(formSchema),
+        mode: "onSubmit",
         defaultValues: {
             template: TemplateType.template1,
             title: "",
@@ -29,6 +30,7 @@ export default function CreatePage() {
             achievements: [],
             skills: [],
             education: [],
+            personalPortfolio: []
         }
     });
 

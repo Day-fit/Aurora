@@ -2,15 +2,15 @@ import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 import { FiHash, FiPlus, FiX } from "react-icons/fi";
 import Button from "@/components/button";
 import { ButtonType } from "@/lib/types/button";
-import React from "react";
 import Input from "@/components/input";
+import React from "react";
 
-export default function Achievement() {
+export default function PersonalPortfolio() {
     const { control } = useFormContext();
 
     const { fields, append, remove } = useFieldArray({
         control,
-        name: "achievements",
+        name: "personalPortfolio",
     });
 
     return (
@@ -23,18 +23,17 @@ export default function Achievement() {
                         aria-live="polite"
                     >
                         <FiHash className="text-2xl" />
-                        <p className="max-w-xs">You haven't added any achievements yet. Click the button below.</p>
+                        <p className="max-w-xs">You haven't added any personal portfolio yet. Click the button below to add your first role.</p>
                         <Button
                             type={ButtonType.button}
                             onClick={() =>
                                 append({
-                                    title: "",
-                                    year: null,
+                                    name: "",
                                     description: "",
                                 })
                             }
                             className="inline-flex items-center gap-2 bg-gradient-to-r from-aurora-blue-dark to-aurora-green-dark text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
-                            text="Add achievement"
+                            text="Add your portfolio"
                             icon={<FiPlus />}
                         />
                     </div>
@@ -48,77 +47,56 @@ export default function Achievement() {
                                 <div className="absolute top-3 right-3 z-10">
                                     <Button
                                         type={ButtonType.button}
-                                        aria-label={`Remove achievement ${index + 1}`}
+                                        aria-label={`Remove experience ${index + 1}`}
                                         onClick={() => remove(index)}
                                         className="flex items-center justify-center w-8 h-8 rounded-full text-text-dark/50 hover:bg-red-500/10 hover:text-red-500 transition-colors"
                                         icon={<FiX />}
                                     />
                                 </div>
 
-                                {/* Title */}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div className="flex flex-col gap-1 pr-8">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="flex flex-col gap-1">
                                         <Controller
                                             control={control}
-                                            name={`achievements.${index}.title`}
+                                            name={`personalPortfolio.${index}.name`}
                                             render={() => (
                                                 <Input
-                                                    label="Title"
-                                                    name={`achievements.${index}.title`}
-                                                    placeholder="Achievement title"
+                                                    name={`personalPortfolio.${index}.name`}
+                                                    label="Name"
+                                                    placeholder="e.g. Personal Portfolio"
                                                 />
                                             )}
                                         />
                                     </div>
                                 </div>
-                                {/* Year + Description */}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div className="flex flex-col gap-1">
-                                        <Controller
-                                            control={control}
-                                            name={`achievements.${index}.year`}
-                                            render={() => (
-                                                <Input
-                                                    label="Year"
-                                                    name={`achievements.${index}.year`}
-                                                    options={{ valueAsNumber: true }}
-                                                    placeholder="Year"
-                                                    type="number"
-                                                />
-                                            )}
-                                        />
-                                    </div>
 
-                                    <div className="flex flex-col gap-1">
-                                        <Controller
-                                            control={control}
-                                            name={`achievements.${index}.description`}
-                                            render={() => (
-                                                <Input
-                                                    label="Description"
-                                                    name={`achievements.${index}.description`}
-                                                    placeholder="Description"
-                                                    textArea={true}
-                                                />
-                                            )}
-                                        />
-                                    </div>
+                                <div className="flex flex-col gap-1">
+                                    <Controller
+                                        control={control}
+                                        name={`personalPortfolio.${index}.description`}
+                                        render={() => (
+                                            <Input
+                                                textArea={true}
+                                                label="Description"
+                                                name={`personalPortfolio.${index}.description`}
+                                                placeholder="Describe your personal portfolio..."
+                                            />
+                                        )}
+                                    />
                                 </div>
                             </div>
                         ))}
-
                         <div className="pt-1">
                             <Button
                                 type={ButtonType.button}
                                 onClick={() =>
                                     append({
-                                        title: "",
-                                        year: null,
+                                        name: "",
                                         description: "",
                                     })
                                 }
                                 className="inline-flex items-center gap-2 bg-gradient-to-r from-aurora-blue-dark to-aurora-green-dark text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
-                                text="Add new achievement"
+                                text="Add new experience"
                                 icon={<FiPlus />}
                             />
                         </div>
@@ -128,4 +106,3 @@ export default function Achievement() {
         </div>
     );
 }
-
