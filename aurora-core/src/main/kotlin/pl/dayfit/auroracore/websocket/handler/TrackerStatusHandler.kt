@@ -11,6 +11,8 @@ import pl.dayfit.auroracore.service.SessionService
 class TrackerStatusHandler(
     private val sessionService: SessionService
 ) : WebSocketHandler {
+    private val logger = org.slf4j.LoggerFactory.getLogger(this.javaClass)
+
     override fun afterConnectionEstablished(session: WebSocketSession) {
         sessionService.addSession(session)
     }
@@ -26,7 +28,9 @@ class TrackerStatusHandler(
     override fun handleTransportError(
         session: WebSocketSession,
         exception: Throwable
-    ) {}
+    ) {
+        logger.error("Error occurred in WebSocket transport", exception)
+    }
 
     override fun afterConnectionClosed(
         session: WebSocketSession,

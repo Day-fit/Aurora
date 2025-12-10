@@ -23,7 +23,7 @@ class TrackerHandshakeInterceptor(
         attributes: MutableMap<String, Any>
     ): Boolean {
         val accessToken = request.headers.getFirst(HttpHeaders.AUTHORIZATION)?.let {
-            return@let it.substringAfter("Bearer ")
+            return@let it.substring(7)
         } ?: throw BadCredentialsException("No access token found")
 
         val auth = microserviceAuthProvider

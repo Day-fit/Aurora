@@ -1,6 +1,6 @@
 package pl.dayfit.auroracore.service
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import org.springframework.web.socket.TextMessage
@@ -9,7 +9,8 @@ import pl.dayfit.auroracore.event.StatusChangedEvent
 
 @Service
 class NotificationService(
-    private val sessionService: SessionService
+    private val sessionService: SessionService,
+    private val objectMapper: ObjectMapper
 ) {
     private val logger = org.slf4j.LoggerFactory.getLogger(this.javaClass)
 
@@ -23,12 +24,19 @@ class NotificationService(
             trackerStatus
         )
 
-        sessionService.getSessionByUserId(event.userId)?.sendMessage(
+        val session = sessionService.getSessionByUserId(event.userId)
+
+        if (session == null) {
+            logger.debug("No session found for user with id {}", event.userId)
+            return
+        }
+
+        session.forEach { it.sendMessage(
             TextMessage(
-                jacksonObjectMapper()
+                objectMapper
                     .writeValueAsString(message)
             )
-        )
+        ) }
 
         logger.trace("Notification sent. Id: {}, Status: {}", trackerId, trackerStatus)
     }

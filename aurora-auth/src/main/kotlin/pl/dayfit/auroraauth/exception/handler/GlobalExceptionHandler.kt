@@ -35,7 +35,7 @@ class GlobalExceptionHandler {
     @ExceptionHandler(UserAlreadyExistsException::class)
     fun handleUserAlreadyExistsException(ex: UserAlreadyExistsException): ResponseEntity<Map<String, String>> {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
-            mapOf("error" to ex.message!!)
+            mapOf("error" to (ex.message?: "User already exists"))
         )
     }
 

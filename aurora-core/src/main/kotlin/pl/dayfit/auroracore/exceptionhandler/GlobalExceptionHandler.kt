@@ -30,11 +30,11 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotReadyYetException::class)
-    fun handleResumeNotGeneratedYetException(e: ResourceNotReadyYetException): ResponseEntity<Map<String, String>> {
+    fun handleResourceNotReadyYetException(e: ResourceNotReadyYetException): ResponseEntity<Map<String, String>> {
         return ResponseEntity
             .status(HttpStatus.ACCEPTED)
             .body(
-                mapOf("message" to e.message!!)
+                mapOf("message" to (e.message?: "Resource is not ready yet. Please try again later."))
             )
     }
 

@@ -31,7 +31,7 @@ class JwtClaimsService {
         return extractClaim(token) {set ->
             val roles = set.getClaim("roles") as? List<Any?> ?: emptyList<GrantedAuthority>()
             roles
-                .map { role -> Objects.toString(role)}
+                .map { role -> Objects.toString(role) }
                 .map { role -> SimpleGrantedAuthority(role) }
                 .toList()
         }
