@@ -1,6 +1,6 @@
 import Button from "@/components/button";
 import {FiMenu} from "react-icons/fi";
-import PhoneNav from "@/components/phone-nav";
+import PhoneNav from "@/components/layout/header/phone-nav";
 import Link from "next/link";
 import {isLoggedInServer} from "@/lib/backend/auth";
 
@@ -17,7 +17,7 @@ export default async function Header() {
 
             <header className="flex flex-row items-center justify-between m-2 rounded-2xl bg-main-dark text-text-dark p-3 shadow-md">
                 <div className="flex flex-row items-center gap-2">
-                    <img src="../../public/hero-picture.png" alt="logo" className="w-8 h-8" /> {/* Replace with actual logo and use next.js image*/}
+                    <img src="../../../../public/hero-picture.png" alt="logo" className="w-8 h-8" /> {/* Replace with actual logo and use next.js image*/}
                     <h1 className="text-heading-dark font-semibold text-lg">Aurora</h1>
                 </div>
 
@@ -36,10 +36,10 @@ export default async function Header() {
                             <Link href="/" className="w-full">Home</Link>
                         </li>
                         <li>
-                            <Link href="/create" className="w-full">Create</Link>
+                            <Link href="/cv/create" className="w-full">Create</Link>
                         </li>
                         <li>
-                            <Link href="/edit" className="w-full">Edit</Link>
+                            <Link href="/cv" className="w-full">Edit</Link>
                         </li>
                     </ul>
                 </nav>
