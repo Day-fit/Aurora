@@ -20,6 +20,13 @@ import java.util.function.Supplier
 class JwtClaimsService {
     lateinit var jwksSupplier: Supplier<JWKSet>
 
+    fun validate(token: String) {
+        extractClaim(token) { set ->
+            if (set.expirationTime.before(java.util.Date())) throw BadCredentialsException("Token expired")
+            if (set.issuer != "aurora-auth") throw BadCredentialsException("Invalid issuer")
+        }
+    }
+
     fun getRoles(token: String): Collection<GrantedAuthority> {
         return extractClaim(token) {set ->
             val roles = set.getClaim("roles") as? List<Any?> ?: emptyList<GrantedAuthority>()

@@ -8,6 +8,7 @@ import pl.dayfit.auroraauth.auth.token.CredentialsTokenCandidate
 import pl.dayfit.auroraauth.dto.request.LoginRequestDto
 import pl.dayfit.auroraauth.dto.request.RegisterRequestDto
 import pl.dayfit.auroraauth.dto.response.JwtTokenPairDto
+import pl.dayfit.auroraauth.exception.UserAlreadyExistsException
 import pl.dayfit.auroraauth.model.AuroraUser
 import pl.dayfit.auroraauth.repository.UserRepository
 import pl.dayfit.auroraauth.type.AuthProvider
@@ -41,6 +42,11 @@ class AuthService(
     }
 
     fun handleRegistration(registerDto: RegisterRequestDto) {
+        val result = userRepository.findByUsernameOrEmail(registerDto.username, registerDto.email!!)
+        if (result.isPresent){
+            throw UserAlreadyExistsException("User with given username or email already exists")
+        }
+
         val user = AuroraUser(
             null,
             registerDto.username,

@@ -14,7 +14,7 @@ import pl.dayfit.auroraauthlib.auth.provider.MicroserviceAuthProvider
 import pl.dayfit.auroraauthlib.auth.token.MicroserviceTokenCandidate
 
 @Component
-class MicroserviceJwtFilter(
+class   MicroserviceJwtFilter(
     private val microserviceAuthProvider: MicroserviceAuthProvider,
     private val entryPoint: AuthenticationEntryPoint
     ) : OncePerRequestFilter() {

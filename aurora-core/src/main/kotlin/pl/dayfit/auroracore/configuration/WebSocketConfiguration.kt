@@ -4,11 +4,17 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.web.socket.config.annotation.EnableWebSocket
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
+import pl.dayfit.auroracore.websocket.handler.TrackerStatusHandler
+import pl.dayfit.auroracore.websocket.interceptor.TrackerHandshakeInterceptor
 
 @Configuration
 @EnableWebSocket
-class WebSocketConfiguration : WebSocketConfigurer {
+class WebSocketConfiguration(
+    private val trackerStatusHandler: TrackerStatusHandler,
+    private val trackerHandshakeInterceptor: TrackerHandshakeInterceptor
+) : WebSocketConfigurer {
     override fun registerWebSocketHandlers(registry: WebSocketHandlerRegistry) {
-        registry.addHandler(org.springframework.web.socket.WebSocketHandler(), "/ws")
+        registry.addHandler(trackerStatusHandler, "/ws/tracker")
+            .addInterceptors(trackerHandshakeInterceptor)
     }
 }

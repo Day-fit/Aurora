@@ -3,22 +3,38 @@ package pl.dayfit.auroracore.websocket.interceptor
 import org.springframework.http.HttpHeaders
 import org.springframework.http.server.ServerHttpRequest
 import org.springframework.http.server.ServerHttpResponse
+import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.stereotype.Component
 import org.springframework.web.socket.WebSocketHandler
 import org.springframework.web.socket.server.HandshakeInterceptor
-import java.lang.Exception
+import pl.dayfit.auroraauthlib.auth.provider.MicroserviceAuthProvider
+import pl.dayfit.auroraauthlib.auth.token.MicroserviceTokenCandidate
+import java.security.Principal
+import java.util.UUID
 
-class TrackerHandshakeInterceptor : HandshakeInterceptor {
+@Component
+class TrackerHandshakeInterceptor(
+    private val microserviceAuthProvider: MicroserviceAuthProvider,
+) : HandshakeInterceptor {
     override fun beforeHandshake(
         request: ServerHttpRequest,
         response: ServerHttpResponse,
         wsHandler: WebSocketHandler,
-        attributes: Map<String?, Any?>
+        attributes: MutableMap<String, Any>
     ): Boolean {
         val accessToken = request.headers.getFirst(HttpHeaders.AUTHORIZATION)?.let {
             return@let it.substringAfter("Bearer ")
-        } ?: return false
+        } ?: throw BadCredentialsException("No access token found")
 
-        //TODO complete the code by verifying the token, and adding user id to attributes
+        val auth = microserviceAuthProvider
+            .authenticate(
+                MicroserviceTokenCandidate(accessToken)
+            )
+
+        val principal = auth.principal as Principal
+        attributes["userId"] = UUID.fromString(
+            principal.name
+        )
 
         return true
     }
@@ -29,6 +45,6 @@ class TrackerHandshakeInterceptor : HandshakeInterceptor {
         wsHandler: WebSocketHandler,
         exception: Exception?
     ) {
-        TODO("Not yet implemented")
+        //Ignored
     }
 }
