@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.rabbit.stream.producer.RabbitStreamTemplate
+import pl.dayfit.auroracore.configuration.properties.StreamsConfigurationProperties
 
 @Configuration
 @EnableConfigurationProperties(StreamsConfigurationProperties::class)
@@ -40,6 +41,15 @@ class SteamsConfiguration {
     fun translateStreamTemplate(streamsEnvironment: Environment): RabbitStreamTemplate
     {
         val template = RabbitStreamTemplate(streamsEnvironment, "translation.stream")
+        template.setMessageConverter(Jackson2JsonMessageConverter())
+
+        return template
+    }
+
+    @Bean
+    fun autoGenerationStreamTemplate(streamsEnvironment: Environment): RabbitStreamTemplate
+    {
+        val template = RabbitStreamTemplate(streamsEnvironment, "autogeneration.stream")
         template.setMessageConverter(Jackson2JsonMessageConverter())
 
         return template

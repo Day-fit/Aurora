@@ -13,6 +13,14 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>aurora-auth</name>
     <description>aurora-auth</description>
+    <repositories>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/day-fit/Aurora</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+    </repositories>
     <url/>
     <licenses>
         <license/>

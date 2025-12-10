@@ -1,3 +1,7 @@
+permissions:
+  contents: read
+  packages: write
+
 name: build-docker.yml
 on:
   push:
@@ -8,7 +12,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        service: [core, ai]
+        service: [core, ai, auth]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -32,4 +36,8 @@ jobs:
           context: .
           file: ./dockerfiles/dockerfile-${{ matrix.service }}
           push: true
-          tags: ghcr.io/dayfit/aurora-${{ matrix.service }}:latest
+          platforms: linux/amd64,linux/arm64/v8
+          tags: ghcr.io/day-fit/aurora-${{ matrix.service }}:latest
+          secrets: |
+            gh_name=${{ github.actor }}
+            github_token=${{ secrets.GITHUB_TOKEN }}

@@ -1,4 +1,4 @@
-package pl.dayfit.auroracore.configuration
+package pl.dayfit.auroracore.configuration.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

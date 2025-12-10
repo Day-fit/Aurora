@@ -1,4 +1,110 @@
 services:
+  aurora-core:
+    image: 'ghcr.io/day-fit/aurora-core:latest'
+    container_name: core
+    restart: unless-stopped
+    healthcheck:
+      test: [ 'CMD', 'curl', '-f', 'http://localhost:8081/actuator/health' ]
+      retries: 3
+      timeout: 5s
+      interval: 10s
+    ports:
+      - '8081:8081'
+    depends_on:
+      - postgres
+      - redis
+      - minio
+      - rabbitmq
+      - aurora-ai
+      - aurora-auth
+    environment:
+      - 'RABBITMQ_HOST=${RABBITMQ_HOST}'
+      - 'RABBITMQ_USER=${RABBITMQ_USER}'
+      - 'RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}'
+      - 'DB_USER=${DB_USER}'
+      - 'DB_PASSWORD=${DB_PASSWORD}'
+      - 'DB_URL=${DB_URL}'
+      - 'DB_NAME=${DB_NAME}'
+      - 'JWKS_SUPPLIER_URI=${JWKS_SUPPLIER_URI}'
+      - 'CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}'
+      - 'GITHUB_PAT=${GITHUB_PAT}'
+    labels:
+      - 'com.centurylinklabs.watchtower.enable=true'
+      - 'com.centurylinklabs.watchtower.reboot-if-changed=true'
+    profiles:
+      - prod
+
+  aurora-auth:
+    image: 'ghcr.io/day-fit/aurora-auth:latest'
+    container_name: auth
+    restart: unless-stopped
+    healthcheck:
+      test: [ 'CMD', 'curl', '-f', 'http://localhost:8083/actuator/health' ]
+      retries: 3
+      timeout: 5s
+      interval: 10s
+    depends_on:
+      - postgres
+      - rabbitmq
+      - minio
+      - redis
+    ports:
+      - '8083:8083'
+    environment:
+      - 'RABBITMQ_HOST=${RABBITMQ_HOST}'
+      - 'RABBITMQ_USER=${RABBITMQ_USER}'
+      - 'RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}'
+      - 'DB_USER=${DB_USER}'
+      - 'DB_PASSWORD=${DB_PASSWORD}'
+      - 'DB_URL=${DB_URL}'
+      - 'DB_NAME=${DB_NAME}'
+      - 'MINIO_HOST=${MINIO_HOST}'
+      - 'MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}'
+      - 'MINIO_SECRET_KEY=${MINIO_SECRET_KEY}'
+      - 'REDIS_HOST=${REDIS_HOST}'
+      - 'REDIS_PASSWORD=${REDIS_PASSWORD}'
+      - 'APPLE_CLIENT_ID=${APPLE_CLIENT_ID}'
+      - 'APPLE_CLIENT_SECRET=${APPLE_CLIENT_SECRET}'
+      - 'APPLE_JWKS_URI=${APPLE_JWKS_URI}'
+      - 'GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}'
+      - 'GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}'
+      - 'GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}'
+      - 'GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}'
+      - 'JWKS_SUPPLIER_URI=${JWKS_SUPPLIER_URI}'
+      - 'CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}'
+      - 'GITHUB_PAT=${GITHUB_PAT}'
+    labels:
+      - 'com.centurylinklabs.watchtower.enable=true'
+      - 'com.centurylinklabs.watchtower.reboot-if-changed=true'
+    profiles:
+      - prod
+
+  aurora-ai:
+    image: 'ghcr.io/day-fit/aurora-ai:latest'
+    container_name: ai
+    ports:
+      - '8082:8082'
+    restart: unless-stopped
+    depends_on:
+      - rabbitmq
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8082/actuator/health']
+      retries: 3
+      timeout: 5s
+      interval: 10s
+    environment:
+      - 'OPENAI_API_KEY=${OPENAI_API_KEY}'
+      - 'OPENAI_ORGANIZATION=${OPENAI_ORGANIZATION}'
+      - 'OPENAI_PROJECT=${OPENAI_PROJECT}'
+      - 'RABBITMQ_HOST=${RABBITMQ_HOST}'
+      - 'RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}'
+      - 'RABBITMQ_USER=${RABBITMQ_USER}'
+    labels:
+      - 'com.centurylinklabs.watchtower.enable=true'
+      - 'com.centurylinklabs.watchtower.reboot-if-changed=true'
+    profiles:
+      - prod
+
   postgres:
     image: 'postgres:latest'
     environment:
@@ -6,7 +112,7 @@ services:
       - 'POSTGRES_PASSWORD=${DB_PASSWORD:-secret}'
       - 'POSTGRES_USER=${DB_USER}'
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql
     ports:
       - '5432:5432'
 
@@ -16,6 +122,8 @@ services:
       - 'REDIS_PASSWORD=${REDIS_PASSWORD}'
     ports:
       - '6379:6379'
+    labels:
+      - 'com.centurylinklabs.watchtower.enable=true'
 
   minio:
     image: minio/minio:latest
@@ -23,8 +131,8 @@ services:
       - 'MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}'
       - 'MINIO_SECRET_KEY=${MINIO_SECRET_KEY}'
     ports:
-      - "9000:9000"
-      - "9090:9090"
+      - '9000:9000'
+      - '9090:9090'
     command: [ "server", "--console-address", ":9090", "/data"]
     volumes:
     - minio:/data
@@ -33,6 +141,8 @@ services:
       interval: 5s
       timeout: 2s
       retries: 12
+    labels:
+      - 'com.centurylinklabs.watchtower.enable=true'
 
   create-buckets:
     image: minio/mc:latest
@@ -45,9 +155,26 @@ services:
         mc mb -p local/jwks || true &&
         mc mb -p local/resumes || true
       "
-    restart: "no"
+    restart: 'no'
 
   rabbitmq:
+    image: 'rabbitmq:4.1.0-management-alpine'
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+      - '5552:5552'
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./definitions.json:/etc/rabbitmq/definitions.json:ro
+      - rabbitmq:/var/lib/rabbitmq
+    command: >
+      bash -c "rabbitmq-plugins enable --offline rabbitmq_stream && rabbitmq-server"
+    profiles:
+      - 'prod'
+    labels:
+      - 'com.centurylinklabs.watchtower.enable=true'
+
+  rabbitmq-dev:
     image: 'rabbitmq:4.1.0-management-alpine'
     ports:
       - "5672:5672"
@@ -55,12 +182,24 @@ services:
       - "5552:5552"
     volumes:
       - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
-      - ./definitions.json:/etc/rabbitmq/definitions.json:ro
-      - rabbitmq:/var/lib/rabbitmq
+      - ./definitions-dev.json:/etc/rabbitmq/definitions.json:ro
+      - rabbitmq_dev:/var/lib/rabbitmq
     command: >
       bash -c "rabbitmq-plugins enable --offline rabbitmq_stream && rabbitmq-server"
+    profiles:
+      - 'dev'
+
+  watchtower:
+    image: containrrr/watchtower:1.7.1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --label-enable --cleanup --interval 300
+    restart: unless-stopped
+    profiles:
+      - 'prod'
 
 volumes:
   postgres:
   minio:
   rabbitmq:
+  rabbitmq_dev:

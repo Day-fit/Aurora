@@ -1,0 +1,122 @@
+{
+  "users": [
+    {
+      "name": "admin",
+      "password": "secretsecret",
+      "tags": "administrator"
+    },
+    {
+      "name": "auroraapp",
+      "password": "appsecret",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": "application"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "auroraapp",
+      "vhost": "/",
+      "configure": "",
+      "write": ".*",
+      "read": ".*"
+    },
+    {
+      "user": "admin",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
+  "queues": [
+    {
+      "name": "jwks.queue.core",
+      "vhost": "/",
+      "durable": true,
+      "type": "classic",
+      "arguments": {
+        "x-queue-type": "classic"
+      }
+    },
+    {
+      "name": "post.enhancement.stream",
+      "vhost": "/",
+      "durable": true,
+      "type": "stream",
+      "arguments": {
+        "x-queue-type": "stream",
+        "x-stream-max-segment-size-bytes": 536870912
+      }
+    },
+    {
+      "name": "post.translation.stream",
+      "vhost": "/",
+      "durable": true,
+      "type": "stream",
+      "arguments": {
+        "x-queue-type": "stream",
+        "x-stream-max-segment-size-bytes": 536870912
+      }
+    },
+    {
+      "name": "post.autogeneration.stream",
+      "vhost": "/",
+      "durable": true,
+      "arguments": {
+        "x-queue-type": "stream",
+        "x-stream-max-segment-size-bytes": 536870912
+      }
+    },
+    {
+      "name": "enhancement.stream",
+      "vhost": "/",
+      "durable": true,
+      "arguments": {
+        "x-queue-type": "stream",
+        "x-stream-max-segment-size-bytes": 536870912
+      }
+    },
+    {
+      "name": "translation.stream",
+      "vhost": "/",
+      "durable": true,
+      "arguments": {
+        "x-queue-type": "stream",
+        "x-stream-max-segment-size-bytes": 536870912
+      }
+    },
+    {
+      "name": "autogeneration.stream",
+      "vhost": "/",
+      "durable": true,
+      "arguments": {
+        "x-queue-type": "stream",
+        "x-stream-max-segment-size-bytes": 536870912
+      }
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "jwks.exchange",
+      "vhost": "/",
+      "type": "fanout",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "jwks.exchange",
+      "vhost": "/",
+      "destination": "jwks.queue.core",
+      "destination_type": "queue"
+    }
+  ]
+}

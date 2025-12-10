@@ -1,0 +1,25 @@
+FROM amazoncorretto:21-alpine3.22-jdk AS build
+
+COPY aurora-auth/ /aurora/
+WORKDIR /aurora
+
+RUN --mount=type=secret,id=gh_name \
+    --mount=type=secret,id=github_token \
+    sh -c 'echo \
+"<settings>" \
+"  <servers>" \
+"    <server>" \
+"      <id>github</id>" \
+"      <username>$(cat /run/secrets/gh_name)</username>" \
+"      <password>$(cat /run/secrets/github_token)</password>" \
+"    </server>" \
+"  </servers>" \
+"</settings>" > /tmp/settings.xml'
+
+RUN chmod +x ./mvnw && \
+    ./mvnw clean package -DskipTests -s /tmp/settings.xml
+
+FROM amazoncorretto:21-al2023-headless
+COPY --from=build /aurora/target/aurora-auth-*.jar /aurora/aurora-auth.jar
+CMD ["java", "-jar", "/aurora/aurora-auth.jar"]
+EXPOSE 8083

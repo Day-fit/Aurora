@@ -4,37 +4,21 @@ import org.springframework.rabbit.stream.producer.RabbitStreamTemplate
 import org.springframework.stereotype.Service
 import pl.dayfit.auroracore.dto.TranslationResumeDto
 import pl.dayfit.auroracore.event.TranslationRequestedEvent
-import pl.dayfit.auroracore.exception.ResumeNotGeneratedYetException
-import pl.dayfit.auroracore.exception.UuidInvalidException
 import pl.dayfit.auroracore.model.Resume
-import pl.dayfit.auroracore.repository.ResumeRepository
+import pl.dayfit.auroracore.service.cache.ResumeCacheService
 import pl.dayfit.auroracore.type.LanguageType
 import java.time.Instant
 import java.util.UUID
-import kotlin.io.encoding.Base64
 
 @Service
-class ResumeService (
-    private val resumeRepository: ResumeRepository,
+class TranslationService (
+    private val resumeCacheService: ResumeCacheService,
     private val translateStreamTemplate: RabbitStreamTemplate
-) {
-    fun getResume(id: String): String {
-        val resume = resumeRepository.findById(
-            runCatching { UUID.fromString(id) }
-                .getOrElse { throw UuidInvalidException() }
-        )
-            .orElseThrow{ NoSuchElementException("There is no resume with such a id") }
-
-        val result = resume.generatedResult
-            ?: throw ResumeNotGeneratedYetException("Resume has not been generated yet")
-
-        return Base64.encode(result)
-    }
-
+){
     fun translateResume(id: UUID, language: LanguageType): UUID
     {
-        val originalResume = resumeRepository.findById(id)
-            .orElseThrow { NoSuchElementException("There is no resume with such a id") }
+        val originalResume = resumeCacheService
+            .getResumeById(id)
 
         val translatedResume = Resume(
             id = null,
@@ -47,7 +31,7 @@ class ResumeService (
             templateVersion = originalResume.templateVersion,
             lastUpdate = Instant.now(),
             title = null,
-            experiences = originalResume.experiences.map { it.copy(id = null) }.toMutableList(),
+            workExperiences = originalResume.workExperiences.map { it.copy(id = null) }.toMutableList(),
             skills = originalResume.skills.map { it.copy(id = null) }.toMutableList(),
             education = originalResume.education.map { it.copy(id = null) }.toMutableList(),
             achievements = originalResume.achievements.map { it.copy(id = null) }.toMutableList(),
@@ -59,7 +43,8 @@ class ResumeService (
             generatedResult = null
         )
 
-        val saved = resumeRepository.save(translatedResume)
+        val saved = resumeCacheService
+            .saveResume(translatedResume)
 
         translateStreamTemplate.convertAndSend(
             TranslationRequestedEvent(
@@ -72,8 +57,8 @@ class ResumeService (
                     originalResume.achievements.map { it.description },
                     originalResume.skills.map { it.name },
                     originalResume.education.map { it.major.orEmpty() },
-                    originalResume.experiences.map { it.position },
-                    originalResume.experiences.map { it.description.orEmpty() }
+                    originalResume.workExperiences.map { it.position },
+                    originalResume.workExperiences.map { it.description.orEmpty() }
                 )
             )
         )

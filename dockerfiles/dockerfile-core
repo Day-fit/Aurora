@@ -1,11 +1,25 @@
-FROM amazoncorretto:21-alpine3.22-jdk
+FROM amazoncorretto:21-alpine3.22-jdk AS build
 
 COPY aurora-core/ /aurora/
 WORKDIR /aurora
 
-RUN \
-    chmod +x ./mvnw && \
-    ./mvnw clean package -DskipTests && \
-    mv target/aurora-core-*.jar /aurora/aurora-core.jar
+RUN --mount=type=secret,id=gh_name \
+    --mount=type=secret,id=github_token \
+    sh -c 'echo \
+"<settings>" \
+"  <servers>" \
+"    <server>" \
+"      <id>github</id>" \
+"      <username>$(cat /run/secrets/gh_name)</username>" \
+"      <password>$(cat /run/secrets/github_token)</password>" \
+"    </server>" \
+"  </servers>" \ 
+"</settings>" > /tmp/settings.xml'
 
-CMD ["java", "-jar", "aurora-core.jar"]
+RUN chmod +x ./mvnw && \
+    ./mvnw clean package -DskipTests -s /tmp/settings.xml
+
+FROM amazoncorretto:21-al2023-headless
+COPY --from=build /aurora/target/aurora-core-*.jar /aurora/aurora-core.jar
+CMD ["java", "-jar", "/aurora/aurora-core.jar"]
+EXPOSE 8081

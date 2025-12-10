@@ -7,7 +7,9 @@ import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import pl.dayfit.auroracore.exception.ResumeNotGeneratedYetException
+import org.springframework.web.servlet.resource.NoResourceFoundException
+import pl.dayfit.auroracore.exception.AutoGenerationFailedException
+import pl.dayfit.auroracore.exception.ResourceNotReadyYetException
 import pl.dayfit.auroracore.exception.UuidInvalidException
 import java.security.NoSuchProviderException
 import java.util.NoSuchElementException
@@ -27,12 +29,12 @@ class GlobalExceptionHandler {
             )
     }
 
-    @ExceptionHandler(ResumeNotGeneratedYetException::class)
-    fun handleResumeNotGeneratedYetException(e: ResumeNotGeneratedYetException): ResponseEntity<Map<String, String>> {
+    @ExceptionHandler(ResourceNotReadyYetException::class)
+    fun handleResourceNotReadyYetException(e: ResourceNotReadyYetException): ResponseEntity<Map<String, String>> {
         return ResponseEntity
             .status(HttpStatus.ACCEPTED)
             .body(
-                mapOf("message" to e.message!!)
+                mapOf("message" to (e.message?: "Resource is not ready yet. Please try again later."))
             )
     }
 
@@ -42,6 +44,14 @@ class GlobalExceptionHandler {
             .status(HttpStatus.NOT_FOUND)
             .body(
                 mapOf("error" to (e.message ?: "Not found"))
+            )
+    }
+
+    @ExceptionHandler(AutoGenerationFailedException::class)
+    fun handleAutoGenerationFailedException(e: AutoGenerationFailedException): ResponseEntity<Map<String, String>> {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(
+                mapOf("error" to (e.message ?: "Auto generation failed"))
             )
     }
 
@@ -86,6 +96,13 @@ class GlobalExceptionHandler {
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(mapOf("error" to (e.message ?: "Invalid UUID")))
+    }
+
+    @ExceptionHandler(NoResourceFoundException::class)
+    fun handleNoResourceFoundException(e: NoResourceFoundException): ResponseEntity<Map<String, String>> {
+        logger.trace("Requested resource not found: ", e)
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(mapOf("error" to (e.message ?: "Requested resource not found")))
     }
 
     @ExceptionHandler(Exception::class)
