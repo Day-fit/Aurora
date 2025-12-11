@@ -21,6 +21,7 @@ export default React.memo(function InputInner({
     const reg = register(name, options);
 
     console.log(formState.errors);
+    console.log(reg);
     return (
         <div className="relative w-full flex flex-col">
             {label && (

@@ -50,15 +50,15 @@ export default function AuthModal({mode, children} : AuthModalProps) {
                             {children}
                         </div>
 
-                        {/* Footer: Login button + Register text */}
+                        {/* Footer: Login button and Register text */}
                         <div className="mt-6 flex flex-col items-center gap-2 text-center">
                             <p className="text-sm text-text-dark/70">
-                                {mode == AuthMode.register ? "Don't have " : "Don't have "}an account?{" "}
+                                {mode == AuthMode.register ? "You have " : "Don't have "}an account?{" "}
                                 <span
                                     className="text-aurora-blue-dark hover:text-aurora-green-dark cursor-pointer underline"
                                     onClick={() => router.push(`/auth/${mode == AuthMode.login ? AuthMode.register : AuthMode.login}`)}
                                 >
-                                    {/*later chane to have first letter uppercase*/}
+                                    {/*later change to have a first letter in uppercase*/}
                                     {mode == AuthMode.login ? AuthMode.register : AuthMode.login} here
                                 </span>
                             </p>
