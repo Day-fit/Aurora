@@ -48,10 +48,13 @@ export default function LoginForm() {
                 <Input
                     label="Email"
                     name="identifier"
-                    type="email"
                     className="focus:ring-2 focus:ring-aurora-green-dark transition"
                 />
-                <Input label="Password" name="password" type="password" />
+                <Input
+                    label="Password"
+                    name="password"
+                    type="password"
+                />
 
                 {/* Login button */}
                 <Button

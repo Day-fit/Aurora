@@ -5,8 +5,8 @@ export default async function register(email: string, username: string, password
         body: JSON.stringify({
             endpoint: "/api/v1/auth/register",
             body: {
-                email,
                 username,
+                email,
                 password,
                 provider: "LOCAL",
             },
