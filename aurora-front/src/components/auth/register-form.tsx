@@ -29,7 +29,7 @@ export default function RegisterForm() {
     const onSubmit = async (data: RegisterValues) => {
         try {
             await register(data.username, data.email, data.password);
-            const identifier = data.username;
+            const identifier = data.email;
 
             await login(identifier, data.password);
 
@@ -50,7 +50,7 @@ export default function RegisterForm() {
             >
                 <Input
                     label="Username"
-                    name="identifier"
+                    name="username"
                     type="text"
                     className="focus:ring-2 focus:ring-aurora-green-dark transition"
                 />
