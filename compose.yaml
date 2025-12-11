@@ -105,6 +105,27 @@ services:
     profiles:
       - prod
 
+  aurora-frontend:
+    image: 'ghcr.io/day-fit/aurora-frontend:latest'
+    container_name: frontend
+    ports:
+      - '3000:3000'
+    restart: unless-stopped
+    healthcheck:
+      test: [ 'CMD', 'curl', '-f', 'http://localhost:3000' ]
+      retries: 3
+      timeout: 5s
+      interval: 10s
+    labels:
+      - 'com.centurylinklabs.watchtower.enable=true'
+      - 'com.centurylinklabs.watchtower.reboot-if-changed=true'
+    depends_on:
+      - aurora-core
+      - aurora-auth
+      - aurora-ai
+    profiles:
+      - prod
+
   postgres:
     image: 'postgres:latest'
     environment:
@@ -135,7 +156,7 @@ services:
       - '9090:9090'
     command: [ "server", "--console-address", ":9090", "/data"]
     volumes:
-    - minio:/data
+      - minio:/data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/ready"]
       interval: 5s
@@ -189,6 +210,13 @@ services:
     profiles:
       - 'dev'
 
+  nginx:
+    image: nginx:mainline-alpine3.23-perl
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+
   watchtower:
     image: containrrr/watchtower:1.7.1
     volumes:
@@ -203,3 +231,4 @@ volumes:
   minio:
   rabbitmq:
   rabbitmq_dev:
+
