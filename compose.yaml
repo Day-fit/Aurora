@@ -213,9 +213,17 @@ services:
   nginx:
     image: nginx:mainline-alpine3.23-perl
     restart: unless-stopped
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - aurora-frontend
+      - aurora-core
+      - aurora-auth
     ports:
       - '80:80'
       - '443:443'
+    profiles:
+      - prod
 
   watchtower:
     image: containrrr/watchtower:1.7.1
