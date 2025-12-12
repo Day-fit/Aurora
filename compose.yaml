@@ -226,15 +226,15 @@ services:
       - '80:80'
       - '443:443'
     profiles:
-      - prod
+      - 'prod'
 
   certbot:
-    image: certbot/certbot
+    image: certbot/certbot:v5.2.2
     volumes:
       - ./certbot/www:/var/www/certbot
       - ./certbot/conf:/etc/letsencrypt
     profiles:
-      - prod
+      - 'prod'
 
   watchtower:
     image: containrrr/watchtower:1.7.1
