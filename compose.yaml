@@ -251,6 +251,8 @@ services:
     image: containrrr/watchtower:1.7.1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - "DOCKER_API_VERSION=1.41"
     command: --label-enable --cleanup --interval 300
     restart: unless-stopped
     profiles:
