@@ -221,6 +221,7 @@ services:
       - aurora-frontend
       - aurora-core
       - aurora-auth
+      - certbot
     ports:
       - '80:80'
       - '443:443'
