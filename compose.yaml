@@ -210,20 +210,29 @@ services:
     profiles:
       - 'dev'
 
-  nginx:
+  nginx-http:
     image: nginx:mainline-alpine3.23-perl
     restart: unless-stopped
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx-http/conf.d:/etc/nginx/conf.d:ro
+    ports:
+      - '80:80'
+    profiles:
+      - 'prod'
+
+  nginx-ssl:
+    image: nginx:mainline-alpine3.23-perl
+    restart: unless-stopped
+    volumes:
+      - ./nginx-ssl/conf.d:/etc/nginx/conf.d:ro
       - ./certbot/conf:/etc/letsencrypt:ro
       - ./certbot/www:/var/www/certbot:ro
     depends_on:
+      - certbot
       - aurora-frontend
       - aurora-core
       - aurora-auth
-      - certbot
     ports:
-      - '80:80'
       - '443:443'
     profiles:
       - 'prod'
@@ -233,6 +242,8 @@ services:
     volumes:
       - ./certbot/www:/var/www/certbot
       - ./certbot/conf:/etc/letsencrypt
+    depends_on:
+      - nginx-http
     profiles:
       - 'prod'
 
