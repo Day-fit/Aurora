@@ -271,8 +271,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - "DOCKER_API_VERSION=1.41"
-    command: --label-enable --cleanup --interval 300
+      - "DOCKER_API_VERSION=1.44"
+    command: --label-enable --cleanup --interval 30
     restart: unless-stopped
     profiles:
       - 'prod'
