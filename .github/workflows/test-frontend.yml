@@ -1,0 +1,15 @@
+name: test-frontend.yml
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  # TODO: Add frontend tests, and run them here
+  # Compile and check frontend
+  compile-check:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v6
+      - name: Compile and check frontend
+        run: cd aurora-front && npm ci && npm run build
