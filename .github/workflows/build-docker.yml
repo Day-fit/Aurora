@@ -33,8 +33,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: aurora-front
-          file: ../dockerfiles/dockerfile-frontend
+          context: .
+          file: dockerfiles/dockerfile-frontend
           push: true
           platforms: linux/amd64,linux/arm64/v8
           tags: ghcr.io/day-fit/aurora-frontend:latest
