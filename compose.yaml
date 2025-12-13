@@ -210,16 +210,6 @@ services:
     profiles:
       - 'dev'
 
-  nginx-http:
-    image: nginx:mainline-alpine3.23-perl
-    restart: unless-stopped
-    volumes:
-      - ./nginx-http/conf.d:/etc/nginx/conf.d:ro
-    ports:
-      - '80:80'
-    profiles:
-      - 'prod'
-
   nginx-ssl:
     image: nginx:mainline-alpine3.23-perl
     restart: unless-stopped
@@ -242,8 +232,8 @@ services:
     volumes:
       - ./certbot/www:/var/www/certbot
       - ./certbot/conf:/etc/letsencrypt
-    depends_on:
-      - nginx-http
+    ports:
+      - '80:80'
     profiles:
       - 'prod'
 
