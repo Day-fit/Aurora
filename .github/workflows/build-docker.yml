@@ -27,13 +27,13 @@ jobs:
         uses: actions/setup-node@v3
       - name: Build frontend
         run: |
-          cd aurora-frontend
+          cd aurora-front
           npm ci
           npm run build
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: aurora-frontend
+          context: aurora-front
           file: ../dockerfiles/dockerfile-frontend
           push: true
           platforms: linux/amd64,linux/arm64/v8
