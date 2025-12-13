@@ -1,6 +1,10 @@
-FROM node:lts-alpine3.23
-COPY aurora-front/ ./
-RUN npm ci && \
-  npx next build
-CMD ["npx", "next", "start"]
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY .next/standalone ./
+COPY .next/static ./.next/static
+COPY public ./public
+
 EXPOSE 3000
+CMD ["node", "server.js"]
