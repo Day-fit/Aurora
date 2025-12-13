@@ -20,6 +20,6 @@ class RabbitMQConfiguration {
     }
 
     @Bean
-    fun messageConverter(mapper: ObjectMapper): MessageConverter =
-        Jackson2JsonMessageConverter(mapper)
+    fun messageConverter(rabbitObjectMapper: ObjectMapper): MessageConverter =
+        Jackson2JsonMessageConverter(rabbitObjectMapper)
 }

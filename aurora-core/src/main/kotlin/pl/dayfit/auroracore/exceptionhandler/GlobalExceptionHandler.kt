@@ -7,6 +7,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.servlet.resource.NoResourceFoundException
 import pl.dayfit.auroracore.exception.AutoGenerationFailedException
 import pl.dayfit.auroracore.exception.ResourceNotReadyYetException
 import pl.dayfit.auroracore.exception.UuidInvalidException
@@ -29,11 +30,11 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotReadyYetException::class)
-    fun handleResumeNotGeneratedYetException(e: ResourceNotReadyYetException): ResponseEntity<Map<String, String>> {
+    fun handleResourceNotReadyYetException(e: ResourceNotReadyYetException): ResponseEntity<Map<String, String>> {
         return ResponseEntity
             .status(HttpStatus.ACCEPTED)
             .body(
-                mapOf("message" to e.message!!)
+                mapOf("message" to (e.message?: "Resource is not ready yet. Please try again later."))
             )
     }
 
@@ -95,6 +96,13 @@ class GlobalExceptionHandler {
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(mapOf("error" to (e.message ?: "Invalid UUID")))
+    }
+
+    @ExceptionHandler(NoResourceFoundException::class)
+    fun handleNoResourceFoundException(e: NoResourceFoundException): ResponseEntity<Map<String, String>> {
+        logger.trace("Requested resource not found: ", e)
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(mapOf("error" to (e.message ?: "Requested resource not found")))
     }
 
     @ExceptionHandler(Exception::class)

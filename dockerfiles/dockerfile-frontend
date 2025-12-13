@@ -1,0 +1,6 @@
+FROM node:lts-alpine3.23
+COPY aurora-front/ ./
+RUN npm ci && \
+  npm run build
+CMD ["npx", "next", "start"]
+EXPOSE 3000

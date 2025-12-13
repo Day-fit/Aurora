@@ -13,8 +13,13 @@ class MicroserviceAuthProvider(val claimsService: JwtClaimsService) : Authentica
         val candidate = (authentication as? MicroserviceTokenCandidate)
             ?: throw IllegalArgumentException("Only MicroserviceTokenCandidate is supported")
 
+        claimsService
+            .validate(
+                candidate.jwtToken
+            )
+
         return MicroserviceToken(
-            { claimsService.getSubject(candidate.jwtToken).toString() },
+            {claimsService.getSubject(candidate.jwtToken).toString()},
                 claimsService.getRoles(candidate.jwtToken)
         )
     }

@@ -105,6 +105,27 @@ services:
     profiles:
       - prod
 
+  aurora-frontend:
+    image: 'ghcr.io/day-fit/aurora-frontend:latest'
+    container_name: frontend
+    ports:
+      - '3000:3000'
+    restart: unless-stopped
+    healthcheck:
+      test: [ 'CMD', 'curl', '-f', 'http://localhost:3000' ]
+      retries: 3
+      timeout: 5s
+      interval: 10s
+    labels:
+      - 'com.centurylinklabs.watchtower.enable=true'
+      - 'com.centurylinklabs.watchtower.reboot-if-changed=true'
+    depends_on:
+      - aurora-core
+      - aurora-auth
+      - aurora-ai
+    profiles:
+      - prod
+
   postgres:
     image: 'postgres:latest'
     environment:
@@ -135,7 +156,7 @@ services:
       - '9090:9090'
     command: [ "server", "--console-address", ":9090", "/data"]
     volumes:
-    - minio:/data
+      - minio:/data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/ready"]
       interval: 5s
@@ -189,10 +210,49 @@ services:
     profiles:
       - 'dev'
 
+  nginx-http:
+    image: nginx:mainline-alpine3.23-perl
+    restart: unless-stopped
+    volumes:
+      - ./nginx-http/conf.d:/etc/nginx/conf.d:ro
+    ports:
+      - '80:80'
+    profiles:
+      - 'prod'
+
+  nginx-ssl:
+    image: nginx:mainline-alpine3.23-perl
+    restart: unless-stopped
+    volumes:
+      - ./nginx-ssl/conf.d:/etc/nginx/conf.d:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+    depends_on:
+      - certbot
+      - aurora-frontend
+      - aurora-core
+      - aurora-auth
+    ports:
+      - '443:443'
+    profiles:
+      - 'prod'
+
+  certbot:
+    image: certbot/certbot:v5.2.2
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    depends_on:
+      - nginx-http
+    profiles:
+      - 'prod'
+
   watchtower:
     image: containrrr/watchtower:1.7.1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - "DOCKER_API_VERSION=1.41"
     command: --label-enable --cleanup --interval 300
     restart: unless-stopped
     profiles:
@@ -203,3 +263,4 @@ volumes:
   minio:
   rabbitmq:
   rabbitmq_dev:
+
