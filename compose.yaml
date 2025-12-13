@@ -210,19 +210,24 @@ services:
     profiles:
       - 'dev'
 
-  nginx-ssl:
-    image: nginx:mainline-alpine3.23-perl
+  nginx:
+    image: nginx:mainline-alpine3.20-perl
     restart: unless-stopped
     volumes:
-      - ./nginx-ssl/conf.d:/etc/nginx/conf.d:ro
-      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot:ro
     depends_on:
-      - certbot
-      - aurora-frontend
-      - aurora-core
-      - aurora-auth
+      certbot-init:
+        condition: service_completed_successfully
+      aurora-frontend:
+        condition: service_started
+      aurora-core:
+        condition: service_started
+      aurora-auth:
+        condition: service_started
     ports:
+      - '80:80'
       - '443:443'
     profiles:
       - 'prod'
@@ -232,8 +237,32 @@ services:
     volumes:
       - ./certbot/www:/var/www/certbot
       - ./certbot/conf:/etc/letsencrypt
-    ports:
-      - '80:80'
+    entrypoint: >
+      sh -c "trap exit TERM;
+      while :; do
+        certbot renew --webroot -w /var/www/certbot --quiet;
+        sleep 12h;
+      done"
+    profiles:
+      - prod
+
+  certbot-init:
+    image: alpine:3.20
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+    entrypoint: >
+      sh -c '
+      CERT="/etc/letsencrypt/live/example.com/fullchain.pem";
+      if [ ! -f "$CERT" ]; then
+        apk add --no-cache openssl >/dev/null;
+        mkdir -p /etc/letsencrypt/live/example.com;
+        openssl req -x509 -nodes -newkey rsa:2048 \
+          -days 1 \
+          -keyout /etc/letsencrypt/live/example.com/privkey.pem \
+          -out /etc/letsencrypt/live/example.com/fullchain.pem \
+          -subj "/CN=example.com";
+      fi
+      '
     profiles:
       - 'prod'
 
