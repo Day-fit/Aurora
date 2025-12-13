@@ -1,5 +1,6 @@
 FROM node:lts-alpine3.23
 COPY aurora-front/ ./
+ENV NEXT_DISABLE_TURBOPACK=1
 RUN npm ci && \
   npm run build
 CMD ["npx", "next", "start"]
