@@ -1,5 +1,6 @@
 package pl.dayfit.auroraauth.service
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import pl.dayfit.auroraauth.auth.provider.CredentialsAuthProvider
@@ -8,6 +9,7 @@ import pl.dayfit.auroraauth.auth.token.CredentialsTokenCandidate
 import pl.dayfit.auroraauth.dto.request.LoginRequestDto
 import pl.dayfit.auroraauth.dto.request.RegisterRequestDto
 import pl.dayfit.auroraauth.dto.response.JwtTokenPairDto
+import pl.dayfit.auroraauth.event.UserReadyForInitializingEvent
 import pl.dayfit.auroraauth.exception.UserAlreadyExistsException
 import pl.dayfit.auroraauth.model.AuroraUser
 import pl.dayfit.auroraauth.repository.UserRepository
@@ -19,7 +21,8 @@ class AuthService(
     private val jwtGenerationService: JwtGenerationService,
     private val credentialsAuthProvider: CredentialsAuthProvider,
     private val userRepository: UserRepository,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val rabbitTemplate: RabbitTemplate
 ) {
     fun handleLogin(loginDto: LoginRequestDto): JwtTokenPairDto {
         if (loginDto.provider != AuthProvider.LOCAL)
@@ -59,5 +62,12 @@ class AuthService(
         )
 
         userRepository.save(user)
+
+        rabbitTemplate.convertAndSend(
+            "user.init.exchange",
+            UserReadyForInitializingEvent(
+            user.id!!
+                .toString()
+        ))
     }
 }

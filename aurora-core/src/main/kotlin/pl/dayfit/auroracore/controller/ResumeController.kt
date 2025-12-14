@@ -1,5 +1,6 @@
 package pl.dayfit.auroracore.controller
 
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
@@ -8,28 +9,35 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import pl.dayfit.auroracore.dto.GenerationRequestDto
 import pl.dayfit.auroracore.dto.TranslationRequestDto
 import pl.dayfit.auroracore.service.GenerationService
 import pl.dayfit.auroracore.service.TranslationService
-import pl.dayfit.auroracore.service.cache.ResumeCacheService
+import java.io.OutputStream
 import java.security.Principal
 import java.util.UUID
 
 @RestController
 @RequestMapping("/resume")
 class ResumeController (
-    private val resumeCacheService: ResumeCacheService,
     private val translationService: TranslationService,
     private val generationService: GenerationService
 ){
     @GetMapping("/get")
-    fun getResume(@RequestParam id: String): ResponseEntity<Map<String, String>> {
-            return ResponseEntity.ok(
-                mapOf(
-                        "result" to resumeCacheService.getResumeById(
-                            UUID.fromString(id)
-                        ).generatedResult.contentToString()))
+    fun getResume(@AuthenticationPrincipal principal: Principal, @RequestParam id: String, ): ResponseEntity<StreamingResponseBody> {
+        val body = StreamingResponseBody { os: OutputStream ->
+            val input = generationService.getGenerationResult(
+                UUID.fromString(principal.name),
+                UUID.fromString(id)
+            )
+            input.transferTo(os)
+            input.close()
+        }
+
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .body(body)
     }
 
     @PostMapping("/translate")

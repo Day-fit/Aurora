@@ -40,7 +40,6 @@ class TranslationService (
             website = originalResume.website,
             linkedIn = originalResume.linkedIn,
             gitHub = originalResume.gitHub,
-            generatedResult = null
         )
 
         val saved = resumeCacheService

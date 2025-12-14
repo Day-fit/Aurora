@@ -6,7 +6,6 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import jakarta.persistence.Lob
 import jakarta.persistence.OneToMany
 import pl.dayfit.auroracore.type.LanguageType
 import java.time.Instant
@@ -45,8 +44,6 @@ class Resume(
     var linkedIn: String?,
     var gitHub: String?,
 
-    @Lob
-    var generatedResult: ByteArray?,
     var templateVersion: Int,
     var lastUpdate: Instant
 )
