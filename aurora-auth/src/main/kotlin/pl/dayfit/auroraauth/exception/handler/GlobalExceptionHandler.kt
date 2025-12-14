@@ -1,5 +1,6 @@
 package pl.dayfit.auroraauth.exception.handler
 
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
@@ -14,7 +15,7 @@ class GlobalExceptionHandler {
     private val logger = org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler::class.java)
 
     @ExceptionHandler(AccessDeniedException::class)
-    fun handleAccessDeniedException(ex: org.springframework.security.access.AccessDeniedException): ResponseEntity<Map<String, String>> {
+    fun handleAccessDeniedException(ex: AccessDeniedException): ResponseEntity<Map<String, String>> {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(mapOf("error" to (ex.message ?: "Access Denied")))
     }
 

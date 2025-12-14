@@ -65,6 +65,7 @@ class AuthService(
 
         rabbitTemplate.convertAndSend(
             "user.init.exchange",
+            "",
             UserReadyForInitializingEvent(
             user.id!!
                 .toString()
