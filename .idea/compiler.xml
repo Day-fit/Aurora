@@ -21,4 +21,7 @@
       <module name="aurora-core" options="-parameters" />
     </option>
   </component>
+  <component name="TypeScriptCompiler">
+    <option name="useServicePoweredTypesChangedManually" value="ENABLED" />
+  </component>
 </project>
