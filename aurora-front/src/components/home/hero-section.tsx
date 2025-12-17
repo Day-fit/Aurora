@@ -4,12 +4,12 @@ import Image from "next/image";
 
 export default function HeroSection() {
   return (
-    <section className="rounded-xl p-10 md:p-16 min-h-[calc(100vh-80px)]">
+    <section className="rounded-xl p- md:p-16 min-h-[calc(100vh-80px)] ">
       <div className="bg-main-dark/80 backdrop-blur-sm rounded-xl p-8 md:p-12 flex flex-col md:flex-row gap-10 items-center text-text-dark shadow-2xl">
         <div className="md:w-1/2 space-y-6">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
             Build Your Perfect Resume with{" "}
-            <span className="whitespace-nowrap bg-clip-text text-transparent bg-gradient-to-r from-aurora-blue-dark via-aurora-green-dark to-aurora-blue-dark">
+            <span className="whitespace-nowrap bg-clip-text text-transparent bg-linear-to-r from-aurora-blue-dark via-aurora-green-dark to-aurora-blue-dark">
               AI-Powered
             </span>{" "}
             Guidance
@@ -34,7 +34,7 @@ export default function HeroSection() {
         </div>
 
         <div className="flex justify-center items-center md:w-1/2">
-          <div className="relative w-full max-w-lg rounded-xl shadow-2xl p-4 bg-gradient-to-tr from-white/3 to-white/5 backdrop-blur-sm transform transition-all duration-500 hover:scale-105 hover:-translate-y-2">
+          <div className="relative w-full max-w-lg rounded-xl shadow-2xl p-4 bg-linear-to-tr from-white/3 to-white/5 backdrop-blur-sm transform transition-all duration-500 hover:scale-105 hover:-translate-y-2">
             <Image
               src={heroPicture}
               alt="Professional resume creation illustration"
