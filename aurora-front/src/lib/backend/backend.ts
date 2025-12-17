@@ -1,19 +1,22 @@
+"use server";
 import {
   BackendResponse,
   RequestMethod,
   RequestType,
 } from "@/lib/types/backend";
+import { cookies } from "next/headers";
 
 export async function callBackend<T = any>({
   method = RequestMethod.POST,
   endpoint,
-  token = null,
   body = null,
 }: RequestType): Promise<BackendResponse<T>> {
   const BASE_URL = process.env.BACKEND_AUTH_URL;
   if (!BASE_URL) {
     throw new Error("BACKEND_URL is not configured");
   }
+
+  const token = (await cookies()).get("accessToken")?.value;
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
