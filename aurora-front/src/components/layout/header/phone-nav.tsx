@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function PhoneNav({ isLogged }: { isLogged: boolean }) {
   return (
-    <aside className="flex flex-col m-4 rounded-2xl p-4 shadow-xl transition-all md:hidden bg-main-dark text-text-dark">
+    <aside className="flex flex-col m-2 rounded-2xl p-4 shadow-xl transition-all md:hidden bg-main-dark text-text-dark">
       <nav className="flex flex-col gap-2 text-center">
         <ul className="flex flex-col gap-2">
           <li>
