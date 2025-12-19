@@ -20,7 +20,7 @@ export default async function Header() {
     <div className="sticky top-2 z-50">
       <input type="checkbox" id="mobile-menu-toggle" className="peer hidden" />
 
-      <header className="flex flex-row items-center justify-between m-2 rounded-2xl bg-main-dark text-text-dark p-3 shadow-md">
+      <header className="flex flex-row items-center justify-between m-2 rounded-2xl bg-main-dark text-text-dark p-3 shadow-md pointer-events-auto relative z-50">
         <Link
           href="/"
           className="flex flex-row items-center gap-2"
