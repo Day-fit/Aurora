@@ -21,7 +21,7 @@ export default function AuthModal({ mode, children }: AuthModalProps) {
       <Dialog.Portal>
         <Dialog.Overlay asChild>
           <motion.div
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[120px] opacity-40"
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[120px] opacity-40 pointer-events-none"
             style={{
               background: "radial-gradient(circle at center, #6A5ACD, #000000)",
             }}
@@ -31,7 +31,10 @@ export default function AuthModal({ mode, children }: AuthModalProps) {
           />
         </Dialog.Overlay>
 
-        <Dialog.Content asChild>
+        <Dialog.Content
+          asChild
+          onPointerDownOutside={(e) => e.preventDefault()}
+        >
           <motion.div
             className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-main-dark text-text-dark rounded-xl p-8 shadow-2xl max-w-lg w-[90vw] max-h-[85vh] overflow-y-auto border border-gray-700"
             initial={{ opacity: 0, scale: 0.9 }}

@@ -4,7 +4,9 @@ import type { NextRequest } from "next/server";
 export function proxy(req: NextRequest) {
   const accessToken = req.cookies.get("accessToken")?.value;
 
-  const protectedPaths = ["/create", "/edit"];
+  console.log(accessToken);
+
+  const protectedPaths = ["/cv"];
   const isProtected = protectedPaths.some((path) =>
     req.nextUrl.pathname.startsWith(path),
   );
@@ -19,5 +21,5 @@ export function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/create/:path*", "/edit/:path*"], // protect multiple paths
+  matcher: ["/cv/:path*"], // protect multiple paths
 };

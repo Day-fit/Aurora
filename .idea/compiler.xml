@@ -24,4 +24,7 @@
   <component name="TypeScriptCompiler">
     <option name="useServicePoweredTypesChangedManually" value="ENABLED" />
   </component>
+  <component name="TypeScriptCompiler">
+    <option name="useServicePoweredTypesEnabledManually" value="true" />
+  </component>
 </project>
