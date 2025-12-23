@@ -28,6 +28,9 @@ services:
       - 'JWKS_SUPPLIER_URI=${JWKS_SUPPLIER_URI}'
       - 'CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}'
       - 'GITHUB_PAT=${GITHUB_PAT}'
+      - 'MINIO_HOST=${MINIO_HOST}'
+      - 'MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}'
+      - 'MINIO_SECRET_KEY=${MINIO_SECRET_KEY}'
     labels:
       - 'com.centurylinklabs.watchtower.enable=true'
       - 'com.centurylinklabs.watchtower.reboot-if-changed=true'

@@ -3,6 +3,9 @@ package pl.dayfit.auroracore.service
 import com.itextpdf.html2pdf.HtmlConverter
 import freemarker.template.Configuration
 import freemarker.template.Template
+import io.minio.GetObjectArgs
+import io.minio.MinioClient
+import io.minio.PutObjectArgs
 import jakarta.transaction.Transactional
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
@@ -20,6 +23,7 @@ import pl.dayfit.auroracore.model.Resume
 import pl.dayfit.auroracore.model.Skill
 import pl.dayfit.auroracore.service.cache.ResumeCacheService
 import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import java.io.StringWriter
 import java.time.Instant
 import java.util.UUID
@@ -31,6 +35,7 @@ class GenerationService(
     private val freeMarkerConfiguration: Configuration,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val enhancementStreamTemplate: RabbitStreamTemplate,
+    private val minioClient: MinioClient
 ) {
     private val logger = LoggerFactory.getLogger(GenerationService::class.java)
 
@@ -92,25 +97,25 @@ class GenerationService(
             requestDto.website,
             requestDto.gitHub,
             requestDto.linkedIn,
-            null,
             requestDto.templateVersion,
             Instant.now(),
         )
 
-        resumeCacheService.saveResume(resume)
+        val id = resumeCacheService.saveResume(resume)
+            .id!!
 
         if (!requestDto.enhanced)
         {
             applicationEventPublisher.publishEvent(
-                ResumeReadyToExport(resume.id!!)
+                ResumeReadyToExport(id)
             )
-            logger.trace("Resume ready to export: {}", resume.id)
-            return resume.id!!
+            logger.trace("Resume ready to export: {}", id)
+            return id
         }
 
         enhancementStreamTemplate.convertAndSend(
             EnhanceRequestedEvent(
-                resume.id!!,
+                id,
                 requestDto.title,
                 requestDto.profileDescription,
                 requestDto.achievements
@@ -121,7 +126,7 @@ class GenerationService(
         )
 
         logger.trace("Resume ready to export: {}", resume.id)
-        return resume.id!!
+        return id
     }
 
     /**
@@ -170,10 +175,32 @@ class GenerationService(
                     outPdf
                 )
 
-                resume.generatedResult = outPdf.toByteArray()
+                handleSaving(outPdf, resume.auroraUserId, resume.id!!)
             }
         }
 
         resumeCacheService.saveResume(resume)
+    }
+
+    fun getGenerationResult(ownerId: UUID, resumeId: UUID): InputStream
+    {
+        return minioClient.getObject(
+            GetObjectArgs.builder()
+                .bucket(ownerId.toString())
+                .`object`("$resumeId.pdf")
+                .build(),
+        ).buffered()
+    }
+
+    private fun handleSaving(outputStream: ByteArrayOutputStream, ownerId: UUID, resumeId: UUID)
+    {
+        minioClient.putObject(
+            PutObjectArgs.builder()
+                .bucket(ownerId.toString())
+                .stream(outputStream.toByteArray().inputStream(), outputStream.size().toLong(), 5 * 1024 * 1024L)
+                .`object`("$resumeId.pdf")
+                .contentType("application/pdf")
+                .build()
+        )
     }
 }

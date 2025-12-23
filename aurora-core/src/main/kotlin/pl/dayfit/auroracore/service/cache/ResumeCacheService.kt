@@ -12,20 +12,20 @@ import java.util.UUID
 class ResumeCacheService(
     private val resumeRepository: ResumeRepository
 ) {
-    @Cacheable("resume.id", key = "#id.toString()")
+    @Cacheable("resume.id", key = "#id")
     fun getResumeById(id: UUID): Resume
     {
         return resumeRepository.findById(id)
             .orElseThrow{ NoSuchElementException("There is no resume with such a id") }
     }
 
-    @CachePut("resume.id", key = "#resume.id.toString()")
+    @CachePut("resume.id", key = "#resume.id")
     fun saveResume(resume: Resume): Resume
     {
         return resumeRepository.save(resume)
     }
 
-    @CacheEvict("resume.id", key = "#id.toString()")
+    @CacheEvict("resume.id", key = "#id")
     fun deleteResume(id: UUID)
     {
         resumeRepository.deleteById(id)
