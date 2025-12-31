@@ -26,9 +26,7 @@ export default function LoginForm() {
 
   const onSubmit = async (data: LoginValues) => {
     try {
-      const result = await login(data.identifier, data.password);
-      console.log("Login successful:", result);
-
+      await login(data.identifier, data.password);
       router.push(redirectTo);
     } catch (error: any) {
       const message = error?.message || "Login failed. Please try again.";

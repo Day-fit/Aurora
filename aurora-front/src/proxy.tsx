@@ -4,8 +4,6 @@ import type { NextRequest } from "next/server";
 export function proxy(req: NextRequest) {
   const accessToken = req.cookies.get("accessToken")?.value;
 
-  console.log(accessToken);
-
   const protectedPaths = ["/cv"];
   const isProtected = protectedPaths.some((path) =>
     req.nextUrl.pathname.startsWith(path),
