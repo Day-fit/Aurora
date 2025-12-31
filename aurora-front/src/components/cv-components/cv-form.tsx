@@ -33,7 +33,7 @@ export default function CvForm() {
         {/* Left: form (takes left half on md+) */}
         <div className="w-full">
           <header className="mb-6">
-            <h2 className="text-3xl md:text-4xl font-extrabold leading-tight bg-clip-text text-transparent bg-gradient-to-r from-aurora-blue-dark to-aurora-green-dark">
+            <h2 className="text-3xl md:text-4xl font-extrabold leading-tight bg-clip-text text-transparent bg-linear-to-r from-aurora-blue-dark to-aurora-green-dark">
               Create your CV
             </h2>
             <p className="text-sm text-text-dark/70 mt-2 max-w-prose">
@@ -93,8 +93,6 @@ export default function CvForm() {
             </div>
           </form>
         </div>
-
-        {/* Right: illustrative card (hidden on small screens) */}
       </div>
     </section>
   );
