@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="overflow-hidden">
+    <html lang="en">
       <body className="overflow-x-hidden relative">
         <Header />
         <div className="pointer-events-none absolute -left-24 -top-10 w-80 h-80 rounded-full bg-linear-to-tr from-aurora-blue-dark/40 to-aurora-green-dark/30 blur-3xl opacity-30 transform rotate-12 animate-pulse" />
