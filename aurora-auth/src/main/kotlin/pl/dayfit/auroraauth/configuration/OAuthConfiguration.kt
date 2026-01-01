@@ -16,12 +16,9 @@ class OAuthConfiguration {
         oAuthSuccessHandler: OAuthSuccessHandler
     ): SecurityFilterChain {
         return http
-            .securityMatcher("/oauth2/authorization/**")
-            .oauth2Login { it.successHandler { request, response, authentication ->
-                oAuthSuccessHandler.onAuthenticationSuccess(
-                    request, response, authentication
-                )
-            } }
+            .securityMatcher("/oauth/authorization/**", "/login/oauth/code/**")
+            .authorizeHttpRequests { it.anyRequest().permitAll() }
+            .oauth2Login { it.successHandler(oAuthSuccessHandler) }
             .cors { it.configurationSource(corsConfigurationSource)}
             .csrf { it.disable() }
             .build()

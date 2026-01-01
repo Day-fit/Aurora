@@ -9,6 +9,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component
 import pl.dayfit.auroraauth.dto.response.JwtTokenPairDto
 import pl.dayfit.auroraauth.model.AuroraUser
+import pl.dayfit.auroraauth.oauth.worker.OAuthInfoWorker
 import pl.dayfit.auroraauth.repository.UserRepository
 import pl.dayfit.auroraauth.service.AuthService
 import pl.dayfit.auroraauth.service.JwtGenerationService

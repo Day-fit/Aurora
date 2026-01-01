@@ -1,7 +1,8 @@
-package pl.dayfit.auroraauth.oauth
+package pl.dayfit.auroraauth.oauth.worker
 
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.stereotype.Component
+import pl.dayfit.auroraauth.oauth.OAuthUserInfo
 import pl.dayfit.auroraauth.type.AuthProvider
 
 @Component
