@@ -12,22 +12,31 @@ import java.util.UUID
 class ResumeCacheService(
     private val resumeRepository: ResumeRepository
 ) {
-    @Cacheable("resume.id", key = "#id.toString()")
-    fun getResumeById(id: UUID): Resume
-    {
+    @Cacheable("resume.id", key = "#id")
+    fun getResumeById(id: UUID): Resume {
         return resumeRepository.findById(id)
-            .orElseThrow{ NoSuchElementException("There is no resume with such a id") }
+            .orElseThrow { NoSuchElementException("There is no resume with such a id") }
     }
 
-    @CachePut("resume.id", key = "#resume.id.toString()")
+    @Cacheable("resumes.ownerId", key = "#userId")
+    fun getAllResumesByOwnerId(userId: UUID): List<Resume>
+    {
+        return resumeRepository
+            .findAllByAuroraUserId(userId)
+    }
+
+    @CachePut("resume.id", key = "#resume.id")
     fun saveResume(resume: Resume): Resume
     {
-        return resumeRepository.save(resume)
+        return resumeRepository
+            .save(resume)
     }
 
-    @CacheEvict("resume.id", key = "#id.toString()")
+    @CacheEvict("resume.id", key = "#id")
     fun deleteResume(id: UUID)
     {
-        resumeRepository.deleteById(id)
+        //TODO: when adding removing functionality, please implement "resumes.ownerId" cache evict
+        resumeRepository
+            .deleteById(id)
     }
 }
