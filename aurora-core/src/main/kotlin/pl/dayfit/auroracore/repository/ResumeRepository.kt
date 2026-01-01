@@ -6,4 +6,6 @@ import pl.dayfit.auroracore.model.Resume
 import java.util.UUID
 
 @Repository
-interface ResumeRepository : JpaRepository<Resume, UUID>
+interface ResumeRepository : JpaRepository<Resume, UUID> {
+    fun findAllByAuroraUserId(auroraUserId: UUID): MutableList<Resume>
+}

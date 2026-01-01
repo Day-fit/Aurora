@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import pl.dayfit.auroracore.dto.GenerationRequestDto
 import pl.dayfit.auroracore.dto.TranslationRequestDto
 import pl.dayfit.auroracore.service.GenerationService
+import pl.dayfit.auroracore.service.ResumeService
 import pl.dayfit.auroracore.service.TranslationService
 import java.io.OutputStream
 import java.security.Principal
@@ -22,10 +23,20 @@ import java.util.UUID
 @RequestMapping("/resume")
 class ResumeController (
     private val translationService: TranslationService,
-    private val generationService: GenerationService
+    private val generationService: GenerationService,
+    private val resumeService: ResumeService
 ){
+    @GetMapping("/getAll")
+    fun getAllResumes(@AuthenticationPrincipal principal: Principal): ResponseEntity<List<UUID>> {
+        return ResponseEntity
+            .ok(
+                resumeService
+                    .findAllResumes(UUID.fromString(principal.name))
+            )
+    }
+
     @GetMapping("/get")
-    fun getResume(@AuthenticationPrincipal principal: Principal, @RequestParam id: String, ): ResponseEntity<StreamingResponseBody> {
+    fun getResume(@AuthenticationPrincipal principal: Principal, @RequestParam id: String): ResponseEntity<StreamingResponseBody> {
         val body = StreamingResponseBody { os: OutputStream ->
             val input = generationService.getGenerationResult(
                 UUID.fromString(principal.name),
@@ -36,7 +47,7 @@ class ResumeController (
         }
 
         return ResponseEntity.ok()
-            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .contentType(MediaType.APPLICATION_PDF)
             .body(body)
     }
 
