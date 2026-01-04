@@ -54,7 +54,7 @@ data class EditResumeDto(
     val templateVersion: Int?,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    val enhanced : Boolean = false
+    val enhanced: Boolean = false
 )
 {
     data class Education (
