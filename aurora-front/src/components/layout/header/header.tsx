@@ -14,8 +14,6 @@ export const revalidate = 0;
 export default async function Header() {
   const isLogged = await isLoggedInServer();
 
-  console.log(isLogged);
-
   return (
     <div className="sticky top-2 z-50">
       <input type="checkbox" id="mobile-menu-toggle" className="peer hidden" />

@@ -31,8 +31,6 @@ export default function TemplatePreview() {
     return () => URL.revokeObjectURL(url);
   }, [profileImage]);
 
-  console.log(profileImage);
-  console.log(skills);
   return (
     <section className="relative overflow-hidden rounded-xl p-6 lg:p-10 min-h-[60vh]">
       <div className="w-full max-w-[800px] aspect-[1/1.4142] mx-auto">
@@ -49,20 +47,20 @@ export default function TemplatePreview() {
 
             {(email || website || linkedIn || gitHub) && (
               <>
-                <div className="text-[12px] font-bold border-b-2 border-white pb-[5px] mt-[20px] uppercase tracking-[1px]">
+                <div className="text-[12px] font-bold border-b-2 border-white pb-[5px] mt-5 uppercase tracking-[1px]">
                   Contact
                 </div>
 
                 {email && (
-                  <div className="flex items-center mb-[8px] text-[11px]">
-                    📧<span className="ml-[6px] text-white">{email}</span>
+                  <div className="flex items-center mb-2 text-[11px]">
+                    📧<span className="ml-1.5 text-white">{email}</span>
                   </div>
                 )}
 
                 {website && (
-                  <div className="flex items-center mb-[8px] text-[11px]">
+                  <div className="flex items-center mb-2 text-[11px]">
                     🌐
-                    <span className="ml-[6px] text-white">
+                    <span className="ml-1.5 text-white">
                       <a href={website} target="_blank">
                         Portfolio
                       </a>
@@ -71,9 +69,9 @@ export default function TemplatePreview() {
                 )}
 
                 {linkedIn && (
-                  <div className="flex items-center mb-[8px] text-[11px]">
+                  <div className="flex items-center mb-2 text-[11px]">
                     🔗
-                    <span className="ml-[6px] text-white">
+                    <span className="ml-1.5 text-white">
                       <a href={linkedIn} target="_blank">
                         LinkedIn
                       </a>
@@ -82,9 +80,9 @@ export default function TemplatePreview() {
                 )}
 
                 {gitHub && (
-                  <div className="flex items-center mb-[8px] text-[11px]">
+                  <div className="flex items-center mb-2 text-[11px]">
                     🐱
-                    <span className="ml-[6px] text-white">
+                    <span className="ml-1.5 text-white">
                       <a href={gitHub} target="_blank">
                         GitHub
                       </a>
@@ -96,13 +94,13 @@ export default function TemplatePreview() {
 
             {education?.length > 0 && (
               <>
-                <div className="text-[12px] font-bold border-b-2 border-white pb-[5px] mt-[20px] uppercase tracking-[1px]">
+                <div className="text-[12px] font-bold border-b-2 border-white pb-[5px] mt-5 uppercase tracking-[1px]">
                   Education
                 </div>
 
                 {education.map((edu: any, index: number) => (
                   <div key={index} className="mb-[15px]">
-                    <div className="font-bold mt-[8px]">{edu.institution}</div>
+                    <div className="font-bold mt-2">{edu.institution}</div>
                     <div>
                       {edu.degree
                         ?.split("_")
@@ -122,7 +120,7 @@ export default function TemplatePreview() {
 
             {skills?.length > 0 && (
               <>
-                <div className="text-[12px] font-bold border-b-2 border-white pb-[5px] mt-[20px] uppercase tracking-[1px]">
+                <div className="text-[12px] font-bold border-b-2 border-white pb-[5px] mt-5 uppercase tracking-[1px]">
                   Skills
                 </div>
                 <ul className="pl-[15px] mt-[5px]">
@@ -153,7 +151,7 @@ export default function TemplatePreview() {
             )}
 
             {title && (
-              <h2 className="text-[14px] tracking-[1px] mt-[5px] mb-[20px] font-normal text-[#1c7c74]">
+              <h2 className="text-[14px] tracking-[1px] mt-[5px] mb-5 font-normal text-[#1c7c74]">
                 {title}
               </h2>
             )}
@@ -161,10 +159,10 @@ export default function TemplatePreview() {
             {/* PROFILE */}
             {profileDescription && (
               <>
-                <div className="text-[12px] font-bold border-b-2 pb-[5px] mt-[20px] uppercase tracking-[1px] text-[#1c7c74] border-[#1c7c74]">
+                <div className="text-[12px] font-bold border-b-2 pb-[5px] mt-5 uppercase tracking-[1px] text-[#1c7c74] border-[#1c7c74]">
                   Profile
                 </div>
-                <p className="text-[12px] leading-[1.5] my-[5px]">
+                <p className="text-[12px] leading-normal my-[5px]">
                   {profileDescription}
                 </p>
               </>
@@ -173,12 +171,12 @@ export default function TemplatePreview() {
             {/* WORK EXPERIENCE */}
             {experience?.length > 0 && (
               <>
-                <div className="text-[12px] font-bold border-b-2 pb-[5px] mt-[20px] uppercase tracking-[1px] text-[#1c7c74] border-[#1c7c74]">
+                <div className="text-[12px] font-bold border-b-2 pb-[5px] mt-5 uppercase tracking-[1px] text-[#1c7c74] border-[#1c7c74]">
                   Work Experience
                 </div>
 
                 {experience.map((exp: any, index: number) => (
-                  <div key={index} className="mt-[8px]">
+                  <div key={index} className="mt-2">
                     <div className="font-bold">
                       {exp.position} at {exp.company} | {exp.fromYear} -{" "}
                       {exp.toYear ? exp.toYear : "Present"}
@@ -191,13 +189,13 @@ export default function TemplatePreview() {
             {/* ACHIEVEMENTS */}
             {achievements?.length > 0 && (
               <>
-                <div className="text-[12px] font-bold border-b-2 pb-[5px] mt-[20px] uppercase tracking-[1px] text-[#1c7c74] border-[#1c7c74]">
+                <div className="text-[12px] font-bold border-b-2 pb-[5px] mt-5 uppercase tracking-[1px] text-[#1c7c74] border-[#1c7c74]">
                   Achievements
                 </div>
 
                 <ul className="pl-[15px] mt-[5px]">
                   {achievements.map((ach: any, index: number) => (
-                    <li key={index} className="mt-[8px] text-[12px]">
+                    <li key={index} className="mt-2 text-[12px]">
                       <span className="font-bold">{ach.title}</span>
                       {ach.year && ` (${ach.year})`} - {ach.description}
                     </li>
