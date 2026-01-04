@@ -10,7 +10,7 @@ import pl.dayfit.auroracore.type.SkillLevel
 data class Skill (
     @Id
     @GeneratedValue(GenerationType.IDENTITY)
-    var id: Long?,
+    var id: Long? = null,
 
     var name: String,
     var level: SkillLevel

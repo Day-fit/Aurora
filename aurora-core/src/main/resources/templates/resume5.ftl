@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title>${name!''} ${surname!''}</title>
     <style>
-        @page { 
-            size: A4; 
-            margin: 0; 
+        @page {
+            size: A4;
+            margin: 0;
         }
 
         .container {
@@ -91,15 +91,27 @@
             text-align: justify;
         }
 
-        .experience-item, .portfolio-item, .education-item {
+        .experience-item,
+        .portfolio-item,
+        .education-item {
             margin-bottom: 15px;
         }
 
+        /* ===== FIXED FLEX HEADER ===== */
         .item-header {
             display: flex;
-            justify-content: space-between;
-            align-items: baseline;
             margin-bottom: 3px;
+        }
+
+        .item-header > div:first-child {
+            flex: 1;
+        }
+
+        .date-range {
+            font-size: 10px;
+            color: #333;
+            margin-left: 15px;
+            white-space: nowrap;
         }
 
         .item-title {
@@ -115,11 +127,6 @@
             margin-bottom: 3px;
         }
 
-        .date-range {
-            font-size: 10px;
-            color: #333;
-        }
-
         .description {
             font-size: 10px;
             color: #000;
@@ -128,6 +135,7 @@
             margin-top: 5px;
         }
 
+        /* ===== SKILLS (columns OK) ===== */
         .skills-section {
             columns: 2;
             column-gap: 20px;
@@ -171,12 +179,6 @@
         li strong {
             font-weight: 700;
         }
-
-        .divider {
-            margin: 15px 0;
-            border: none;
-            border-top: 1px solid #000;
-        }
     </style>
 </head>
 <body>
@@ -219,7 +221,13 @@
                             <div class="item-subtitle">${exp.company!''}</div>
                         </div>
                         <div class="date-range">
-                            ${exp.startDate?string["MMM yyyy"]} - <#if exp.endDate?has_content>${exp.endDate?string["MMM yyyy"]}<#else>Present</#if>
+                            <#if exp.startDate?has_content>
+                                ${exp.startDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")}
+                            </#if>
+                            -
+                            <#if exp.endDate?has_content>
+                                ${exp.endDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")}
+                            <#else>Present</#if>
                         </div>
                     </div>
                     <#if exp.description?has_content>
@@ -239,9 +247,15 @@
                         <div class="item-header">
                             <div>
                                 <div class="item-title">${edu.institution!''}</div>
-                                <div class="education-degree">${edu.degree!''}<#if edu.major?has_content> in ${edu.major}</#if></div>
+                                <div class="education-degree">
+                                    ${edu.degree!''}<#if edu.major?has_content> in ${edu.major}</#if>
+                                </div>
                             </div>
-                            <div class="date-range">${edu.fromYear!''} - <#if edu.toYear?has_content>${edu.toYear}<#else>Present</#if></div>
+                            <div class="date-range">
+                                <#if edu.fromYear?has_content>${edu.fromYear?c}</#if>
+                                -
+                                <#if edu.toYear?has_content>${edu.toYear?c}<#else>Present</#if>
+                            </div>
                         </div>
                     </div>
                 </#list>
@@ -255,7 +269,10 @@
             <div class="skills-section">
                 <#list skills![] as skill>
                     <div class="skill-item">
-                        • ${skill.name!''}<#if skill.level?has_content><span class="skill-level">(${skill.level})</span></#if>
+                        • ${skill.name!''}
+                        <#if skill.level?has_content>
+                            <span class="skill-level">(${skill.level})</span>
+                        </#if>
                     </div>
                 </#list>
             </div>
@@ -280,7 +297,9 @@
             <ul>
                 <#list achievements![] as ach>
                     <li>
-                        <strong>${ach.title!''}</strong><#if ach.year?has_content>, ${ach.year}</#if>: ${ach.description!''}
+                        <strong>${ach.title!''}</strong>
+                        <#if ach.year?has_content>, ${ach.year?c}</#if>:
+                        ${ach.description!''}
                     </li>
                 </#list>
             </ul>

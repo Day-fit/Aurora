@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title>${name!''} ${surname!''}</title>
     <style>
-        @page { 
-            size: A4; 
-            margin: 0; 
+        @page {
+            size: A4;
+            margin: 0;
         }
 
         .container {
@@ -39,119 +39,119 @@
             box-sizing: border-box;
         }
 
-        .profile-pic { 
-            width: 100%; 
+        .profile-pic {
+            width: 100%;
             max-width: 180px;
-            border-radius: 6px; 
-            margin-bottom: 25px; 
-            border: 3px solid #fff; 
+            border-radius: 6px;
+            margin-bottom: 25px;
+            border: 3px solid #fff;
             display: block;
         }
-        
-        .section-title { 
-            font-size: 12px; 
-            font-weight: bold; 
-            border-bottom: 2px solid #fff; 
-            padding-bottom: 5px; 
-            margin-top: 20px; 
+
+        .section-title {
+            font-size: 12px;
+            font-weight: bold;
+            border-bottom: 2px solid #fff;
+            padding-bottom: 5px;
+            margin-top: 20px;
             margin-bottom: 10px;
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        
-        .contact-item, .social-item { 
-            display: flex; 
-            align-items: center; 
-            margin-bottom: 8px; 
+
+        .contact-item, .social-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
             font-size: 10px;
             word-wrap: break-word;
         }
-        
-        .contact-item span, .social-item span { 
-            margin-left: 6px; 
-            color: #fff; 
+
+        .contact-item span, .social-item span {
+            margin-left: 6px;
+            color: #fff;
             word-wrap: break-word;
             overflow-wrap: break-word;
         }
-        
-        h1 { 
-            font-size: 28px; 
-            letter-spacing: 1px; 
-            margin: 0; 
+
+        h1 {
+            font-size: 28px;
+            letter-spacing: 1px;
+            margin: 0;
         }
-        
-        h2 { 
-            font-size: 16px; 
-            letter-spacing: 1px; 
-            margin: 5px 0 20px 0; 
-            font-weight: 400; 
-            color: #1c7c74; 
+
+        h2 {
+            font-size: 16px;
+            letter-spacing: 1px;
+            margin: 5px 0 20px 0;
+            font-weight: 400;
+            color: #1c7c74;
         }
-        
-        p { 
-            font-size: 11px; 
-            line-height: 1.6; 
-            margin: 5px 0; 
+
+        p {
+            font-size: 11px;
+            line-height: 1.6;
+            margin: 5px 0;
             text-align: justify;
         }
-        
-        ul { 
-            padding-left: 15px; 
-            margin: 5px 0; 
+
+        ul {
+            padding-left: 15px;
+            margin: 5px 0;
         }
-        
-        li { 
-            margin-bottom: 5px; 
-            font-size: 10px; 
+
+        li {
+            margin-bottom: 5px;
+            font-size: 10px;
             line-height: 1.4;
         }
-        
-        .bold { 
-            font-weight: bold; 
+
+        .bold {
+            font-weight: bold;
         }
-        
-        .skill-level { 
-            font-size: 9px; 
-            color: #e0f7f7; 
-            margin-left: 5px; 
+
+        .skill-level {
+            font-size: 9px;
+            color: #e0f7f7;
+            margin-left: 5px;
         }
-        
-        .mt-small { 
-            margin-top: 12px; 
+
+        .mt-small {
+            margin-top: 12px;
         }
-        
+
         .mt-tiny {
             margin-top: 4px;
         }
-        
-        a { 
-            color: #fff; 
-            text-decoration: none; 
+
+        a {
+            color: #fff;
+            text-decoration: none;
         }
-        
-        a:hover { 
-            text-decoration: underline; 
+
+        a:hover {
+            text-decoration: underline;
         }
-        
-        .right .section-title { 
-            color: #1c7c74; 
-            border-color: #1c7c74; 
+
+        .right .section-title {
+            color: #1c7c74;
+            border-color: #1c7c74;
         }
-        
+
         .experience-item, .portfolio-item, .education-item {
             margin-bottom: 15px;
         }
-        
+
         .date-range {
             font-size: 10px;
             color: #666;
             font-style: italic;
         }
-        
+
         .left .date-range {
             color: #e0f7f7;
         }
-        
+
         .description {
             font-size: 10px;
             color: #555;
@@ -190,7 +190,7 @@
                 <div class="education-item">
                     <div class="mt-small bold">${edu.institution!''}</div>
                     <div class="mt-tiny">${edu.degree!''}<#if edu.major?has_content> in ${edu.major}</#if></div>
-                    <div class="date-range">${edu.fromYear!''} - <#if edu.toYear?has_content>${edu.toYear}<#else>Present</#if></div>
+                    <div class="date-range">${edu.fromYear?c!''} - <#if edu.toYear?has_content>${edu.toYear?c}<#else>Present</#if></div>
                 </div>
             </#list>
         </#if>
@@ -221,7 +221,7 @@
                     <div class="bold">${exp.position!''}</div>
                     <div class="mt-tiny">${exp.company!''}</div>
                     <div class="date-range">
-                        ${exp.startDate?string["MMM yyyy"]} - <#if exp.endDate?has_content>${exp.endDate?string["MMM yyyy"]}<#else>Present</#if>
+                        ${exp.startDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")} - <#if exp.endDate?has_content>${exp.endDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")?c}<#else>Present</#if>
                     </div>
                     <#if exp.description?has_content>
                         <p class="description">${exp.description}</p>
@@ -246,7 +246,7 @@
                 <#list achievements![] as ach>
                     <li class="mt-small">
                         <span class="bold">${ach.title!''}</span>
-                        <#if ach.year?has_content> (${ach.year})</#if> - ${ach.description!''}
+                        <#if ach.year?has_content> (${ach.year?c})</#if> - ${ach.description!''}
                     </li>
                 </#list>
             </ul>

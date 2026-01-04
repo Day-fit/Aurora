@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title>${name!''} ${surname!''}</title>
     <style>
-        @page { 
-            size: A4; 
-            margin: 0; 
+        @page {
+            size: A4;
+            margin: 0;
         }
 
         .container {
@@ -32,10 +32,10 @@
             min-height: calc(297mm - 20px);
         }
 
+        /* ===== HEADER ===== */
         .header {
             display: flex;
             align-items: center;
-            gap: 25px;
             margin-bottom: 30px;
             padding-bottom: 20px;
             border-bottom: 3px solid #667eea;
@@ -48,6 +48,7 @@
             border: 4px solid #667eea;
             object-fit: cover;
             flex-shrink: 0;
+            margin-right: 25px; /* zamiast gap */
         }
 
         .header-text {
@@ -69,9 +70,9 @@
             color: #764ba2;
         }
 
+        /* ===== CONTACT CHIPS ===== */
         .contact-chips {
             display: flex;
-            gap: 10px;
             flex-wrap: wrap;
         }
 
@@ -82,6 +83,7 @@
             border-radius: 15px;
             color: #667eea;
             border: 1px solid #667eea;
+            margin: 0 10px 10px 0; /* zamiast gap */
         }
 
         .chip a {
@@ -89,6 +91,7 @@
             text-decoration: none;
         }
 
+        /* ===== SECTIONS ===== */
         .section {
             margin-bottom: 25px;
         }
@@ -116,20 +119,23 @@
             border-left: 4px solid #667eea;
         }
 
+        /* ===== TWO COLUMN ===== */
         .two-column {
             display: flex;
-            gap: 25px;
         }
 
         .main-column {
             flex: 1.5;
+            margin-right: 25px; /* zamiast gap */
         }
 
         .side-column {
             flex: 1;
         }
 
-        .experience-item, .portfolio-item {
+        /* ===== EXPERIENCE / PORTFOLIO ===== */
+        .experience-item,
+        .portfolio-item {
             margin-bottom: 18px;
             padding: 15px;
             background: #f9f9f9;
@@ -165,6 +171,7 @@
             text-align: justify;
         }
 
+        /* ===== SKILLS ===== */
         .skill-category {
             margin-bottom: 15px;
         }
@@ -172,7 +179,6 @@
         .skills-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
         }
 
         .skill-badge {
@@ -182,6 +188,7 @@
             color: #fff;
             border-radius: 20px;
             font-weight: 600;
+            margin: 0 8px 8px 0; /* zamiast gap */
         }
 
         .skill-level {
@@ -190,6 +197,7 @@
             margin-left: 4px;
         }
 
+        /* ===== EDUCATION ===== */
         .education-item {
             margin-bottom: 15px;
             padding: 12px;
@@ -212,6 +220,7 @@
             margin-bottom: 3px;
         }
 
+        /* ===== ACHIEVEMENTS ===== */
         .achievement-list {
             margin: 0;
             padding-left: 20px;
@@ -241,25 +250,17 @@
                 <h1>${name!''} ${surname!''}</h1>
                 <h2>${title!''}</h2>
                 <div class="contact-chips">
-                    <#if email?has_content>
-                        <div class="chip">📧 ${email}</div>
-                    </#if>
-                    <#if website?has_content>
-                        <div class="chip">🌐 <a href="${website}" target="_blank">Website</a></div>
-                    </#if>
-                    <#if linkedIn?has_content>
-                        <div class="chip">🔗 <a href="${linkedIn}" target="_blank">LinkedIn</a></div>
-                    </#if>
-                    <#if gitHub?has_content>
-                        <div class="chip">🐱 <a href="${gitHub}" target="_blank">GitHub</a></div>
-                    </#if>
+                    <#if email?has_content><div class="chip">📧 ${email}</div></#if>
+                    <#if website?has_content><div class="chip">🌐 <a href="${website}" target="_blank">Website</a></div></#if>
+                    <#if linkedIn?has_content><div class="chip">🔗 <a href="${linkedIn}" target="_blank">LinkedIn</a></div></#if>
+                    <#if gitHub?has_content><div class="chip">🐱 <a href="${gitHub}" target="_blank">GitHub</a></div></#if>
                 </div>
             </div>
         </div>
 
         <#if profileDescription?has_content>
             <div class="section">
-                <div class="section-title">✨ About Me</div>
+                <div class="section-title">About Me</div>
                 <p class="profile-text">${profileDescription}</p>
             </div>
         </#if>
@@ -268,13 +269,19 @@
             <div class="main-column">
                 <#if experiences?has_content>
                     <div class="section">
-                        <div class="section-title">💼 Work Experience</div>
+                        <div class="section-title">Work Experience</div>
                         <#list experiences![] as exp>
                             <div class="experience-item">
                                 <div class="item-title">${exp.position!''}</div>
                                 <div class="item-subtitle">${exp.company!''}</div>
                                 <div class="date-range">
-                                    ${exp.startDate?string["MMM yyyy"]} - <#if exp.endDate?has_content>${exp.endDate?string["MMM yyyy"]}<#else>Present</#if>
+                                    <#if exp.startDate?has_content>
+                                        ${exp.startDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")}
+                                    </#if>
+                                    -
+                                    <#if exp.endDate?has_content>
+                                        ${exp.endDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")}
+                                    <#else>Present</#if>
                                 </div>
                                 <#if exp.description?has_content>
                                     <p class="description">${exp.description}</p>
@@ -286,7 +293,7 @@
 
                 <#if personalPortfolio?has_content>
                     <div class="section">
-                        <div class="section-title">🚀 Featured Projects</div>
+                        <div class="section-title">Featured Projects</div>
                         <#list personalPortfolio![] as portfolio>
                             <div class="portfolio-item">
                                 <div class="item-title">${portfolio.name!''}</div>
@@ -298,11 +305,13 @@
 
                 <#if achievements?has_content>
                     <div class="section">
-                        <div class="section-title">🏆 Achievements</div>
+                        <div class="section-title">Achievements</div>
                         <ul class="achievement-list">
                             <#list achievements![] as ach>
                                 <li>
-                                    <strong>${ach.title!''}</strong><#if ach.year?has_content> (${ach.year})</#if> - ${ach.description!''}
+                                    <strong>${ach.title!''}</strong>
+                                    <#if ach.year?has_content> (${ach.year?c})</#if>
+                                    - ${ach.description!''}
                                 </li>
                             </#list>
                         </ul>
@@ -313,12 +322,15 @@
             <div class="side-column">
                 <#if skills?has_content>
                     <div class="section">
-                        <div class="section-title">🛠️ Skills</div>
+                        <div class="section-title">Skills</div>
                         <div class="skill-category">
                             <div class="skills-list">
                                 <#list skills![] as skill>
                                     <div class="skill-badge">
-                                        ${skill.name!''}<#if skill.level?has_content><span class="skill-level">${skill.level}</span></#if>
+                                        ${skill.name!''}
+                                        <#if skill.level?has_content>
+                                            <span class="skill-level">${skill.level}</span>
+                                        </#if>
                                     </div>
                                 </#list>
                             </div>
@@ -328,12 +340,18 @@
 
                 <#if education?has_content>
                     <div class="section">
-                        <div class="section-title">🎓 Education</div>
+                        <div class="section-title">Education</div>
                         <#list education![] as edu>
                             <div class="education-item">
                                 <div class="education-title">${edu.institution!''}</div>
-                                <div class="education-degree">${edu.degree!''}<#if edu.major?has_content> in ${edu.major}</#if></div>
-                                <div class="date-range">${edu.fromYear!''} - <#if edu.toYear?has_content>${edu.toYear}<#else>Present</#if></div>
+                                <div class="education-degree">
+                                    ${edu.degree!''}<#if edu.major?has_content> in ${edu.major}</#if>
+                                </div>
+                                <div class="date-range">
+                                    <#if edu.fromYear?has_content>${edu.fromYear?c}</#if>
+                                    -
+                                    <#if edu.toYear?has_content>${edu.toYear?c}<#else>Present</#if>
+                                </div>
                             </div>
                         </#list>
                     </div>

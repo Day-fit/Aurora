@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title>${name!''} ${surname!''}</title>
     <style>
-        @page { 
-            size: A4; 
-            margin: 0; 
+        @page {
+            size: A4;
+            margin: 0;
         }
 
         .container {
@@ -61,17 +61,17 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 20px;
             border-bottom: 2px solid #667eea;
         }
 
         .contact-item {
             font-size: 10px;
             color: #555;
+            margin: 0 10px 10px 10px;
         }
 
         .contact-item a {
-            color: #667eea;
+            color: #555;
             text-decoration: none;
         }
 
@@ -85,11 +85,10 @@
 
         .two-column {
             display: flex;
-            gap: 30px;
         }
 
         .main-column {
-            flex: 2;
+            margin-right: 30px;
         }
 
         .side-column {
@@ -237,7 +236,15 @@
                                 <div class="item-title">${exp.position!''}</div>
                                 <div class="item-subtitle">${exp.company!''}</div>
                                 <div class="date-range">
-                                    ${exp.startDate?string["MMM yyyy"]} - <#if exp.endDate?has_content>${exp.endDate?string["MMM yyyy"]}<#else>Present</#if>
+                                    <#if exp.startDate?has_content>
+                                        ${exp.startDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")}
+                                    </#if>
+                                    -
+                                    <#if exp.endDate?has_content>
+                                        ${exp.endDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")}
+                                    <#else>
+                                        Present
+                                    </#if>
                                 </div>
                                 <#if exp.description?has_content>
                                     <p class="description">${exp.description}</p>
@@ -265,7 +272,7 @@
                         <ul>
                             <#list achievements![] as ach>
                                 <li>
-                                    <strong>${ach.title!''}</strong><#if ach.year?has_content> (${ach.year})</#if> - ${ach.description!''}
+                                    <strong>${ach.title!''}</strong><#if ach.year?has_content> (${ach.year?c})</#if> - ${ach.description!''}
                                 </li>
                             </#list>
                         </ul>
@@ -292,7 +299,17 @@
                             <div class="education-item">
                                 <div class="item-title">${edu.institution!''}</div>
                                 <div class="education-degree">${edu.degree!''}<#if edu.major?has_content> in ${edu.major}</#if></div>
-                                <div class="date-range">${edu.fromYear!''} - <#if edu.toYear?has_content>${edu.toYear}<#else>Present</#if></div>
+                                <div class="date-range">
+                                    <#if edu.fromYear?has_content>
+                                        ${edu.fromYear?c}
+                                    </#if>
+                                    -
+                                    <#if edu.toYear?has_content>
+                                        ${edu.toYear?c}
+                                    <#else>
+                                        Present
+                                    </#if>
+                                </div>
                             </div>
                         </#list>
                     </div>

@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title>${name!''} ${surname!''}</title>
     <style>
-        @page { 
-            size: A4; 
-            margin: 0; 
+        @page {
+            size: A4;
+            margin: 0;
         }
 
         .container {
@@ -58,13 +58,17 @@
             letter-spacing: 1px;
         }
 
+        /* ===== CONTACT INFO ===== */
         .contact-info {
             font-size: 10px;
             color: #666;
             display: flex;
             justify-content: center;
-            gap: 15px;
             flex-wrap: wrap;
+        }
+
+        .contact-info span {
+            margin: 0 7px 7px 7px; /* zamiast gap: 15px */
         }
 
         .contact-info a {
@@ -98,16 +102,17 @@
             font-style: italic;
         }
 
-        .experience-item, .portfolio-item, .education-item {
+        .experience-item,
+        .portfolio-item,
+        .education-item {
             margin-bottom: 20px;
             padding-left: 20px;
             border-left: 2px solid #e0e0e0;
         }
 
+        /* ===== ITEM HEADER ===== */
         .item-header {
             display: flex;
-            justify-content: space-between;
-            align-items: baseline;
             margin-bottom: 5px;
         }
 
@@ -115,18 +120,20 @@
             font-size: 12px;
             font-weight: 700;
             color: #1a1a1a;
-        }
-
-        .item-subtitle {
-            font-size: 11px;
-            color: #666;
-            margin-bottom: 5px;
+            margin-right: 10px;
         }
 
         .date-range {
             font-size: 9px;
             color: #999;
             font-style: italic;
+            white-space: nowrap;
+        }
+
+        .item-subtitle {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 5px;
         }
 
         .description {
@@ -137,18 +144,18 @@
             margin-top: 8px;
         }
 
+        /* ===== SKILLS ===== */
         .skills-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
         }
 
         .skill-item {
             font-size: 10px;
             padding: 6px 12px;
             border: 1px solid #1a1a1a;
-            border-radius: 0;
             color: #1a1a1a;
+            margin: 0 10px 10px 0; /* zamiast gap: 10px */
         }
 
         .skill-level {
@@ -157,15 +164,17 @@
             margin-left: 6px;
         }
 
+        /* ===== EDUCATION ===== */
         .education-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
         }
 
         .education-item {
             flex: 1;
             min-width: 200px;
+            margin-right: 20px; /* zamiast gap: 20px */
+            margin-bottom: 20px;
         }
 
         .education-degree {
@@ -200,18 +209,10 @@
         <h1>${name!''} ${surname!''}</h1>
         <h2>${title!''}</h2>
         <div class="contact-info">
-            <#if email?has_content>
-                <span>${email}</span>
-            </#if>
-            <#if website?has_content>
-                <span><a href="${website}" target="_blank">${website}</a></span>
-            </#if>
-            <#if linkedIn?has_content>
-                <span><a href="${linkedIn}" target="_blank">LinkedIn</a></span>
-            </#if>
-            <#if gitHub?has_content>
-                <span><a href="${gitHub}" target="_blank">GitHub</a></span>
-            </#if>
+            <#if email?has_content><span>${email}</span></#if>
+            <#if website?has_content><span><a href="${website}" target="_blank">${website}</a></span></#if>
+            <#if linkedIn?has_content><span><a href="${linkedIn}" target="_blank">LinkedIn</a></span></#if>
+            <#if gitHub?has_content><span><a href="${gitHub}" target="_blank">GitHub</a></span></#if>
         </div>
     </div>
 
@@ -230,7 +231,13 @@
                     <div class="item-header">
                         <div class="item-title">${exp.position!''}</div>
                         <div class="date-range">
-                            ${exp.startDate?string["MMM yyyy"]} - <#if exp.endDate?has_content>${exp.endDate?string["MMM yyyy"]}<#else>Present</#if>
+                            <#if exp.startDate?has_content>
+                                ${exp.startDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")}
+                            </#if>
+                            -
+                            <#if exp.endDate?has_content>
+                                ${exp.endDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")}
+                            <#else>Present</#if>
                         </div>
                     </div>
                     <div class="item-subtitle">${exp.company!''}</div>
@@ -260,7 +267,10 @@
             <div class="skills-grid">
                 <#list skills![] as skill>
                     <div class="skill-item">
-                        ${skill.name!''}<#if skill.level?has_content><span class="skill-level">${skill.level}</span></#if>
+                        ${skill.name!''}
+                        <#if skill.level?has_content>
+                            <span class="skill-level">${skill.level}</span>
+                        </#if>
                     </div>
                 </#list>
             </div>
@@ -274,8 +284,14 @@
                 <#list education![] as edu>
                     <div class="education-item">
                         <div class="item-title">${edu.institution!''}</div>
-                        <div class="education-degree">${edu.degree!''}<#if edu.major?has_content> in ${edu.major}</#if></div>
-                        <div class="date-range">${edu.fromYear!''} - <#if edu.toYear?has_content>${edu.toYear}<#else>Present</#if></div>
+                        <div class="education-degree">
+                            ${edu.degree!''}<#if edu.major?has_content> in ${edu.major}</#if>
+                        </div>
+                        <div class="date-range">
+                            <#if edu.fromYear?has_content>${edu.fromYear?c}</#if>
+                            -
+                            <#if edu.toYear?has_content>${edu.toYear?c}<#else>Present</#if>
+                        </div>
                     </div>
                 </#list>
             </div>
@@ -288,7 +304,9 @@
             <ul>
                 <#list achievements![] as ach>
                     <li>
-                        <strong>${ach.title!''}</strong><#if ach.year?has_content> (${ach.year})</#if> - ${ach.description!''}
+                        <strong>${ach.title!''}</strong>
+                        <#if ach.year?has_content> (${ach.year?c})</#if>
+                        - ${ach.description!''}
                     </li>
                 </#list>
             </ul>

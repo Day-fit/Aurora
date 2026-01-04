@@ -9,15 +9,13 @@ import com.itextpdf.styledxmlparser.css.media.MediaDeviceDescription
 import com.itextpdf.styledxmlparser.css.media.MediaType
 import freemarker.template.Configuration
 import freemarker.template.Template
-import io.minio.GetObjectArgs
-import io.minio.MinioClient
-import io.minio.PutObjectArgs
 import jakarta.transaction.Transactional
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.context.event.EventListener
 import org.springframework.rabbit.stream.producer.RabbitStreamTemplate
 import org.springframework.stereotype.Service
+import org.springframework.transaction.event.TransactionPhase
+import org.springframework.transaction.event.TransactionalEventListener
 import pl.dayfit.auroracore.dto.GenerationRequestDto
 import pl.dayfit.auroracore.event.EnhanceRequestedEvent
 import pl.dayfit.auroracore.event.ResumeReadyToExport
@@ -30,7 +28,6 @@ import pl.dayfit.auroracore.model.Skill
 import pl.dayfit.auroracore.service.cache.ResumeCacheService
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.io.InputStream
 import java.io.StringWriter
 import java.time.Instant
 import java.util.UUID
@@ -42,10 +39,21 @@ class GenerationService(
     private val freeMarkerConfiguration: Configuration,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val enhancementStreamTemplate: RabbitStreamTemplate,
-    private val minioClient: MinioClient
+    private val resumeService: ResumeService
 ) {
     private val logger = LoggerFactory.getLogger(GenerationService::class.java)
 
+    /**
+     * Initiates the generation process for a résumé based on the provided data.
+     * This method saves the resume data to a cache, optionally triggers an enhancement
+     * process, and notifies when the résumé is ready for export.
+     *
+     * @param requestDto Data transfer object containing the resume details
+     *                   such as personal information, work experience,
+     *                   education, skills, and other related fields.
+     * @param userId The unique identifier of the user requesting the resume generation.
+     * @return The unique identifier of the generated résumé.
+     */
     @Transactional
     fun requestGeneration(requestDto: GenerationRequestDto, userId: UUID): UUID
     {
@@ -53,11 +61,12 @@ class GenerationService(
             null,
             userId,
             null,
+            null,
             requestDto.name,
             requestDto.surname,
             requestDto.age,
             requestDto.title,
-            requestDto.experiences.map {
+            requestDto.workExperience.map {
                 WorkExperience(
                         null,
                     it.company,
@@ -102,8 +111,8 @@ class GenerationService(
             requestDto.profileDescription,
             requestDto.email,
             requestDto.website,
-            requestDto.gitHub,
             requestDto.linkedIn,
+            requestDto.gitHub,
             requestDto.templateVersion,
             Instant.now(),
         )
@@ -142,7 +151,7 @@ class GenerationService(
      * @param event The event containing the ID of the CV to be exported.
      * @return The generated résumé as a string.
      */
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun generateResume(event: ResumeReadyToExport)
     {
         val resume = resumeCacheService
@@ -158,8 +167,8 @@ class GenerationService(
         data["age"] = resume.age
 
         //Profile
-        resume.photo?.let { data["profileImage"] = "data:image/png;base64, ${Base64.encode(it)}" }
-        resume.description?.let { data["profileDescription"] = it }
+        resume.profileImage?.let { data["profileImage"] = "data:image/png;base64, ${Base64.encode(it)}" }
+        resume.profileDescription?.let { data["profileDescription"] = it }
 
         //Contact information
         data["email"] = resume.email
@@ -171,8 +180,8 @@ class GenerationService(
         resume.education.let { data["education"] = it }
         resume.skills.let { data["skills"] = it }
         resume.achievements.let { data["achievements"] = it}
-        resume.workExperiences.let { data["experiences"] = it}
-        resume.personalPortfolios.let { data["personalPortfolio"] = it }
+        resume.workExperience.let { data["experiences"] = it}
+        resume.personalPortfolio.let { data["personalPortfolio"] = it }
 
         StringWriter().use {
             htmlOs -> template.process(data, htmlOs)
@@ -197,48 +206,11 @@ class GenerationService(
 
                 pdfDoc.close()
 
-                handleSaving(outPdf, resume.auroraUserId, resume.id!!)
+                resumeService
+                    .handleSaving(outPdf, resume.auroraUserId, resume.id!!)
             }
         }
 
         resumeCacheService.saveResume(resume)
-    }
-
-    fun getGenerationResult(ownerId: UUID, resumeId: UUID): InputStream
-    {
-        return minioClient.getObject(
-            GetObjectArgs.builder()
-                .bucket(ownerId.toString())
-                .`object`("$resumeId.pdf")
-                .build(),
-        )
-    }
-
-    fun getGenerationResultSize(ownerId: UUID, resumeId: UUID): Long {
-        return minioClient.statObject(
-            io.minio.StatObjectArgs.builder()
-                .bucket(ownerId.toString())
-                .`object`("$resumeId.pdf")
-                .build()
-        ).size()
-    }
-
-    private fun handleSaving(outputStream: ByteArrayOutputStream, ownerId: UUID, resumeId: UUID)
-    {
-        try {
-            val bytes = outputStream.toByteArray()
-
-            minioClient.putObject(
-                PutObjectArgs.builder()
-                    .bucket(ownerId.toString())
-                    .`object`("$resumeId.pdf")
-                    .stream(bytes.inputStream(), bytes.size.toLong(), -1)
-                    .contentType("application/pdf")
-                    .build()
-            )
-        } catch (e: Exception) {
-            logger.error("Failed to save resume PDF to MinIO for ownerId=$ownerId, resumeId=$resumeId", e)
-            throw e
-        }
     }
 }
