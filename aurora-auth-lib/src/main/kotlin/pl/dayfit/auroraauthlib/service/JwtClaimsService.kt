@@ -10,6 +10,7 @@ import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
+import pl.dayfit.auroraauthlib.exception.JwtAuthenticationException
 import java.text.ParseException
 import java.util.Objects
 import java.util.UUID
@@ -22,8 +23,8 @@ class JwtClaimsService {
 
     fun validate(token: String) {
         extractClaim(token) { set ->
-            if (set.expirationTime.before(java.util.Date())) throw BadCredentialsException("Token expired")
-            if (set.issuer != "aurora-auth") throw BadCredentialsException("Invalid issuer")
+            if (set.expirationTime.before(java.util.Date())) throw JwtAuthenticationException("Token expired")
+            if (set.issuer != "aurora-auth") throw JwtAuthenticationException("Invalid issuer")
         }
     }
 
@@ -58,9 +59,9 @@ class JwtClaimsService {
 
             return solver.apply(jwt.jwtClaimsSet)
         } catch (parseException: ParseException) {
-            throw BadCredentialsException("Invalid token", parseException)
+            throw JwtAuthenticationException("Invalid token", parseException)
         } catch (joseException: JOSEException) {
-            throw IllegalStateException("Could not verify token", joseException)
+            throw JwtAuthenticationException("Could not verify token", joseException)
         }
     }
 }

@@ -2,14 +2,40 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=210mm, height=297mm">
     <title>${name!''} ${surname!''}</title>
     <style>
-        @page { size: A4; margin:20mm; }
-        body { margin:0; font-family:'Arial', sans-serif; background:#fff; color:#333; }
-        .container { display:flex; height:257mm; border:1px solid #ccc; border-radius:8px; overflow:hidden; }
-        .left { width:35%; background:#1c7c74; color:#fff; padding:25px; box-sizing:border-box; }
-        .right { width:65%; padding:25px; box-sizing:border-box; }
+        @page { size: A4; margin: 0; }
+
+        .container {
+            width: 210mm;
+            height: 297mm;
+            display: flex;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: #fff;
+            color: #333;
+        }
+
+        .left {
+            width: 35%;
+            background: #1c7c74;
+            color: #fff;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+
+        .right {
+            width: 65%;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+
         .profile-pic { width:100%; border-radius:6px; margin-bottom:25px; border:3px solid #fff; }
         .section-title { font-size:12px; font-weight:bold; border-bottom:2px solid #fff; padding-bottom:5px; margin-top:20px; text-transform:uppercase; letter-spacing:1px; }
         .contact-item, .social-item { display:flex; align-items:center; margin-bottom:8px; font-size:11px; }

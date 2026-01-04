@@ -1,6 +1,12 @@
 package pl.dayfit.auroracore.service
 
+import com.itextpdf.html2pdf.ConverterProperties
 import com.itextpdf.html2pdf.HtmlConverter
+import com.itextpdf.kernel.geom.PageSize
+import com.itextpdf.kernel.pdf.PdfDocument
+import com.itextpdf.kernel.pdf.PdfWriter
+import com.itextpdf.styledxmlparser.css.media.MediaDeviceDescription
+import com.itextpdf.styledxmlparser.css.media.MediaType
 import freemarker.template.Configuration
 import freemarker.template.Template
 import io.minio.GetObjectArgs
@@ -22,6 +28,7 @@ import pl.dayfit.auroracore.model.WorkExperience
 import pl.dayfit.auroracore.model.Resume
 import pl.dayfit.auroracore.model.Skill
 import pl.dayfit.auroracore.service.cache.ResumeCacheService
+import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.StringWriter
@@ -133,7 +140,7 @@ class GenerationService(
      * Generates a formatted resume document based on the specified event data.
      *
      * @param event The event containing the ID of the CV to be exported.
-     * @return The generated resume as a string.
+     * @return The generated résumé as a string.
      */
     @EventListener
     fun generateResume(event: ResumeReadyToExport)
@@ -167,13 +174,25 @@ class GenerationService(
         resume.workExperiences.let { data["experiences"] = it}
 
         StringWriter().use {
-            out -> template.process(data, out)
+            htmlOs -> template.process(data, htmlOs)
 
             ByteArrayOutputStream().use { outPdf ->
+                val writer = PdfWriter(outPdf)
+                val pdfDoc = PdfDocument(writer)
+                pdfDoc.addNewPage(PageSize.A4)
+
+                val props = ConverterProperties()
+                val media = MediaDeviceDescription(MediaType.PRINT)
+                media.width = PageSize.A4.width
+                props.mediaDeviceDescription = media
+                val htmlBytes = htmlOs.toString().toByteArray()
+
                 HtmlConverter.convertToPdf(
-                    out.toString(),
-                    outPdf
+                    ByteArrayInputStream(htmlBytes),
+                    pdfDoc,
+                    props
                 )
+
 
                 handleSaving(outPdf, resume.auroraUserId, resume.id!!)
             }
@@ -189,18 +208,34 @@ class GenerationService(
                 .bucket(ownerId.toString())
                 .`object`("$resumeId.pdf")
                 .build(),
-        ).buffered()
+        )
+    }
+
+    fun getGenerationResultSize(ownerId: UUID, resumeId: UUID): Long {
+        return minioClient.statObject(
+            io.minio.StatObjectArgs.builder()
+                .bucket(ownerId.toString())
+                .`object`("$resumeId.pdf")
+                .build()
+        ).size()
     }
 
     private fun handleSaving(outputStream: ByteArrayOutputStream, ownerId: UUID, resumeId: UUID)
     {
-        minioClient.putObject(
-            PutObjectArgs.builder()
-                .bucket(ownerId.toString())
-                .stream(outputStream.toByteArray().inputStream(), outputStream.size().toLong(), 5 * 1024 * 1024L)
-                .`object`("$resumeId.pdf")
-                .contentType("application/pdf")
-                .build()
-        )
+        try {
+            val bytes = outputStream.toByteArray()
+
+            minioClient.putObject(
+                PutObjectArgs.builder()
+                    .bucket(ownerId.toString())
+                    .`object`("$resumeId.pdf")
+                    .stream(bytes.inputStream(), bytes.size.toLong(), -1)
+                    .contentType("application/pdf")
+                    .build()
+            )
+        } catch (e: Exception) {
+            logger.error("Failed to save resume PDF to MinIO for ownerId=$ownerId, resumeId=$resumeId", e)
+            throw e
+        }
     }
 }

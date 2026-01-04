@@ -1,5 +1,6 @@
 package pl.dayfit.auroraauthlib.configuration
 
+import jakarta.servlet.DispatcherType
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -10,7 +11,6 @@ import org.springframework.security.authentication.ProviderManager
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
@@ -46,7 +46,6 @@ class SecurityConfiguration {
         microserviceJwtFilter: MicroserviceJwtFilter,
         corsConfigurationSource: CorsConfigurationSource,
         publicPathsConfigurationProperties: PublicPathsConfigurationProperties,
-        authenticationEntryPoint: AuthenticationEntryPoint,
     ): SecurityFilterChain {
         val paths = publicPathsConfigurationProperties.paths.toTypedArray()
 
@@ -58,11 +57,9 @@ class SecurityConfiguration {
             .cors { it.configurationSource(corsConfigurationSource) }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .addFilterBefore(microserviceJwtFilter, UsernamePasswordAuthenticationFilter::class.java)
-            .exceptionHandling {
-                it.authenticationEntryPoint(authenticationEntryPoint)
-            }
             .authorizeHttpRequests { auth ->
                 auth
+                    .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
                     .requestMatchers(*paths).permitAll()
                     .anyRequest().authenticated()
             }

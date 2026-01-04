@@ -37,17 +37,24 @@ class ResumeController (
 
     @GetMapping("/get")
     fun getResume(@AuthenticationPrincipal principal: Principal, @RequestParam id: String): ResponseEntity<StreamingResponseBody> {
+        val userId = UUID.fromString(principal.name)
+        val resumeId = UUID.fromString(id)
+
+        val contentLength = generationService.getGenerationResultSize(userId, resumeId)
+
         val body = StreamingResponseBody { os: OutputStream ->
-            val input = generationService.getGenerationResult(
-                UUID.fromString(principal.name),
-                UUID.fromString(id)
-            )
-            input.transferTo(os)
-            input.close()
+            generationService.getGenerationResult(
+                userId,
+                resumeId
+            ).use { input ->
+                input.transferTo(os)
+                os.flush()
+            }
         }
 
         return ResponseEntity.ok()
             .contentType(MediaType.APPLICATION_PDF)
+            .contentLength(contentLength)
             .body(body)
     }
 
