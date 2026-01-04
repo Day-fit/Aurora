@@ -1,5 +1,6 @@
 package pl.dayfit.auroraauthlib.configuration
 
+import jakarta.servlet.DispatcherType
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -58,6 +59,7 @@ class SecurityConfiguration {
             .addFilterBefore(microserviceJwtFilter, UsernamePasswordAuthenticationFilter::class.java)
             .authorizeHttpRequests { auth ->
                 auth
+                    .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
                     .requestMatchers(*paths).permitAll()
                     .anyRequest().authenticated()
             }

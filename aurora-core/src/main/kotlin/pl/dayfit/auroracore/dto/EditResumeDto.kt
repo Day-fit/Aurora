@@ -1,5 +1,6 @@
 package pl.dayfit.auroracore.dto
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
@@ -8,34 +9,51 @@ import org.hibernate.validator.constraints.Length
 import pl.dayfit.auroracore.type.EducationDegree
 import pl.dayfit.auroracore.type.SkillLevel
 import java.time.Instant
+import java.util.UUID
 
-data class GenerationRequestDto (
-    @NotBlank
-    val name: String,
-    @NotBlank
-    val surname: String,
-    val age: Int,
-    @NotBlank
+data class EditResumeDto(
+    val resumeId: UUID,
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val name: String?,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val surname: String?,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val age: Int?,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Length(max = 200)
-    val title: String,
+    val title: String?,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Email(message = "Given email is not valid")
-    @NotBlank(message = "Email cannot be blank")
-    val email: String,
+    val email: String?,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     val website: String?,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     val linkedIn: String?,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     val gitHub: String?,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     val profileImage: String?,
+    @Length(max = 2000)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     val profileDescription: String?,
-    val education: List<Education>,
-    val skills: List<Skill>,
-    val workExperience: List<Experience>,
-    val achievements: List<Achievement>,
-    val personalPortfolio: List<PersonalPortfolio>,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val education: List<Education>?,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val skills: List<Skill>?,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val workExperience: List<Experience>?,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val achievements: List<Achievement>?,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val personalPortfolio: List<PersonalPortfolio>?,
 
     @Min(1)
     @Max(5)
-    val templateVersion: Int,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val templateVersion: Int?,
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     val enhanced: Boolean = false
 )
 {

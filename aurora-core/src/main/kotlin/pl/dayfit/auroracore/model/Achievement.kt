@@ -9,7 +9,7 @@ import jakarta.persistence.Id
 data class Achievement(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long?,
+    var id: Long? = null,
 
     var title: String,
     var description: String,

@@ -1,14 +1,21 @@
 package pl.dayfit.auroracore.service
 
+import com.itextpdf.html2pdf.ConverterProperties
 import com.itextpdf.html2pdf.HtmlConverter
+import com.itextpdf.kernel.geom.PageSize
+import com.itextpdf.kernel.pdf.PdfDocument
+import com.itextpdf.kernel.pdf.PdfWriter
+import com.itextpdf.styledxmlparser.css.media.MediaDeviceDescription
+import com.itextpdf.styledxmlparser.css.media.MediaType
 import freemarker.template.Configuration
 import freemarker.template.Template
 import jakarta.transaction.Transactional
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.context.event.EventListener
 import org.springframework.rabbit.stream.producer.RabbitStreamTemplate
 import org.springframework.stereotype.Service
+import org.springframework.transaction.event.TransactionPhase
+import org.springframework.transaction.event.TransactionalEventListener
 import pl.dayfit.auroracore.dto.GenerationRequestDto
 import pl.dayfit.auroracore.event.EnhanceRequestedEvent
 import pl.dayfit.auroracore.event.ResumeReadyToExport
@@ -19,6 +26,7 @@ import pl.dayfit.auroracore.model.WorkExperience
 import pl.dayfit.auroracore.model.Resume
 import pl.dayfit.auroracore.model.Skill
 import pl.dayfit.auroracore.service.cache.ResumeCacheService
+import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.StringWriter
 import java.time.Instant
@@ -31,9 +39,21 @@ class GenerationService(
     private val freeMarkerConfiguration: Configuration,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val enhancementStreamTemplate: RabbitStreamTemplate,
+    private val resumeService: ResumeService
 ) {
     private val logger = LoggerFactory.getLogger(GenerationService::class.java)
 
+    /**
+     * Initiates the generation process for a résumé based on the provided data.
+     * This method saves the resume data to a cache, optionally triggers an enhancement
+     * process, and notifies when the résumé is ready for export.
+     *
+     * @param requestDto Data transfer object containing the resume details
+     *                   such as personal information, work experience,
+     *                   education, skills, and other related fields.
+     * @param userId The unique identifier of the user requesting the resume generation.
+     * @return The unique identifier of the generated résumé.
+     */
     @Transactional
     fun requestGeneration(requestDto: GenerationRequestDto, userId: UUID): UUID
     {
@@ -41,11 +61,12 @@ class GenerationService(
             null,
             userId,
             null,
+            null,
             requestDto.name,
             requestDto.surname,
             requestDto.age,
             requestDto.title,
-            requestDto.experiences.map {
+            requestDto.workExperience.map {
                 WorkExperience(
                         null,
                     it.company,
@@ -90,27 +111,27 @@ class GenerationService(
             requestDto.profileDescription,
             requestDto.email,
             requestDto.website,
-            requestDto.gitHub,
             requestDto.linkedIn,
-            null,
+            requestDto.gitHub,
             requestDto.templateVersion,
             Instant.now(),
         )
 
-        resumeCacheService.saveResume(resume)
+        val id = resumeCacheService.saveResume(resume)
+            .id!!
 
         if (!requestDto.enhanced)
         {
             applicationEventPublisher.publishEvent(
-                ResumeReadyToExport(resume.id!!)
+                ResumeReadyToExport(id)
             )
-            logger.trace("Resume ready to export: {}", resume.id)
-            return resume.id!!
+            logger.trace("Resume ready to export: {}", id)
+            return id
         }
 
         enhancementStreamTemplate.convertAndSend(
             EnhanceRequestedEvent(
-                resume.id!!,
+                id,
                 requestDto.title,
                 requestDto.profileDescription,
                 requestDto.achievements
@@ -121,16 +142,16 @@ class GenerationService(
         )
 
         logger.trace("Resume ready to export: {}", resume.id)
-        return resume.id!!
+        return id
     }
 
     /**
      * Generates a formatted resume document based on the specified event data.
      *
      * @param event The event containing the ID of the CV to be exported.
-     * @return The generated resume as a string.
+     * @return The generated résumé as a string.
      */
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun generateResume(event: ResumeReadyToExport)
     {
         val resume = resumeCacheService
@@ -146,8 +167,8 @@ class GenerationService(
         data["age"] = resume.age
 
         //Profile
-        resume.photo?.let { data["profileImage"] = "data:image/png;base64, ${Base64.encode(it)}" }
-        resume.description?.let { data["profileDescription"] = it }
+        resume.profileImage?.let { data["profileImage"] = "data:image/png;base64, ${Base64.encode(it)}" }
+        resume.profileDescription?.let { data["profileDescription"] = it }
 
         //Contact information
         data["email"] = resume.email
@@ -159,18 +180,34 @@ class GenerationService(
         resume.education.let { data["education"] = it }
         resume.skills.let { data["skills"] = it }
         resume.achievements.let { data["achievements"] = it}
-        resume.workExperiences.let { data["experiences"] = it}
+        resume.workExperience.let { data["experiences"] = it}
+        resume.personalPortfolio.let { data["personalPortfolio"] = it }
 
         StringWriter().use {
-            out -> template.process(data, out)
+            htmlOs -> template.process(data, htmlOs)
 
             ByteArrayOutputStream().use { outPdf ->
+                val writer = PdfWriter(outPdf)
+                val pdfDoc = PdfDocument(writer)
+                pdfDoc.defaultPageSize = PageSize.A4
+
+                val props = ConverterProperties()
+                val media = MediaDeviceDescription(MediaType.PRINT)
+                media.width = PageSize.A4.width
+                media.height = PageSize.A4.height
+                props.mediaDeviceDescription = media
+                val htmlBytes = htmlOs.toString().toByteArray()
+
                 HtmlConverter.convertToPdf(
-                    out.toString(),
-                    outPdf
+                    ByteArrayInputStream(htmlBytes),
+                    pdfDoc,
+                    props
                 )
 
-                resume.generatedResult = outPdf.toByteArray()
+                pdfDoc.close()
+
+                resumeService
+                    .handleSaving(outPdf, resume.auroraUserId, resume.id!!)
             }
         }
 
