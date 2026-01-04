@@ -3,6 +3,7 @@ package pl.dayfit.auroracore.service.cache
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.cache.annotation.Caching
 import org.springframework.stereotype.Service
 import pl.dayfit.auroracore.model.Resume
 import pl.dayfit.auroracore.repository.ResumeRepository
@@ -25,13 +26,17 @@ class ResumeCacheService(
             .findAllByAuroraUserId(userId)
     }
 
-    @CachePut("resume.id", key = "#resume.id")
+    @Caching(
+        put = [CachePut("resume.id", key = "#resume.id")],
+        evict = [CacheEvict("resumes.ownerId", key = "#resume.auroraUserId")]
+    )
     fun saveResume(resume: Resume): Resume
     {
         return resumeRepository
             .save(resume)
     }
 
+    @Suppress("unused")
     @CacheEvict("resume.id", key = "#id")
     fun deleteResume(id: UUID)
     {

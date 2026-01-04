@@ -41,7 +41,7 @@ class TranslationIntegrationService(
 
     /**
      * Handles an event indicating that a resume translation has been completed. Updates the resume data
-     * in the cache with the translated values and publishes an event to signal that the resume is ready
+     * in the cache with the translated values and publishes an event to signal that the résumé is ready
      * for export.
      *
      * @param event The event containing the translated resume data and associated metadata.
