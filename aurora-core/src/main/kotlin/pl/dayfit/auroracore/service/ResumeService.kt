@@ -130,6 +130,11 @@ class ResumeService(
     }
 
     fun getGenerationResultSize(ownerId: UUID, resumeId: UUID): Long {
+        if(!accessHelper.isOwner(resumeCacheService.getResumeById(resumeId), ownerId))
+        {
+            throw AccessDeniedException("You are not allowed to access this resume")
+        }
+
         return minioClient.statObject(
             StatObjectArgs.builder()
                 .bucket(ownerId.toString())
