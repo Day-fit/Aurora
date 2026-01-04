@@ -4,14 +4,17 @@
     <meta charset="UTF-8">
     <title>${name!''} ${surname!''}</title>
     <style>
-        @page { size: A4; margin: 0; }
+        @page { 
+            size: A4; 
+            margin: 0; 
+        }
 
         .container {
             width: 210mm;
-            height: 297mm;
+            min-height: 297mm;
             display: flex;
             box-sizing: border-box;
-            overflow: hidden;
+            page-break-after: always;
         }
 
         html, body {
@@ -36,21 +39,125 @@
             box-sizing: border-box;
         }
 
-        .profile-pic { width:100%; border-radius:6px; margin-bottom:25px; border:3px solid #fff; }
-        .section-title { font-size:12px; font-weight:bold; border-bottom:2px solid #fff; padding-bottom:5px; margin-top:20px; text-transform:uppercase; letter-spacing:1px; }
-        .contact-item, .social-item { display:flex; align-items:center; margin-bottom:8px; font-size:11px; }
-        .contact-item span, .social-item span { margin-left:6px; color:#fff; }
-        h1 { font-size:24px; letter-spacing:1px; margin:0; }
-        h2 { font-size:14px; letter-spacing:1px; margin:5px 0 20px 0; font-weight:400; color:#e0f7f7; }
-        p { font-size:12px; line-height:1.5; margin:5px 0; }
-        ul { padding-left:15px; margin:5px 0; }
-        li { margin-bottom:3px; font-size:12px; }
-        .bold { font-weight:bold; }
-        .skill-level { font-size:10px; color:#ccc; margin-left:5px; }
-        .mt-small { margin-top:8px; }
-        a { color:#fff; text-decoration:none; }
-        a:hover { text-decoration:underline; }
-        .right .section-title { color:#1c7c74; border-color:#1c7c74; }
+        .profile-pic { 
+            width: 100%; 
+            max-width: 180px;
+            border-radius: 6px; 
+            margin-bottom: 25px; 
+            border: 3px solid #fff; 
+            display: block;
+        }
+        
+        .section-title { 
+            font-size: 12px; 
+            font-weight: bold; 
+            border-bottom: 2px solid #fff; 
+            padding-bottom: 5px; 
+            margin-top: 20px; 
+            margin-bottom: 10px;
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+        }
+        
+        .contact-item, .social-item { 
+            display: flex; 
+            align-items: center; 
+            margin-bottom: 8px; 
+            font-size: 10px;
+            word-wrap: break-word;
+        }
+        
+        .contact-item span, .social-item span { 
+            margin-left: 6px; 
+            color: #fff; 
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        h1 { 
+            font-size: 28px; 
+            letter-spacing: 1px; 
+            margin: 0; 
+        }
+        
+        h2 { 
+            font-size: 16px; 
+            letter-spacing: 1px; 
+            margin: 5px 0 20px 0; 
+            font-weight: 400; 
+            color: #1c7c74; 
+        }
+        
+        p { 
+            font-size: 11px; 
+            line-height: 1.6; 
+            margin: 5px 0; 
+            text-align: justify;
+        }
+        
+        ul { 
+            padding-left: 15px; 
+            margin: 5px 0; 
+        }
+        
+        li { 
+            margin-bottom: 5px; 
+            font-size: 10px; 
+            line-height: 1.4;
+        }
+        
+        .bold { 
+            font-weight: bold; 
+        }
+        
+        .skill-level { 
+            font-size: 9px; 
+            color: #e0f7f7; 
+            margin-left: 5px; 
+        }
+        
+        .mt-small { 
+            margin-top: 12px; 
+        }
+        
+        .mt-tiny {
+            margin-top: 4px;
+        }
+        
+        a { 
+            color: #fff; 
+            text-decoration: none; 
+        }
+        
+        a:hover { 
+            text-decoration: underline; 
+        }
+        
+        .right .section-title { 
+            color: #1c7c74; 
+            border-color: #1c7c74; 
+        }
+        
+        .experience-item, .portfolio-item, .education-item {
+            margin-bottom: 15px;
+        }
+        
+        .date-range {
+            font-size: 10px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .left .date-range {
+            color: #e0f7f7;
+        }
+        
+        .description {
+            font-size: 10px;
+            color: #555;
+            line-height: 1.5;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -80,9 +187,11 @@
         <#if education?has_content>
             <div class="section-title">Education</div>
             <#list education![] as edu>
-                <div class="mt-small bold">${edu.institution!''}</div>
-                <div>${edu.degree!''} <#if edu.major?has_content>${edu.major}</#if></div>
-                <div>${edu.fromYear!''} - <#if edu.toYear?has_content>${edu.toYear}<#else>Present</#if></div>
+                <div class="education-item">
+                    <div class="mt-small bold">${edu.institution!''}</div>
+                    <div class="mt-tiny">${edu.degree!''}<#if edu.major?has_content> in ${edu.major}</#if></div>
+                    <div class="date-range">${edu.fromYear!''} - <#if edu.toYear?has_content>${edu.toYear}<#else>Present</#if></div>
+                </div>
             </#list>
         </#if>
 
@@ -108,11 +217,25 @@
         <#if experiences?has_content>
             <div class="section-title">Work Experience</div>
             <#list experiences![] as exp>
-                <div class="mt-small">
-                    <div class="bold">
-                        ${exp.position!''} at ${exp.company!''} | ${exp.fromYear!''} -
-                        <#if exp.toYear?has_content>${exp.toYear}<#else>Present</#if>
+                <div class="experience-item">
+                    <div class="bold">${exp.position!''}</div>
+                    <div class="mt-tiny">${exp.company!''}</div>
+                    <div class="date-range">
+                        ${exp.startDate?string["MMM yyyy"]} - <#if exp.endDate?has_content>${exp.endDate?string["MMM yyyy"]}<#else>Present</#if>
                     </div>
+                    <#if exp.description?has_content>
+                        <p class="description">${exp.description}</p>
+                    </#if>
+                </div>
+            </#list>
+        </#if>
+
+        <#if personalPortfolio?has_content>
+            <div class="section-title">Projects</div>
+            <#list personalPortfolio![] as portfolio>
+                <div class="portfolio-item">
+                    <div class="bold">${portfolio.name!''}</div>
+                    <p class="description">${portfolio.description!''}</p>
                 </div>
             </#list>
         </#if>
@@ -123,7 +246,7 @@
                 <#list achievements![] as ach>
                     <li class="mt-small">
                         <span class="bold">${ach.title!''}</span>
-                        <#if ach.year?has_content>(${ach.year})</#if> - ${ach.description!''}
+                        <#if ach.year?has_content> (${ach.year})</#if> - ${ach.description!''}
                     </li>
                 </#list>
             </ul>

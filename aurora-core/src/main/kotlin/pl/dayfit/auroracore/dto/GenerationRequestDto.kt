@@ -33,7 +33,7 @@ data class GenerationRequestDto (
     val personalPortfolio: List<PersonalPortfolio>,
 
     @Min(1)
-    @Max(1) //TODO: Add more versions
+    @Max(5)
     val templateVersion: Int,
 
     val enhanced : Boolean = false

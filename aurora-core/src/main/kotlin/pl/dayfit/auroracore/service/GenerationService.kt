@@ -172,6 +172,7 @@ class GenerationService(
         resume.skills.let { data["skills"] = it }
         resume.achievements.let { data["achievements"] = it}
         resume.workExperiences.let { data["experiences"] = it}
+        resume.personalPortfolios.let { data["personalPortfolio"] = it }
 
         StringWriter().use {
             htmlOs -> template.process(data, htmlOs)
@@ -179,11 +180,12 @@ class GenerationService(
             ByteArrayOutputStream().use { outPdf ->
                 val writer = PdfWriter(outPdf)
                 val pdfDoc = PdfDocument(writer)
-                pdfDoc.addNewPage(PageSize.A4)
+                pdfDoc.defaultPageSize = PageSize.A4
 
                 val props = ConverterProperties()
                 val media = MediaDeviceDescription(MediaType.PRINT)
                 media.width = PageSize.A4.width
+                media.height = PageSize.A4.height
                 props.mediaDeviceDescription = media
                 val htmlBytes = htmlOs.toString().toByteArray()
 
@@ -193,6 +195,7 @@ class GenerationService(
                     props
                 )
 
+                pdfDoc.close()
 
                 handleSaving(outPdf, resume.auroraUserId, resume.id!!)
             }
