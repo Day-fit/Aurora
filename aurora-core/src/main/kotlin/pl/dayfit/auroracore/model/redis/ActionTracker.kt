@@ -2,15 +2,16 @@ package pl.dayfit.auroracore.model.redis
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.redis.core.RedisHash
-import pl.dayfit.auroracore.dto.AutoGenerationDto
 import pl.dayfit.auroracore.type.TrackerStatus
+import pl.dayfit.auroracore.type.TrackerType
 import java.util.UUID
 
-@RedisHash("AutoGenerationTracker", timeToLive = 900)
-data class AutoGenerationTracker (
+@RedisHash("ActionTracker", timeToLive = 900)
+data class ActionTracker (
     @Id
     var id: String?,
     val ownerId: UUID,
     var status: TrackerStatus,
-    var result: AutoGenerationDto?
+    var type: TrackerType,
+    var trackedResourceId: Any
 )
