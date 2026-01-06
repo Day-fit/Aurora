@@ -80,7 +80,7 @@ export default function Page() {
   ];
 
   return (
-    <section className="rounded-xl p-10 md:p-16 h-full min-h-[calc(100vh-80px)]">
+    <section className="rounded-xl p-10 md:p-16 h-full min-h-[calc(60vh-80px)]">
       <div className="bg-main-dark/80 backdrop-blur-sm rounded-xl p-8 md:p-12 flex flex-col md:flex-row gap-10 text-text-dark shadow-2xl items-center justify-center">
         {!createdCvs ? (
           <div className="flex flex-col items-center text-center md:w-1/2 space-y-6 mx-auto">
