@@ -1,83 +1,35 @@
 import Button from "@/components/button";
 import Link from "next/link";
 import { CvCard } from "@/components/cv-components/cv-card";
+import { callBackend } from "@/lib/backend/backend";
+import { RequestMethod } from "@/lib/types/backend";
 
-export default function Page() {
-  const createdCvs = true;
+export const dynamic = "force-dynamic";
 
-  const dawidData = {
-    name: "Dawid",
-    surname: "Kowalski",
-    age: 29,
-    title: "Software Engineer",
-    email: "dawid.kowalski@example.com",
-    website: "https://dawid.dev",
-    linkedIn: "https://linkedin.com/in/dawidkowalski",
-    gitHub: "https://github.com/dawidkowalski",
-    //profileImage: "https://avatars.githubusercontent.com/u/10055274?v=4",
-    profileDescription:
-      "Doświadczony inżynier oprogramowania specjalizujący się w Kotlinie i systemach rozproszonych.",
-    education: [
-      {
-        institution: "Politechnika Warszawska",
-        major: "Informatyka",
-        degree: "MASTER_DEGREE",
-        fromYear: 2016,
-        toYear: 2021,
-      },
-      {
-        institution: "University of Helsinki",
-        major: "Computer Science",
-        degree: "BACHELOR_DEGREE",
-        fromYear: 2013,
-        toYear: 2016,
-      },
-    ],
-    skills: [
-      { name: "Kotlin", level: "ADVANCED" },
-      { name: "Spring Boot", level: "ADVANCED" },
-      { name: "Docker", level: "INTERMEDIATE" },
-      { name: "PostgreSQL", level: "INTERMEDIATE" },
-    ],
-    experiences: [
-      {
-        company: "DayFit Sp. z o.o.",
-        position: "Senior Backend Engineer",
-        description:
-          "Projektowanie i rozwój mikrousług w Kotlinie z użyciem Spring Boot.",
-        startDate: "2022-01-15T00:00:00Z",
-        endDate: null,
-      },
-      {
-        company: "AuroraTech",
-        position: "Software Developer",
-        description:
-          "Tworzenie API REST i integracji z systemami zewnętrznymi.",
-        startDate: "2019-07-01T00:00:00Z",
-        endDate: "2021-12-31T00:00:00Z",
-      },
-    ],
-    achievements: [
-      {
-        title: "Employee of the Year",
-        description: "Nagroda za wyjątkowe wyniki w projektach backendowych.",
-        year: 2023,
-      },
-      {
-        title: "Open Source Contributor",
-        description:
-          "Aktywny udział w projektach open-source w ekosystemie Kotlin.",
-        year: null,
-      },
-    ],
-    templateVersion: 1,
-    enhanced: true,
-  };
+async function getCvs() {
+  try {
+    console.log("Fetching CVs...");
+    // We use callBackend directly on the server.
+    // It handles cookies/tokens automatically via next/headers
+    const { status, data } = await callBackend({
+      endpoint: "/api/v1/core/resume/getAll", // Adjust this to your actual CV endpoint
+      method: RequestMethod.GET,
+      baseUrl: process.env.BACKEND_CORE_URL, // Assuming core handles CVs
+    });
 
-  const myCvs = [
-    { id: "cv-1", data: dawidData },
-    { id: "cv-2", data: dawidData },
-  ];
+    console.log("Fetched CVs:", data);
+
+    if (status !== 200) return [];
+    return data as any[];
+  } catch (error) {
+    console.error("Failed to fetch CVs:", error);
+    return [];
+  }
+}
+
+export default async function Page() {
+  const myCvs = await getCvs();
+  const createdCvs = myCvs.length > 0;
 
   return (
     <section className="rounded-xl p-10 md:p-16 h-full min-h-[calc(60vh-80px)]">
@@ -129,7 +81,7 @@ export default function Page() {
                 </Link>
               </header>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
-                {myCvs.map((cv) => (
+                {myCvs.map((cv: any) => (
                   <CvCard key={cv.id} id={cv.id} data={cv.data} />
                 ))}
               </div>
