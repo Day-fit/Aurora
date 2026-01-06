@@ -96,10 +96,10 @@ export default function TemplatesSlider() {
               </div>
 
               <Dialog.Portal>
-                <Dialog.Overlay className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100]" />
+                <Dialog.Overlay className="fixed inset-0 bg-black/80 backdrop-blur-sm z-100" />
 
                 {/* Clicking DialogContent now also closes it because we've removed the X and simplified the container */}
-                <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-2xl max-h-[90vh] z-[101] flex flex-col focus:outline-none cursor-zoom-out">
+                <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-2xl max-h-[90vh] z-101 flex flex-col focus:outline-none cursor-zoom-out">
                   <div className="hidden">
                     <Dialog.Title>Template Full Preview</Dialog.Title>
                     <Dialog.Description>
