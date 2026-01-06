@@ -52,13 +52,8 @@ export default async function Header() {
               </Link>
             </li>
             <li>
-              <Link href="/cv/create" className="w-full">
-                Create
-              </Link>
-            </li>
-            <li>
               <Link href="/cv" className="w-full">
-                Edit
+                Your Cvs
               </Link>
             </li>
           </ul>
