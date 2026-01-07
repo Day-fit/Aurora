@@ -90,7 +90,7 @@ Aurora follows a microservices architecture with the following services:
 - **Key Libraries**: React Hook Form, Framer Motion, Radix UI, Tailwind CSS
 
 #### Aurora Core (aurora-core)
-- **Technology**: Kotlin, Spring Boot 3.5, Java 21
+- **Technology**: Kotlin, Spring Boot 3.5.7, Java 21
 - **Purpose**: Main business logic service for CV management and PDF generation
 - **Features**: 
   - CV CRUD operations
@@ -101,7 +101,7 @@ Aurora follows a microservices architecture with the following services:
 - **Database**: PostgreSQL (JPA/Hibernate)
 
 #### Aurora Auth (aurora-auth)
-- **Technology**: Kotlin, Spring Boot 3.5, Java 21
+- **Technology**: Kotlin, Spring Boot 3.5.6, Java 21
 - **Purpose**: Centralized authentication and authorization service
 - **Features**:
   - OAuth2 integration (Google, Apple, GitHub)
@@ -111,7 +111,7 @@ Aurora follows a microservices architecture with the following services:
 - **Security**: Custom auth library (aurora-auth-lib) for shared security logic
 
 #### Aurora AI (aurora-ai)
-- **Technology**: Kotlin, Spring Boot 3.5, Java 21
+- **Technology**: Kotlin, Spring Boot 3.5.6, Java 21
 - **Purpose**: AI-powered CV enhancement service using OpenAI
 - **Features**:
   - Content enhancement using GPT models
@@ -125,7 +125,7 @@ Aurora follows a microservices architecture with the following services:
 ### Backend Services (Microservices)
 - **Language**: Kotlin 2.2
 - **Runtime**: Java 21 (OpenJDK)
-- **Framework**: Spring Boot 3.5
+- **Framework**: Spring Boot 3.5.x (aurora-core: 3.5.7, aurora-auth/ai: 3.5.6)
 - **Build Tool**: Maven
 
 ### Frontend
