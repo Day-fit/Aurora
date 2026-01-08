@@ -133,7 +133,7 @@ export const formSchema = z.object({
     .max(150, "Age cannot be greater than 150"),
 
   education: z.array(EducationSchema),
-  experience: z.array(ExperienceSchema),
+  workExperience: z.array(ExperienceSchema),
   achievements: z.array(AchievementSchema),
   skills: z.array(SkillSchema),
   personalPortfolio: z.array(PersonalPortfolioSchema),
