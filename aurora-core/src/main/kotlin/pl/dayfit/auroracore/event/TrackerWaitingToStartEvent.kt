@@ -1,12 +1,10 @@
 package pl.dayfit.auroracore.event
 
-import pl.dayfit.auroracore.type.AutoGenerationSource
+import pl.dayfit.auroracore.type.TrackerType
 import java.util.UUID
 
 data class TrackerWaitingToStartEvent (
-    val id: String,
     val userId: UUID,
-    val name: String,
-    val title: String,
-    val source: AutoGenerationSource
+    val trackerType: TrackerType,
+    val trackedResourceId: Any
 )

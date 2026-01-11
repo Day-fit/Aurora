@@ -8,8 +8,10 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import pl.dayfit.auroracore.event.ResumeReadyToExport
+import pl.dayfit.auroracore.event.StatusChangedEvent
 import pl.dayfit.auroracore.event.TranslationDoneEvent
 import pl.dayfit.auroracore.service.cache.ResumeCacheService
+import pl.dayfit.auroracore.type.TrackerStatus
 import java.nio.charset.StandardCharsets
 
 @Service
@@ -74,6 +76,14 @@ class TranslationIntegrationService(
             .forEach { (skill, skillName) -> skill.name = skillName }
 
         resumeCacheService.saveResume(resume)
+
+        applicationEventPublisher.publishEvent(
+            StatusChangedEvent(
+                resume.auroraUserId,
+                event.trackerId,
+                TrackerStatus.DONE
+            )
+        )
 
         applicationEventPublisher.publishEvent(
             ResumeReadyToExport(resume.id!!)

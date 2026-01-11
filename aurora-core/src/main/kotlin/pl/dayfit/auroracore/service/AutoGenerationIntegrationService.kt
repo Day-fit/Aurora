@@ -9,7 +9,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import pl.dayfit.auroracore.event.AutoGenerationDoneEvent
 import pl.dayfit.auroracore.event.StatusChangedEvent
-import pl.dayfit.auroracore.repository.redis.AutoGenerationTrackerRepository
+import pl.dayfit.auroracore.repository.redis.TrackerRepository
 import pl.dayfit.auroracore.type.TrackerStatus
 
 /**
@@ -20,7 +20,7 @@ import pl.dayfit.auroracore.type.TrackerStatus
 class AutoGenerationIntegrationService(
     streamsEnvironment: Environment,
     private val applicationEventPublisher: ApplicationEventPublisher,
-    private val autoGenerationTrackerRepository: AutoGenerationTrackerRepository,
+    private val trackerRepository: TrackerRepository,
     private val rabbitObjectMapper: ObjectMapper
 ) {
     private val consumer = streamsEnvironment.consumerBuilder()
@@ -42,13 +42,12 @@ class AutoGenerationIntegrationService(
 
     @EventListener
     fun handleAutoGeneration(event: AutoGenerationDoneEvent) {
-        val tracker = autoGenerationTrackerRepository
+        val tracker = trackerRepository
             .findById(event.trackerId)
             .orElseThrow { NoSuchElementException("Tracker not found") }
 
         tracker.status = TrackerStatus.DONE
-        tracker.result = event.result
-        autoGenerationTrackerRepository.save(tracker)
+        trackerRepository.save(tracker)
 
         applicationEventPublisher
             .publishEvent(

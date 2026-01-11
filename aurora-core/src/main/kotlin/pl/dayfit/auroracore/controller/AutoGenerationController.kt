@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import pl.dayfit.auroracore.dto.AutoGenerationDto
+import pl.dayfit.auroracore.dto.AutoGenerationDataDto
 import pl.dayfit.auroracore.dto.AutoGenerationRequestDto
 import pl.dayfit.auroracore.service.AutoGenerationService
 import java.security.Principal
@@ -33,7 +33,7 @@ class AutoGenerationController(
         )
 
         return ResponseEntity.ok(
-            mapOf("trackingId" to trackingId)
+            mapOf("autoGenerationId" to trackingId)
         )
     }
 
@@ -46,9 +46,9 @@ class AutoGenerationController(
      * @throws pl.dayfit.auroracore.exception.ResourceNotReadyYetException if the tracker result is not yet available
      */
     @GetMapping("/{trackingId}")
-    fun getAutoGenerationResults(@PathVariable trackingId: String): ResponseEntity<AutoGenerationDto> {
+    fun getAutoGenerationResults(@PathVariable trackingId: String, @AuthenticationPrincipal principal: Principal): ResponseEntity<AutoGenerationDataDto> {
         return ResponseEntity.ok(
-            autoGenerationService.getAutoGenerationResult(trackingId)
+            autoGenerationService.getAutoGenerationResult(trackingId, UUID.fromString(principal.name))
         )
     }
 }

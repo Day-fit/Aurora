@@ -2,50 +2,47 @@ package pl.dayfit.auroracore.service
 
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
-import pl.dayfit.auroracore.dto.AutoGenerationDto
-import pl.dayfit.auroracore.event.StatusChangedEvent
-import pl.dayfit.auroracore.event.TrackerWaitingToStartEvent
-import pl.dayfit.auroracore.exception.AutoGenerationFailedException
+import pl.dayfit.auroracore.dto.AutoGenerationDataDto
+import pl.dayfit.auroracore.event.AutoGenerationStartedEvent
 import pl.dayfit.auroracore.exception.ResourceNotReadyYetException
-import pl.dayfit.auroracore.model.redis.AutoGenerationTracker
-import pl.dayfit.auroracore.repository.redis.AutoGenerationTrackerRepository
+import pl.dayfit.auroracore.model.redis.AutoGenerationData
+import pl.dayfit.auroracore.repository.redis.AutoGenerationRepository
 import pl.dayfit.auroracore.type.AutoGenerationSource
-import pl.dayfit.auroracore.type.TrackerStatus
+import pl.dayfit.auroracore.type.TrackerType
 import java.util.UUID
 
 @Service
 class AutoGenerationService(
     private val applicationEventPublisher: ApplicationEventPublisher,
-    private val autoGenerationTrackerRepository: AutoGenerationTrackerRepository,
+    private val trackerService: TrackerService,
+    private val autoGenerationRepository: AutoGenerationRepository
 ) {
     /**
      * Puts a request in processing queue
      */
     fun requestAutoGeneration(title: String, name: String, source: AutoGenerationSource, ownerId: UUID): String {
-        val tracker = AutoGenerationTracker(
+        val data = AutoGenerationData(
             null,
-            ownerId,
-            TrackerStatus.STARTING,
+            ownerId = ownerId,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
             null
         )
 
-        val saved = autoGenerationTrackerRepository
-            .save(tracker)
-
-        val id = saved.id!!
-
-        applicationEventPublisher
-            .publishEvent(
-                StatusChangedEvent(
-                    ownerId,
-                    id,
-                    saved.status,
-                )
-            )
+        val id = trackerService
+            .createNewTracker(
+                ownerId,
+                TrackerType.AUTOGENERATION,
+                autoGenerationRepository.save(data).id!!
+            ).id!!
 
         applicationEventPublisher
             .publishEvent(
-                TrackerWaitingToStartEvent(
+                AutoGenerationStartedEvent(
                     id,
                     ownerId,
                     name,
@@ -56,29 +53,62 @@ class AutoGenerationService(
 
         return id
     }
+    fun getAutoGenerationResult(trackingId: String, ownerId: UUID): AutoGenerationDataDto {
+        val dataId = trackerService
+            .getTrackedResourceId(
+                trackingId,
+                ownerId,
+                TrackerType.AUTOGENERATION
+            ) as String
 
-    /**
-     * Tries to get a result from a tracker with tracker id
-     * @throws NoSuchElementException when tracker with given id does not exist
-     * @throws ResourceNotReadyYetException when the tracker result is null
-     * @return Auto generation result
-     */
-    @Throws(NoSuchElementException::class, ResourceNotReadyYetException::class)
-    fun getAutoGenerationResult(trackerId: String): AutoGenerationDto {
-        val tracker = autoGenerationTrackerRepository
-            .findById(trackerId)
-            .orElseThrow{ NoSuchElementException("No tracker with id $trackerId") }
+        val data = autoGenerationRepository
+            .findById(dataId)
+            .orElseThrow { ResourceNotReadyYetException("Resource is not ready yet. Please try again later.") }
 
-        if (tracker.status == TrackerStatus.FAILED)
-        {
-            throw AutoGenerationFailedException("Auto generation failed for tracker with id $trackerId. Please try again later.")
-        }
-
-        if (tracker.result == null)
-        {
-            throw ResourceNotReadyYetException("Tracker with id $trackerId is not ready yet")
-        }
-
-        return tracker.result!!
+        return AutoGenerationDataDto(
+            data.age,
+            data.email,
+            data.website,
+            data.linkedIn,
+            data.gitHub,
+            data.profileImage,
+            data.profileDescription,
+            data.education.map {
+                    AutoGenerationDataDto.Education(
+                        it.institution,
+                        it.major,
+                        it.degree,
+                        it.fromYear,
+                        it.toYear
+                    )
+                },
+            data.skills.map {
+                AutoGenerationDataDto.Skill(
+                    it.name,
+                    it.level
+                )
+            },
+            data.workExperiences.map {
+                AutoGenerationDataDto.WorkExperience(
+                    it.company,
+                    it.position,
+                    it.description,
+                    it.startDate,
+                    it.endDate
+                )
+            },
+            data.personalPortfolios.map {
+                AutoGenerationDataDto.PersonalPortfolio(
+                    it.name,
+                    it.description
+                ) },
+            data.achievements.map {
+                AutoGenerationDataDto.Achievement(
+                    it.title,
+                    it.description,
+                    it.year
+                )
+            }
+        )
     }
 }

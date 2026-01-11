@@ -18,10 +18,9 @@ class SessionService {
      * attribute of type UUID to properly associate it with the corresponding user.
      */
     fun addSession(session: WebSocketSession) {
-        sessions[
-            session.attributes["userId"] as? UUID
-                ?: throw IllegalStateException("User not found in session attributes")
-        ]?.add(session)
+        val userId = session.attributes["userId"] as? UUID ?: throw IllegalStateException("User not found in session attributes")
+        sessions.computeIfAbsent(userId) { mutableListOf() }
+            .add(session)
     }
 
     /**
@@ -32,10 +31,8 @@ class SessionService {
      * attribute of type UUID to properly locate and remove it from the storage.
      */
     fun removeSession(session: WebSocketSession) {
-        sessions.remove(
-            session.attributes["userId"] as? UUID
-                ?: throw IllegalStateException("User not found in session attributes")
-        )?.remove(session)
+        val userId = session.attributes["userId"] as? UUID ?: throw IllegalStateException("User not found in session attributes")
+        sessions[userId]?.remove(session)
     }
 
     /**

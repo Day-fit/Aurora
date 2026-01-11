@@ -9,6 +9,7 @@ import pl.dayfit.auroracore.helper.AccessHelper
 import pl.dayfit.auroracore.model.Resume
 import pl.dayfit.auroracore.service.cache.ResumeCacheService
 import pl.dayfit.auroracore.type.LanguageType
+import pl.dayfit.auroracore.type.TrackerType
 import java.time.Instant
 import java.util.UUID
 
@@ -16,7 +17,8 @@ import java.util.UUID
 class TranslationService (
     private val resumeCacheService: ResumeCacheService,
     private val translateStreamTemplate: RabbitStreamTemplate,
-    private val accessHelper: AccessHelper
+    private val accessHelper: AccessHelper,
+    private val trackerService: TrackerService
 ){
     /**
      * Translates a résumé into the specified language by creating a new translated version.
@@ -77,6 +79,12 @@ class TranslationService (
                     originalResume.workExperience.map { it.description.orEmpty() }
                 )
             )
+        )
+
+        trackerService.createNewTracker(
+            ownerId,
+            TrackerType.TRANSLATION,
+            saved.id!!
         )
 
         return saved.id!!
