@@ -55,13 +55,13 @@ class InformationManagerService(
         if (information.isFailure){
             tracker.status = TrackerStatus.FAILED
             trackerRepository.save(tracker)
-            handleStatusChange(event.id, event.userId, tracker.status)
+            handleStatusChanged(event.id, event.userId, tracker.status)
             logger.error("Failed to collect information for ${event.name} from ${event.source}, id ${event.id}", information.exceptionOrNull())
             return
         }
 
         trackerRepository.save(tracker)
-        handleStatusChange(event.id, event.userId, tracker.status)
+        handleStatusChanged(event.id, event.userId, tracker.status)
 
         autoGenerationStreamTemplate.convertAndSend(
             AutoGenerationRequestedEvent(
@@ -74,7 +74,7 @@ class InformationManagerService(
 
         tracker.status = TrackerStatus.PROCESSING_INFORMATION
         trackerRepository.save(tracker)
-        handleStatusChange(event.id, event.userId, tracker.status)
+        handleStatusChanged(event.id, event.userId, tracker.status)
     }
 
     private fun handleCollectingInformation(name: String, source: AutoGenerationSource): InformationDto
@@ -84,7 +84,7 @@ class InformationManagerService(
             ?: throw IllegalStateException("No worker found for source $source")
     }
 
-    private fun handleStatusChange(id: String, userId: UUID, status: TrackerStatus)
+    private fun handleStatusChanged(id: String, userId: UUID, status: TrackerStatus)
     {
         applicationEventPublisher
             .publishEvent(

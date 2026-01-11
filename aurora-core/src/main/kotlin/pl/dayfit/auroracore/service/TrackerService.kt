@@ -6,6 +6,7 @@ import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.springframework.web.socket.TextMessage
 import pl.dayfit.auroracore.dto.StatusChangedDto
+import pl.dayfit.auroracore.dto.TrackerResponseDto
 import pl.dayfit.auroracore.event.StatusChangedEvent
 import pl.dayfit.auroracore.model.redis.ActionTracker
 import pl.dayfit.auroracore.repository.redis.TrackerRepository
@@ -30,7 +31,7 @@ class TrackerService(
      */
     fun createNewTracker(ownerId: UUID, trackerType: TrackerType, trackedResourceId: Any): ActionTracker
     {
-        return trackerRepository.save(
+        val tracker = trackerRepository.save(
             ActionTracker(
                 null,
                 ownerId,
@@ -39,6 +40,20 @@ class TrackerService(
                 trackedResourceId
             )
         )
+
+        notifyUser(
+            ownerId,
+            objectMapper.writeValueAsString(
+                StatusChangedDto(
+                    tracker.id!!,
+                    tracker.status,
+                    tracker.type,
+                    tracker.trackedResourceId
+                )
+            )
+        )
+
+        return tracker
     }
 
     /**
@@ -49,28 +64,25 @@ class TrackerService(
      * the user ID, tracker ID, and the new tracker status.
      */
     @EventListener
-    fun handleUpdatingAndNotifying(event: StatusChangedEvent) {
+    fun handleNotifying(event: StatusChangedEvent) {
         val trackerId = event.trackerId
         val trackerStatus = event.status
 
+        val tracker = trackerRepository
+            .findById(trackerId)
+            .orElseThrow { NoSuchElementException("Tracker not found") }
+
         val message = StatusChangedDto(
             trackerId,
-            trackerStatus
+            trackerStatus,
+            tracker.type,
+            tracker.trackedResourceId
         )
 
-        val sessions = sessionService.getSessionByUserId(event.userId)
-
-        if (sessions == null) {
-            logger.debug("No session found for user with id {}", event.userId)
-            return
-        }
-
-        sessions.forEach { it.sendMessage(
-            TextMessage(
-                objectMapper
-                    .writeValueAsString(message)
-            )
-        ) }
+        notifyUser(
+            event.userId,
+            objectMapper.writeValueAsString(message)
+        )
 
         logger.trace("Notification sent. Id: {}, Status: {}", trackerId, trackerStatus)
     }
@@ -79,7 +91,7 @@ class TrackerService(
     {
         val tracker = trackerRepository
             .findById(trackingId)
-            .orElseThrow { NoSuchElementException("There is no tracker with such a id") }
+            .orElseThrow { NoSuchElementException("There is no tracker with given id") }
 
         if (tracker.ownerId != ownerId) {
             throw AccessDeniedException("You are not allowed to access this tracker")
@@ -90,5 +102,25 @@ class TrackerService(
         }
 
         return tracker.trackedResourceId
+    }
+    
+    fun getAllTrackers(ownerId: UUID): List<TrackerResponseDto>
+    {
+        return trackerRepository.findAllByOwnerId(ownerId)
+            .map {
+                TrackerResponseDto(
+                    it.id!!,
+                    it.status,
+                    it.type
+                )
+            }
+    }
+
+    private fun notifyUser(userId: UUID, message: String) {
+        val sessions = sessionService.getSessionByUserId(userId)
+
+        sessions?.forEach {
+            it.sendMessage(TextMessage(message))
+        }
     }
 }

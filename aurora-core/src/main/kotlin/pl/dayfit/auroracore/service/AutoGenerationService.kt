@@ -34,8 +34,11 @@ class AutoGenerationService(
         )
 
         val id = trackerService
-            .createNewTracker(ownerId, TrackerType.AUTOGENERATION, data.id!!)
-            .id!!
+            .createNewTracker(
+                ownerId,
+                TrackerType.AUTOGENERATION,
+                autoGenerationRepository.save(data).id!!
+            ).id!!
 
         applicationEventPublisher
             .publishEvent(

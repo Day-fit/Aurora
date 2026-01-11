@@ -1,8 +1,8 @@
 package pl.dayfit.auroracore.event
 
-import pl.dayfit.auroracore.model.redis.AutoGenerationData
+import pl.dayfit.auroracore.dto.AutoGenerationDataDto
 
 data class AutoGenerationDoneEvent(
     val trackerId: String,
-    val result: AutoGenerationData
+    val result: AutoGenerationDataDto
 )
