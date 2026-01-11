@@ -8,6 +8,7 @@ import org.springframework.security.core.AuthenticationException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.servlet.resource.NoResourceFoundException
 import pl.dayfit.auroraauth.exception.UserAlreadyExistsException
 
 @RestControllerAdvice
@@ -50,6 +51,13 @@ class GlobalExceptionHandler {
         return ResponseEntity
             .badRequest()
             .body(errors)
+    }
+
+    @ExceptionHandler(NoResourceFoundException::class)
+    fun handleNoResourceFoundException(ex: NoResourceFoundException): ResponseEntity<Map<String, String>> {
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(mapOf("error" to (ex.message ?: "Requested resource not found")))
     }
 
     @ExceptionHandler(Exception::class)
