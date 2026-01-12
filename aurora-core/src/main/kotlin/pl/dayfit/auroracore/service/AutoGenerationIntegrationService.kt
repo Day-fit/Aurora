@@ -9,8 +9,10 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import pl.dayfit.auroracore.event.AutoGenerationDoneEvent
 import pl.dayfit.auroracore.event.StatusChangedEvent
-import pl.dayfit.auroracore.repository.redis.TrackerRepository
+import pl.dayfit.auroracore.model.redis.AutoGenerationData
+import pl.dayfit.auroracore.repository.redis.AutoGenerationRepository
 import pl.dayfit.auroracore.type.TrackerStatus
+import pl.dayfit.auroracore.type.TrackerType
 
 /**
  * Service responsible for integration with auto-generation (AI microservice).
@@ -20,8 +22,9 @@ import pl.dayfit.auroracore.type.TrackerStatus
 class AutoGenerationIntegrationService(
     streamsEnvironment: Environment,
     private val applicationEventPublisher: ApplicationEventPublisher,
-    private val trackerRepository: TrackerRepository,
-    private val rabbitObjectMapper: ObjectMapper
+    private val rabbitObjectMapper: ObjectMapper,
+    private val autoGenerationRepository: AutoGenerationRepository,
+    private val trackerService: TrackerService
 ) {
     private val consumer = streamsEnvironment.consumerBuilder()
         .stream("post.autogeneration.stream")
@@ -42,19 +45,57 @@ class AutoGenerationIntegrationService(
 
     @EventListener
     fun handleAutoGeneration(event: AutoGenerationDoneEvent) {
-        val tracker = trackerRepository
-            .findById(event.trackerId)
-            .orElseThrow { NoSuchElementException("Tracker not found") }
+        val id: String = trackerService.getTrackedResourceId(
+            event.trackerId,
+            TrackerType.AUTOGENERATION
+        ) as String
 
-        tracker.status = TrackerStatus.DONE
-        trackerRepository.save(tracker)
+        val generationData: AutoGenerationData = autoGenerationRepository.findById(id)
+            .orElseThrow { IllegalStateException("Generation data not found") }
+
+        generationData.skills = event.result.skills.map { skillDto ->
+            AutoGenerationData.Skill(
+                name = skillDto.name,
+                level = skillDto.level
+            )
+        }
+        generationData.education = event.result.education.map { educationDto ->
+            AutoGenerationData.Education(
+                institution = educationDto.institution,
+                major = educationDto.major,
+                degree = educationDto.degree,
+                fromYear = educationDto.fromYear,
+                toYear = educationDto.toYear
+            )
+        }
+        generationData.workExperiences = event.result.workExperiences.map { workExperienceDto ->
+            AutoGenerationData.WorkExperience(
+                company = workExperienceDto.company,
+                position = workExperienceDto.position,
+                description = workExperienceDto.description,
+                startDate = workExperienceDto.startDate,
+                endDate = workExperienceDto.endDate
+            )
+        }
+        generationData.personalPortfolios = event.result.personalPortfolios.map { portfolioDto ->
+            AutoGenerationData.PersonalPortfolio(
+                name = portfolioDto.name,
+                description = portfolioDto.description
+            )
+        }
+        generationData.achievements = event.result.achievements.map { achievementDto ->
+            AutoGenerationData.Achievement(
+                title = achievementDto.title,
+                description = achievementDto.description,
+                year = achievementDto.year
+            )
+        }
 
         applicationEventPublisher
             .publishEvent(
                 StatusChangedEvent(
-                    tracker.ownerId,
-                    tracker.id!!,
-                    tracker.status
+                    event.trackerId,
+                    TrackerStatus.DONE
                 )
             )
     }

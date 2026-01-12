@@ -9,7 +9,9 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import pl.dayfit.auroracore.event.EnhanceDoneEvent
 import pl.dayfit.auroracore.event.ResumeReadyToExport
+import pl.dayfit.auroracore.event.StatusChangedEvent
 import pl.dayfit.auroracore.service.cache.ResumeCacheService
+import pl.dayfit.auroracore.type.TrackerStatus
 import java.nio.charset.StandardCharsets
 import java.time.Instant
 
@@ -69,6 +71,14 @@ class EnhancementIntegrationService(
         resume.lastModified = Instant.now()
 
         resumeCacheService.saveResume(resume)
+
+        applicationEventPublisher.publishEvent(
+            StatusChangedEvent(
+                event.trackerId,
+                TrackerStatus.DONE
+            )
+        )
+
         applicationEventPublisher.publishEvent(
             ResumeReadyToExport(resume.id!!)
         )

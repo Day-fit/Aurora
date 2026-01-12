@@ -10,21 +10,21 @@ import java.util.UUID
 @RedisHash("AutoGenerationData", timeToLive = 900)
 data class AutoGenerationData (
     @Id
-    val id: String?,
+    var id: String?,
 
-    val ownerId: UUID,
-    val age: Int?,
-    val email: String?,
-    val website: String?,
-    val linkedIn: String?,
-    val gitHub: String?,
-    val profileImage: String?,
-    val profileDescription: String?,
-    val education: List<Education> = emptyList(),
-    val skills: List<Skill> = emptyList(),
-    val workExperiences: List<WorkExperience> = emptyList(),
-    val personalPortfolios: List<PersonalPortfolio> = emptyList(),
-    val achievements: List<Achievement> = emptyList(),
+    var ownerId: UUID,
+    var age: Int?,
+    var email: String?,
+    var website: String?,
+    var linkedIn: String?,
+    var gitHub: String?,
+    var profileImage: String?,
+    var profileDescription: String?,
+    var education: List<Education> = emptyList(),
+    var skills: List<Skill> = emptyList(),
+    var workExperiences: List<WorkExperience> = emptyList(),
+    var personalPortfolios: List<PersonalPortfolio> = emptyList(),
+    var achievements: List<Achievement> = emptyList(),
 )
 {
     data class Education (

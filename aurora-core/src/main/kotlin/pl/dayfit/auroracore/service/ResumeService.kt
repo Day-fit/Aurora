@@ -27,6 +27,7 @@ import pl.dayfit.auroracore.model.Resume
 import pl.dayfit.auroracore.model.Skill
 import pl.dayfit.auroracore.model.WorkExperience
 import pl.dayfit.auroracore.service.cache.ResumeCacheService
+import pl.dayfit.auroracore.type.TrackerType
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.time.Instant
@@ -41,6 +42,7 @@ class ResumeService(
     private val accessHelper: AccessHelper,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val enhancementStreamTemplate: RabbitStreamTemplate,
+    private val trackerService: TrackerService,
 ) {
     private val logger = LoggerFactory.getLogger(this.javaClass)
     private val prohibitedProperties = listOf("resumeId") //Might get bigger over time (that's why we're using a list)
@@ -184,9 +186,16 @@ class ResumeService(
             return
         }
 
+        val tracker = trackerService.createNewTracker(
+            userId,
+            TrackerType.ENCHANCEMNT,
+            resumeId
+        )
+
         enhancementStreamTemplate.convertAndSend(
             EnhanceRequestedEvent(
                 resumeId,
+                tracker.id!!,
                 patchedResume.title ?: "(Title not specified)",
                 patchedResume.profileDescription,
                 patchedResume.achievements

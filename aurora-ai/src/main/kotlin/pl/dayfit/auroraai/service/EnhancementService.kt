@@ -88,6 +88,7 @@ class EnhancementService(
         postGenerationStreamTemplate.convertAndSend(
             EnhanceDoneEvent(
                 event.id,
+                event.trackerId,
                 response.newTitle,
                 response.newDescription,
                 response.newAchievementDescriptions,

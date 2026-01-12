@@ -79,7 +79,6 @@ class TranslationIntegrationService(
 
         applicationEventPublisher.publishEvent(
             StatusChangedEvent(
-                resume.auroraUserId,
                 event.trackerId,
                 TrackerStatus.DONE
             )

@@ -80,11 +80,29 @@ class TrackerService(
         )
 
         notifyUser(
-            event.userId,
+            tracker.ownerId,
             objectMapper.writeValueAsString(message)
         )
 
         logger.trace("Notification sent. Id: {}, Status: {}", trackerId, trackerStatus)
+    }
+
+    /**
+     * Handles the `StatusChangedEvent` by updating the status of the corresponding tracker in the repository.
+     *
+     * @param event the event containing the tracker ID and the new status to be applied.
+     * It includes the following properties:
+     * - `trackerId`: the unique identifier of the tracker to be updated.
+     * - `status`: the new status to be set in the tracker.
+     */
+    @EventListener
+    fun handleUpdatingStatus(event: StatusChangedEvent) {
+        val tracker = trackerRepository.findById(event.trackerId)
+            .orElseThrow { IllegalStateException("Tracker not found") }
+
+        tracker.status = event.status
+
+        trackerRepository.save(tracker)
     }
 
     fun getTrackedResourceId(trackingId: String, ownerId: UUID, expectedType: TrackerType): Any
@@ -96,6 +114,29 @@ class TrackerService(
         if (tracker.ownerId != ownerId) {
             throw AccessDeniedException("You are not allowed to access this tracker")
         }
+
+        if (tracker.type != expectedType) {
+            throw IllegalStateException("Tracker type mismatch (Should not happen)")
+        }
+
+        return tracker.trackedResourceId
+    }
+
+    /**
+     * Retrieves the identifier of the resource tracked by the specified tracker.
+     * Should be used only in internal backend logic. Do not use it when a user is part of the request.
+     *
+     * @param trackingId the unique identifier of the tracker whose tracked resource ID is to be retrieved.
+     * @param expectedType the expected type of the tracker. If the tracker type does not match this, an exception is thrown.
+     * @return the identifier of the resource being tracked by the specified tracker.
+     * @throws NoSuchElementException if a tracker with the given ID does not exist.
+     * @throws IllegalStateException if the tracker type does not match the expected type.
+     */
+    fun getTrackedResourceId(trackingId: String, expectedType: TrackerType): Any
+    {
+        val tracker = trackerRepository
+            .findById(trackingId)
+            .orElseThrow { NoSuchElementException("There is no tracker with given id") }
 
         if (tracker.type != expectedType) {
             throw IllegalStateException("Tracker type mismatch (Should not happen)")

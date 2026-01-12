@@ -13,7 +13,6 @@ import pl.dayfit.auroracore.information.InformationWorker
 import pl.dayfit.auroracore.repository.redis.TrackerRepository
 import pl.dayfit.auroracore.type.AutoGenerationSource
 import pl.dayfit.auroracore.type.TrackerStatus
-import java.util.UUID
 
 /**
  * Service responsible for searching for information in a given source
@@ -55,13 +54,13 @@ class InformationManagerService(
         if (information.isFailure){
             tracker.status = TrackerStatus.FAILED
             trackerRepository.save(tracker)
-            handleStatusChanged(event.id, event.userId, tracker.status)
+            handleStatusChanged(event.id,  tracker.status)
             logger.error("Failed to collect information for ${event.name} from ${event.source}, id ${event.id}", information.exceptionOrNull())
             return
         }
 
         trackerRepository.save(tracker)
-        handleStatusChanged(event.id, event.userId, tracker.status)
+        handleStatusChanged(event.id, tracker.status)
 
         autoGenerationStreamTemplate.convertAndSend(
             AutoGenerationRequestedEvent(
@@ -74,7 +73,7 @@ class InformationManagerService(
 
         tracker.status = TrackerStatus.PROCESSING_INFORMATION
         trackerRepository.save(tracker)
-        handleStatusChanged(event.id, event.userId, tracker.status)
+        handleStatusChanged(event.id, tracker.status)
     }
 
     private fun handleCollectingInformation(name: String, source: AutoGenerationSource): InformationDto
@@ -84,12 +83,11 @@ class InformationManagerService(
             ?: throw IllegalStateException("No worker found for source $source")
     }
 
-    private fun handleStatusChanged(id: String, userId: UUID, status: TrackerStatus)
+    private fun handleStatusChanged(id: String, status: TrackerStatus)
     {
         applicationEventPublisher
             .publishEvent(
                 StatusChangedEvent(
-                    userId,
                     id,
                     status
                 )
