@@ -13,4 +13,5 @@ export interface RequestType {
   body?: any | null;
   method?: RequestMethod;
   endpoint: string;
+  baseUrl?: string;
 }

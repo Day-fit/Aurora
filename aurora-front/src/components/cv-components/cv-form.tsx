@@ -14,6 +14,7 @@ import ProfileLinks from "@/components/cv-components/profile-links";
 import FormStyling from "@/components/cv-components/form-styling";
 import PersonalPortfolio from "@/components/cv-components/personal-portfolio";
 import { generateCv } from "@/lib/backend/resume-generation";
+import { useRouter } from "next/navigation";
 
 export default function CvForm() {
   //need to add validation, error handling, submit handling via request
@@ -23,6 +24,8 @@ export default function CvForm() {
     reset,
     formState: { isSubmitting },
   } = useFormContext();
+
+  const router = useRouter();
 
   const onSubmit = async (data: any) => {
     console.log("Submitting form:", data);
@@ -41,6 +44,8 @@ export default function CvForm() {
       console.error("Error submitting form:", error);
       alert("An unexpected error occurred.");
     }
+
+    router.back();
   };
 
   return (

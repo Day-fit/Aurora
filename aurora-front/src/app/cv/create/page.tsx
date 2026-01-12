@@ -27,7 +27,7 @@ export default function CreatePage() {
       gitHub: "",
       profileDescription: "",
       profileImage: null,
-      experience: [],
+      workExperience: [],
       achievements: [],
       skills: [],
       education: [],
