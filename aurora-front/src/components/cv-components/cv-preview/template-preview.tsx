@@ -40,10 +40,6 @@ export default function TemplatePreview() {
 
     return () => URL.revokeObjectURL(url);
   }, [formData.profileImage]);
-  useEffect(() => {
-    console.log(formData.template);
-    console.log(TemplateType.template2);
-  }, [formData.template]);
 
   return (
     <section className="relative overflow-hidden rounded-xl p-6 lg:p-10 min-h-[60vh]">

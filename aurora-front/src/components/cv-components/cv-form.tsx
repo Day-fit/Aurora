@@ -24,6 +24,7 @@ export default function CvForm() {
     reset,
     formState: { isSubmitting },
   } = useFormContext();
+
   const router = useRouter();
 
   const onSubmit = async (data: any) => {

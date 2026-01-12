@@ -14,8 +14,9 @@ export async function callBackend<T = any>({
 }: RequestType): Promise<BackendResponse<T>> {
   const BASE_URL = baseUrl || process.env.BACKEND_AUTH_URL;
   if (!BASE_URL) {
-    throw new Error("BACKEND_URL is not configured");
+    throw new Error("Base URL is not defined");
   }
+  console.log("Calling backend:", endpoint, method, body, BASE_URL);
 
   const cookieStore = await cookies();
   let accessToken = cookieStore.get("accessToken")?.value;
@@ -28,7 +29,6 @@ export async function callBackend<T = any>({
     return headers;
   };
 
-  // 1. Initial Request
   let res = await fetch(`${BASE_URL}${endpoint}`, {
     method,
     headers: getHeaders(accessToken),
@@ -36,13 +36,11 @@ export async function callBackend<T = any>({
     cache: "no-store",
   });
 
-  // 2. Handle 401 Unauthorized (Token Expired)
   if (res.status === 401) {
     const refreshToken = cookieStore.get("refreshToken")?.value;
 
     if (refreshToken) {
       try {
-        // Attempt to refresh the token
         const refreshRes = await fetch(`${BASE_URL}/api/v1/auth/refresh`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -54,7 +52,6 @@ export async function callBackend<T = any>({
           const newAccessToken = refreshData.accessToken;
           const newRefreshToken = refreshData.refreshToken;
 
-          // Update cookies on the server
           cookieStore.set("accessToken", newAccessToken, {
             httpOnly: true,
             path: "/",
@@ -66,7 +63,6 @@ export async function callBackend<T = any>({
             });
           }
 
-          // 3. RETRY the original request with the new token
           res = await fetch(`${BASE_URL}${endpoint}`, {
             method,
             headers: getHeaders(newAccessToken),

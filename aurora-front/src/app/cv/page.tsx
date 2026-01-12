@@ -1,34 +1,12 @@
 import Button from "@/components/button";
 import Link from "next/link";
 import { CvCard } from "@/components/cv-components/cv-card";
-import { callBackend } from "@/lib/backend/backend";
-import { RequestMethod } from "@/lib/types/backend";
+import getAllResumes from "@/lib/backend/get-all-resumes";
 
 export const dynamic = "force-dynamic";
 
-async function getCvs() {
-  try {
-    console.log("Fetching CVs...");
-    // We use callBackend directly on the server.
-    // It handles cookies/tokens automatically via next/headers
-    const { status, data } = await callBackend({
-      endpoint: "/api/v1/core/resume/getAll", // Adjust this to your actual CV endpoint
-      method: RequestMethod.GET,
-      baseUrl: process.env.BACKEND_CORE_URL, // Assuming core handles CVs
-    });
-
-    console.log("Fetched CVs:", data);
-
-    if (status !== 200) return [];
-    return data as any[];
-  } catch (error) {
-    console.error("Failed to fetch CVs:", error);
-    return [];
-  }
-}
-
 export default async function Page() {
-  const myCvs = await getCvs();
+  const myCvs = await getAllResumes();
   const createdCvs = myCvs.length > 0;
 
   return (
@@ -82,7 +60,7 @@ export default async function Page() {
               </header>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
                 {myCvs.map((cv: any) => (
-                  <CvCard key={cv.id} id={cv.id} data={cv.data} />
+                  <CvCard key={cv.id} id={cv.id} data={cv} />
                 ))}
               </div>
             </div>
