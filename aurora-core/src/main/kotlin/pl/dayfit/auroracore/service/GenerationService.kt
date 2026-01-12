@@ -10,6 +10,7 @@ import com.itextpdf.styledxmlparser.css.media.MediaType
 import freemarker.template.Configuration
 import freemarker.template.Template
 import jakarta.transaction.Transactional
+import net.coobird.thumbnailator.Thumbnails
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.rabbit.stream.producer.RabbitStreamTemplate
@@ -106,7 +107,16 @@ class GenerationService(
                     it.year
                 )
             }.toMutableList(),
-            requestDto.profileImage?.let { Base64.decode(it) },
+            requestDto.profileImage?.let {
+                val inputStream = ByteArrayInputStream(Base64.decode(it))
+                val outputStream = ByteArrayOutputStream()
+                Thumbnails.of(inputStream)
+                    .outputQuality(0.75)
+                    .size(600, 600)
+                    .toOutputStream(outputStream)
+
+                return@let outputStream.toByteArray()
+            },
 
             requestDto.profileDescription,
             requestDto.email,
