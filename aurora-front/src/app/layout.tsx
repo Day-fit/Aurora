@@ -6,6 +6,9 @@ import FooterWrapper from "@/components/layout/footer/footer-wrapper";
 
 export const metadata: Metadata = {
   title: "Aurora",
+  icons: {
+    icon: "/icon.png",
+  },
   description:
     "AuroraResume is a powerful online resume builder that helps you create professional resumes quickly and easily.",
 };
