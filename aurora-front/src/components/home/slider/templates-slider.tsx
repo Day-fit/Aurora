@@ -1,6 +1,11 @@
 "use client";
 
-import temp from "../../../../public/hero-picture.png";
+import template1 from "@/../public/template1.png";
+import template2 from "../../../../public/template2.png";
+import template3 from "../../../../public/template3.png";
+import template4 from "../../../../public/template4.png";
+import template5 from "../../../../public/template5.png";
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -11,7 +16,7 @@ import Image from "next/image";
 import React from "react";
 
 export default function TemplatesSlider() {
-  const images = [temp, temp, temp, temp, temp, temp, temp, temp];
+  const images = [template1, template2, template3, template4, template5];
 
   return (
     <section className="bg-main-dark p-10 relative">

@@ -1,7 +1,7 @@
 "use client";
 
 import CvForm from "@/components/cv-components/cv-form";
-import TemplatePreview from "@/components/cv-components/template-preview";
+import TemplatePreview from "@/components/cv-components/cv-preview/template-preview";
 import { FormProvider, useForm } from "react-hook-form";
 import { TemplateType } from "@/lib/types/form";
 import { zodResolver } from "@hookform/resolvers/zod";

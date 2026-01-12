@@ -6,6 +6,10 @@ import java.util.UUID
 
 data class ResumeInformationDto(
     val id: UUID,
+    val title: String?,
+    val name: String,
+    val surname: String,
+    val profileImage: String?,
     val languageType: LanguageType?,
     val size: Long,
     val lastModified: Instant,

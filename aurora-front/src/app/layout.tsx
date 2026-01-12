@@ -5,7 +5,10 @@ import React from "react";
 import FooterWrapper from "@/components/layout/footer/footer-wrapper";
 
 export const metadata: Metadata = {
-  title: "AuroraResume",
+  title: "Aurora",
+  icons: {
+    icon: "/icon.png",
+  },
   description:
     "AuroraResume is a powerful online resume builder that helps you create professional resumes quickly and easily.",
 };
