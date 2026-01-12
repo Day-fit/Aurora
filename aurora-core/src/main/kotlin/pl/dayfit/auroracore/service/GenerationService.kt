@@ -110,9 +110,7 @@ class GenerationService(
                 )
             }.toMutableList(),
             requestDto.profileImage?.let {
-                compressImage(
-                    Base64.decode(it)
-                )
+                compressImage(it)
             },
 
             requestDto.profileDescription,
@@ -221,7 +219,7 @@ class GenerationService(
         resumeCacheService.saveResume(resume)
     }
 
-    private fun compressImage(image: ByteArray): ByteArray {
+    private fun compressImage(image: String): ByteArray {
         try {
             val inputStream = ByteArrayInputStream(Base64.decode(image))
             val outputStream = ByteArrayOutputStream()
