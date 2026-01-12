@@ -20,6 +20,7 @@ import org.springframework.transaction.event.TransactionalEventListener
 import pl.dayfit.auroracore.dto.GenerationRequestDto
 import pl.dayfit.auroracore.event.EnhanceRequestedEvent
 import pl.dayfit.auroracore.event.ResumeReadyToExport
+import pl.dayfit.auroracore.exception.InvalidBase64Exception
 import pl.dayfit.auroracore.model.Achievement
 import pl.dayfit.auroracore.model.Education
 import pl.dayfit.auroracore.model.PersonalPortfolio
@@ -42,6 +43,7 @@ class GenerationService(
     private val enhancementStreamTemplate: RabbitStreamTemplate,
     private val resumeService: ResumeService
 ) {
+    private val imageQuality = 0.75
     private val logger = LoggerFactory.getLogger(GenerationService::class.java)
 
     /**
@@ -108,14 +110,9 @@ class GenerationService(
                 )
             }.toMutableList(),
             requestDto.profileImage?.let {
-                val inputStream = ByteArrayInputStream(Base64.decode(it))
-                val outputStream = ByteArrayOutputStream()
-                Thumbnails.of(inputStream)
-                    .outputQuality(0.75)
-                    .size(600, 600)
-                    .toOutputStream(outputStream)
-
-                return@let outputStream.toByteArray()
+                compressImage(
+                    Base64.decode(it)
+                )
             },
 
             requestDto.profileDescription,
@@ -222,5 +219,21 @@ class GenerationService(
         }
 
         resumeCacheService.saveResume(resume)
+    }
+
+    private fun compressImage(image: ByteArray): ByteArray {
+        try {
+            val inputStream = ByteArrayInputStream(Base64.decode(image))
+            val outputStream = ByteArrayOutputStream()
+            Thumbnails.of(inputStream)
+                .outputQuality(imageQuality)
+                .size(600, 600)
+                .keepAspectRatio(true)
+                .toOutputStream(outputStream)
+
+            return outputStream.toByteArray()
+        } catch (_: IllegalArgumentException) {
+            throw InvalidBase64Exception("Profile image is invalid base64 string")
+        }
     }
 }
