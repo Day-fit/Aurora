@@ -6,11 +6,13 @@ import { FormProvider, useForm } from "react-hook-form";
 import { TemplateType } from "@/lib/types/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formSchema, FormValues } from "@/lib/types/form";
+import { useSearchParams } from "next/navigation";
+import getResume from "@/lib/backend/get-resume";
+import { useEffect } from "react";
 
 export default function CreatePage() {
-  {
-    /*remember to change all undefined to null in the formSchema*/
-  }
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
 
   const methods = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -34,6 +36,24 @@ export default function CreatePage() {
       personalPortfolio: [],
     },
   });
+
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchResume = async () => {
+      try {
+        const data = await getResume(id);
+        if (data) {
+          methods.reset(data);
+        }
+        console.log("Resume fetched:", data);
+      } catch (error) {
+        console.error("Error fetching resume:", error);
+      }
+    };
+
+    fetchResume();
+  }, [id, methods]);
 
   return (
     <FormProvider {...methods}>
