@@ -15,6 +15,7 @@ import pl.dayfit.auroraauth.model.AuroraUser
 import pl.dayfit.auroraauth.repository.UserRepository
 import pl.dayfit.auroraauth.type.AuthProvider
 import pl.dayfit.auroraauthlib.type.RoleType
+import java.util.UUID
 
 @Service
 class AuthService(
@@ -70,5 +71,14 @@ class AuthService(
             user.id!!
                 .toString()
         ))
+    }
+
+    fun handleRefresh(userId: UUID): JwtTokenPairDto
+    {
+        val pair = jwtGenerationService.generateTokenPair(userId)
+        return JwtTokenPairDto(
+            pair.first,
+            pair.second
+        )
     }
 }
