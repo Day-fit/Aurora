@@ -1,7 +1,9 @@
 package pl.dayfit.auroraauth.exception.handler
 
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.core.AuthenticationException
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -15,8 +17,11 @@ class GlobalExceptionHandler {
     private val logger = org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler::class.java)
 
     @ExceptionHandler(AccessDeniedException::class)
-    fun handleAccessDeniedException(ex: org.springframework.security.access.AccessDeniedException): ResponseEntity<Map<String, String>> {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(mapOf("error" to (ex.message ?: "Access Denied")))
+    fun handleAccessDeniedException(ex: AccessDeniedException): ResponseEntity<Map<String, String>> {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+            .body(mapOf(
+                "error" to (ex.message ?: "Access Denied")
+            ))
     }
 
     @ExceptionHandler(BadCredentialsException::class)
@@ -52,11 +57,21 @@ class GlobalExceptionHandler {
             .body(errors)
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun handleJsonParseException(): ResponseEntity<Map<String, String>> {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(
+                mapOf("error" to "Request body is not valid JSON syntax")
+            )
+    }
+
     @ExceptionHandler(NoResourceFoundException::class)
-    fun handleNoResourceFoundException(ex: NoResourceFoundException): ResponseEntity<Map<String, String>> {
+    fun handleNoResourceFoundException(e: NoResourceFoundException): ResponseEntity<Map<String, String>> {
+        logger.trace("Requested resource not found: ", e)
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
-            .body(mapOf("error" to (ex.message ?: "Requested resource not found")))
+            .body(mapOf("error" to (e.message ?: "Requested resource not found")))
     }
 
     @ExceptionHandler(Exception::class)

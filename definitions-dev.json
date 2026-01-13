@@ -98,11 +98,29 @@
         "x-queue-type": "stream",
         "x-stream-max-segment-size-bytes": 536870912
       }
+    },
+    {
+      "name": "user.init.core",
+      "vhost": "/",
+      "durable": true,
+      "type": "classic",
+      "arguments": {
+        "x-queue-type": "classic"
+      }
     }
   ],
   "exchanges": [
     {
       "name": "jwks.exchange",
+      "vhost": "/",
+      "type": "fanout",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "user.init.exchange",
       "vhost": "/",
       "type": "fanout",
       "durable": true,
@@ -116,6 +134,12 @@
       "source": "jwks.exchange",
       "vhost": "/",
       "destination": "jwks.queue.core",
+      "destination_type": "queue"
+    },
+    {
+      "source": "user.init.exchange",
+      "vhost": "/",
+      "destination": "user.init.core",
       "destination_type": "queue"
     }
   ]

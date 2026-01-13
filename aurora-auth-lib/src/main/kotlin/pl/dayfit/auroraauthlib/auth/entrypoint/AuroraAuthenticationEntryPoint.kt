@@ -22,8 +22,8 @@ class AuroraAuthenticationEntryPoint (
             "error" to (authException?.message?: "Invalid credentials"
             ))
 
-        response?.writer.use { it?.write(
-            objectMapper.writeValueAsString(body)
-        ) }
+        response
+            ?.outputStream
+            ?.write(objectMapper.writeValueAsBytes(body))
     }
 }

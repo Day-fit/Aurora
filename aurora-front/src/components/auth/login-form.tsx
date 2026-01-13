@@ -9,6 +9,7 @@ import { ButtonType } from "@/lib/types/button";
 import * as Dialog from "@radix-ui/react-dialog";
 import login from "@/lib/backend/login";
 import { useSearchParams, useRouter } from "next/navigation";
+import { revalidateHeader } from "@/lib/backend/revalidate";
 
 export default function LoginForm() {
   const method = useForm<LoginValues>({
@@ -26,8 +27,9 @@ export default function LoginForm() {
 
   const onSubmit = async (data: LoginValues) => {
     try {
-      const result = await login(data.identifier, data.password);
-      console.log("Login successful:", result);
+      await login(data.identifier, data.password);
+
+      await revalidateHeader();
 
       router.push(redirectTo);
     } catch (error: any) {

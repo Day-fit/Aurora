@@ -11,6 +11,7 @@ import pl.dayfit.auroracore.event.EnhanceDoneEvent
 import pl.dayfit.auroracore.event.ResumeReadyToExport
 import pl.dayfit.auroracore.service.cache.ResumeCacheService
 import java.nio.charset.StandardCharsets
+import java.time.Instant
 
 @Service
 class EnhancementIntegrationService(
@@ -38,13 +39,25 @@ class EnhancementIntegrationService(
         consumer.close()
     }
 
+    /**
+     * Handles the completion of the resume enhancement process. Updates the resume details with enhanced
+     * information provided in the event and caches the updated résumé. After updating, publishes an event
+     * indicating that the résumé is ready for export.
+     *
+     * @param event The `EnhanceDoneEvent` object containing enhanced details for the résumé, including
+     *  - `id`: The unique identifier of the résumé to be updated.
+     *  - `newTitle`: The updated title for the résumé.
+     *  - `newDescription`: The updated profile description for the résumé.
+     *  - `newAchievementDescriptions`: A list of updated descriptions for the résumé's achievements.
+     *  - `newSkillsNames`: A list of updated names for the résumé's skills.
+     */
     @EventListener
     fun handleEnhancedResume(event: EnhanceDoneEvent)
     {
         val resume = resumeCacheService.getResumeById(event.id)
 
         resume.title = event.newTitle
-        resume.description = event.newDescription
+        resume.profileDescription = event.newDescription
         resume.achievements.zip(event.newAchievementDescriptions)
             .forEach{ (achievement, description) -> achievement.description = description
             }
@@ -52,6 +65,8 @@ class EnhancementIntegrationService(
         resume.skills.zip(event.newSkillsNames)
             .forEach{ (skill, name) -> skill.name = name
         }
+
+        resume.lastModified = Instant.now()
 
         resumeCacheService.saveResume(resume)
         applicationEventPublisher.publishEvent(
