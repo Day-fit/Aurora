@@ -65,7 +65,7 @@ export default async function Header() {
               <Link href="/auth/login" className="w-full">
                 Log in
               </Link>
-              <Link href="/auth/register" className="w-full">
+              <Link href="/auth/register" className="w-full whitespace-nowrap">
                 Sign in
               </Link>
             </>

@@ -59,3 +59,22 @@ export function base64ToBlob(
     return null;
   }
 }
+
+/**
+ * Converts a File object to a base64 string without the Data URL prefix
+ * @param file - The File object to convert
+ * @returns A Promise that resolves to the raw base64 string
+ */
+export function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const result = reader.result as string;
+      // Split the string at the comma and take the second part (the raw base64)
+      const base64Data = result.split(",")[1];
+      resolve(base64Data);
+    };
+    reader.onerror = (error) => reject(error);
+  });
+}
