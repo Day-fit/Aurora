@@ -114,7 +114,7 @@ export const PersonalPortfolioSchema = z.object({
 /* ------------------ ROOT FORM ------------------ */
 
 export const formSchema = z.object({
-  template: TemplateTypeEnum,
+  templateVersion: TemplateTypeEnum,
 
   title: z.string().min(1, "Title is required"),
   email: z.email("Invalid email"),
@@ -138,7 +138,15 @@ export const formSchema = z.object({
   skills: z.array(SkillSchema),
   personalPortfolio: z.array(PersonalPortfolioSchema),
 
-  profileImage: z.instanceof(File).nullable(),
+  profileImage: z
+    .any()
+    .transform((val) => {
+      if (typeof window !== "undefined" && val instanceof FileList) {
+        return val.length > 0 ? val[0] : null;
+      }
+      return val;
+    })
+    .nullable(),
 });
 
 export type FormValues = z.infer<typeof formSchema>;

@@ -18,7 +18,10 @@ export default function FormStyling() {
           </label>
           <select
             className="w-full bg-transparent border border-white/10 rounded-xl px-4 py-3 text-text-dark focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition cursor-pointer  "
-            {...register("template", { required: true })}
+            {...register("template", {
+              required: true,
+              valueAsNumber: true,
+            })}
           >
             <option value="1" className="bg-main-dark text-text-dark">
               Template 1

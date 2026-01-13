@@ -5,3 +5,7 @@ import { revalidatePath } from "next/cache";
 export async function revalidateHeader() {
   revalidatePath("/", "layout");
 }
+
+export async function revalidateCvList() {
+  revalidatePath("/cv", "page");
+}

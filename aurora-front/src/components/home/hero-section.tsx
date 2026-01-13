@@ -1,5 +1,5 @@
 import Button from "@/components/button";
-import heroPicture from "../../../public/hero-picture.png";
+import heroPicture from "../../../public/template2.png";
 import Image from "next/image";
 
 export default function HeroSection() {

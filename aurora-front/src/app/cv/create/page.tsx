@@ -16,7 +16,7 @@ export default function CreatePage() {
     resolver: zodResolver(formSchema),
     mode: "onSubmit",
     defaultValues: {
-      template: TemplateType.template1,
+      templateVersion: TemplateType.template1,
       title: "",
       name: "",
       surname: "",
