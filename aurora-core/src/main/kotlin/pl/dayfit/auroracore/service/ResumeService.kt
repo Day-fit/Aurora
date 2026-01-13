@@ -188,7 +188,7 @@ class ResumeService(
 
         val tracker = trackerService.createNewTracker(
             userId,
-            TrackerType.ENCHANCEMNT,
+            TrackerType.ENHANCEMENT,
             resumeId
         )
 

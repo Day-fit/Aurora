@@ -6,20 +6,27 @@ import com.rabbitmq.stream.OffsetSpecification
 import jakarta.annotation.PreDestroy
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
+import org.springframework.rabbit.stream.producer.RabbitStreamTemplate
 import org.springframework.stereotype.Service
 import pl.dayfit.auroracore.event.EnhanceDoneEvent
+import pl.dayfit.auroracore.event.EnhanceRequestedEvent
 import pl.dayfit.auroracore.event.ResumeReadyToExport
 import pl.dayfit.auroracore.event.StatusChangedEvent
 import pl.dayfit.auroracore.service.cache.ResumeCacheService
 import pl.dayfit.auroracore.type.TrackerStatus
+import pl.dayfit.auroracore.type.TrackerType
 import java.nio.charset.StandardCharsets
 import java.time.Instant
+import java.util.UUID
 
 @Service
-class EnhancementIntegrationService(
+class EnhancementService(
     private val resumeCacheService: ResumeCacheService,
     private val applicationEventPublisher: ApplicationEventPublisher,
+    private val enhancementStreamTemplate: RabbitStreamTemplate,
+    private val trackerService: TrackerService,
     streamsEnvironment: Environment,
+
 ) {
     private val consumer = streamsEnvironment.consumerBuilder()
         .stream("post.enhancement.stream")
@@ -81,6 +88,32 @@ class EnhancementIntegrationService(
 
         applicationEventPublisher.publishEvent(
             ResumeReadyToExport(resume.id!!)
+        )
+    }
+
+    fun requestEnhancement(id: UUID,
+                           userId: UUID,
+                           title: String,
+                           profileDescription: String,
+                           listOfSkills: List<String>,
+                           listOfAchievements: List<String>
+    )
+    {
+        val tracker = trackerService.createNewTracker(
+            userId,
+            TrackerType.ENHANCEMENT,
+            id,
+        )
+
+        enhancementStreamTemplate.convertAndSend(
+            EnhanceRequestedEvent(
+                id,
+                tracker.id!!,
+                title,
+                profileDescription,
+                listOfAchievements,
+                listOfSkills
+            )
         )
     }
 }

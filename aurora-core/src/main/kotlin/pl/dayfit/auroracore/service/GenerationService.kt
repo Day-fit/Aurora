@@ -12,12 +12,10 @@ import freemarker.template.Template
 import jakarta.transaction.Transactional
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.rabbit.stream.producer.RabbitStreamTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
 import pl.dayfit.auroracore.dto.GenerationRequestDto
-import pl.dayfit.auroracore.event.EnhanceRequestedEvent
 import pl.dayfit.auroracore.event.ResumeReadyToExport
 import pl.dayfit.auroracore.model.Achievement
 import pl.dayfit.auroracore.model.Education
@@ -38,7 +36,6 @@ class GenerationService(
     private val resumeCacheService: ResumeCacheService,
     private val freeMarkerConfiguration: Configuration,
     private val applicationEventPublisher: ApplicationEventPublisher,
-    private val enhancementStreamTemplate: RabbitStreamTemplate,
     private val resumeService: ResumeService
 ) {
     private val logger = LoggerFactory.getLogger(GenerationService::class.java)
@@ -129,17 +126,6 @@ class GenerationService(
             return id
         }
 
-        enhancementStreamTemplate.convertAndSend(
-            EnhanceRequestedEvent(
-                id,
-                requestDto.title,
-                requestDto.profileDescription,
-                requestDto.achievements
-                    .map { it.description }.toList(),
-                requestDto.skills
-                    .map { it.name }.toList()
-            )
-        )
 
         logger.trace("Resume ready to export: {}", resume.id)
         return id
