@@ -12,7 +12,7 @@ class GithubOAuthWorker : OAuthInfoWorker {
 
         return OAuthUserInfo(
             oauthUser.attributes["login"] as String,
-            oauthUser.attributes["email"] as String,
+            null,
             AuthProvider.GITHUB
         )
     }

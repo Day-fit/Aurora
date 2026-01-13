@@ -25,35 +25,37 @@ class MicroserviceJwtFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val token: String? = request.getHeader("Authorization")?.let {
-            if (!it.startsWith("Bearer ")) {
-                filterChain.doFilter(request, response)
-                log.trace("Token is not prefixed with Bearer, skipping")
-                return
-            }
+        val accessToken: String? = request.cookies
+            ?.firstOrNull { it.name == "accessToken" }
+            ?.value
+        val refreshToken: String? = request.cookies
+            ?.firstOrNull { it.name == "refreshToken" }
+            ?.value
 
-            return@let it.substring(7)
+        if (accessToken == null && refreshToken == null) {
+            filterChain.doFilter(request, response)
+            log.trace("Both accessToken and refreshToken cookies are missing, skipping")
+            return
         }
 
-        if (token == null) {
+        val tokenToUse = accessToken ?: refreshToken
+
+        if (tokenToUse == null) {
             filterChain.doFilter(request, response)
-            log.trace("Token is null, skipping")
+            log.trace("No valid token found, skipping")
             return
         }
 
         runCatching {
             val authentication = microserviceAuthProvider.authenticate(
-                MicroserviceTokenCandidate(token)
+                MicroserviceTokenCandidate(tokenToUse)
             )
             SecurityContextHolder.getContext().authentication = authentication
-        }.onFailure {
-            ex ->
+        }.onFailure { ex ->
             SecurityContextHolder.clearContext()
-            val authException = ex as? AuthenticationException ?:
-                BadCredentialsException(
-                    ex.message?:
-                    "Authentication failed"
-                )
+            val authException = ex as? AuthenticationException ?: BadCredentialsException(
+                ex.message ?: "Authentication failed"
+            )
 
             entryPoint.commence(
                 request, response, authException
