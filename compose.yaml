@@ -126,6 +126,9 @@ services:
       - aurora-core
       - aurora-auth
       - aurora-ai
+    environment:
+      - 'BACKEND_AUTH_URL=${BACKEND_AUTH_URL}'
+      - 'BACKEND_CORE_URL=${BACKEND_CORE_URL}'
     profiles:
       - prod
 
