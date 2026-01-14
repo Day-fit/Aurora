@@ -69,7 +69,8 @@ class GlobalExceptionHandler {
     @ExceptionHandler(NoResourceFoundException::class)
     fun handleNoResourceFoundException(e: NoResourceFoundException): ResponseEntity<Map<String, String>> {
         logger.trace("Requested resource not found: ", e)
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
             .body(mapOf("error" to (e.message ?: "Requested resource not found")))
     }
 

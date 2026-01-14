@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { AuthModalProps, AuthMode } from "@/lib/types/auth";
+import Image from "next/image";
+import logo from "../../../public/aurora.png";
 
 export default function AuthModal({ mode, children }: AuthModalProps) {
   const router = useRouter();
@@ -42,14 +44,31 @@ export default function AuthModal({ mode, children }: AuthModalProps) {
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
           >
-            <Dialog.Title className="text-3xl font-bold mb-2 text-heading-dark text-center">
-              {mode === AuthMode.register ? "Join Aurora" : "Welcome Back"}
-            </Dialog.Title>
-            <p className="text-text-dark/60 text-center mb-6">
-              {mode === AuthMode.register
-                ? "Create an account to start your journey"
-                : "Log in to continue your journey"}
-            </p>
+            <div className="flex flex-col items-center mb-6">
+              <div className="relative w-20 h-20 mb-4 flex items-center justify-center">
+                {/* Pulsing Glow Background */}
+                <div className="absolute inset-0 bg-aurora-blue-dark/20 rounded-full animate-pulse blur-md" />
+
+                {/* The Logo Container */}
+                <div className="relative w-16 h-16 rounded-full flex items-center justify-center overflow-hidden shadow-inner">
+                  <Image
+                    src={logo}
+                    alt="Aurora Logo"
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                  />
+                </div>
+              </div>
+              <Dialog.Title className="text-3xl font-bold text-heading-dark text-center">
+                {mode === AuthMode.login ? "Welcome Back" : "Join Aurora"}
+              </Dialog.Title>
+              <p className="text-text-dark/60 text-center mt-2">
+                {mode === AuthMode.login
+                  ? "Log in to continue your journey"
+                  : "Create an account to get started"}
+              </p>
+            </div>
 
             <div className="space-y-4">{children}</div>
 
@@ -67,13 +86,7 @@ export default function AuthModal({ mode, children }: AuthModalProps) {
                   }
                 >
                   {/*later change to have a first letter in uppercase*/}
-                  {(mode == AuthMode.login ? AuthMode.register : AuthMode.login)
-                    .charAt(0)
-                    .toUpperCase() +
-                    (mode == AuthMode.login
-                      ? AuthMode.register
-                      : AuthMode.login
-                    ).slice(1)}{" "}
+                  {mode == AuthMode.login ? "Sign up " : "Log in "}
                   here
                 </span>
               </p>

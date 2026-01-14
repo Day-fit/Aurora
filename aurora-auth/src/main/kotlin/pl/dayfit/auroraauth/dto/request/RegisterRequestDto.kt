@@ -11,7 +11,7 @@ data class RegisterRequestDto(
     val username: String,
     @field:NotBlank(message = "Email cannot be blank.")
     @field:Email(message = "Email is not valid.")
-    val email: String?,
+    val email: String,
     val password: String?,
     val provider: AuthProvider
 )
