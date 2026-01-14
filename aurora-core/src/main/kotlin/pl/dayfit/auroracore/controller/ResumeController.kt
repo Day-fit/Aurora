@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import pl.dayfit.auroracore.dto.EditResumeDto
+import pl.dayfit.auroracore.dto.EnhanceResumeDto
 import pl.dayfit.auroracore.dto.GenerationRequestDto
 import pl.dayfit.auroracore.dto.ResumeInformationDto
 import pl.dayfit.auroracore.dto.TranslationRequestDto
+import pl.dayfit.auroracore.service.EnhancementService
 import pl.dayfit.auroracore.service.GenerationService
 import pl.dayfit.auroracore.service.ResumeService
 import pl.dayfit.auroracore.service.TranslationService
@@ -27,7 +29,8 @@ import java.util.UUID
 class ResumeController (
     private val translationService: TranslationService,
     private val generationService: GenerationService,
-    private val resumeService: ResumeService
+    private val resumeService: ResumeService,
+    private val enhancementService: EnhancementService
 ){
     /**
      * Retrieves all resume IDs associated with the currently authenticated user.
@@ -116,6 +119,16 @@ class ResumeController (
         return ResponseEntity.ok(
             mapOf("resumeId" to resumeId.toString())
         )
+    }
+
+    @PostMapping("/enhance")
+    fun enhance(@RequestBody enhanceResumeDto: EnhanceResumeDto, @AuthenticationPrincipal principal: Principal): ResponseEntity<Map<String, String>> {
+        val trackingId = enhancementService.requestEnhancement(
+            enhanceResumeDto.id,
+            UUID.fromString(principal.name)
+        )
+
+        return ResponseEntity.ok(mapOf("trackingId" to trackingId))
     }
 
     /**

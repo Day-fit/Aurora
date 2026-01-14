@@ -122,17 +122,11 @@ class GenerationService(
         val id = resumeCacheService.saveResume(resume)
             .id!!
 
-        if (!requestDto.enhanced)
-        {
-            applicationEventPublisher.publishEvent(
-                ResumeReadyToExport(id)
-            )
-            logger.trace("Resume ready to export: {}", id)
-            return id
-        }
 
-
-        logger.trace("Resume ready to export: {}", resume.id)
+        applicationEventPublisher.publishEvent(
+            ResumeReadyToExport(id)
+        )
+        logger.trace("Resume ready to export: {}", id)
         return id
     }
 

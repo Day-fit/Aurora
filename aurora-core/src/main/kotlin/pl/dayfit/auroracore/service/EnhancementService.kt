@@ -91,14 +91,20 @@ class EnhancementService(
         )
     }
 
+    /**
+     * Requests an enhancement process for a specified résumé by creating a new tracker, retrieving the
+     * resume details, and sending an enhancement request event.
+     *
+     * @param id The unique identifier of the résumé to be enhanced.
+     * @param userId The unique identifier of the user requesting the enhancement.
+     * @return The unique identifier of the created tracker associated with the enhancement process.
+     */
     fun requestEnhancement(id: UUID,
                            userId: UUID,
-                           title: String,
-                           profileDescription: String,
-                           listOfSkills: List<String>,
-                           listOfAchievements: List<String>
-    )
+    ): String
     {
+        val resume = resumeCacheService.getResumeById(id)
+
         val tracker = trackerService.createNewTracker(
             userId,
             TrackerType.ENHANCEMENT,
@@ -109,11 +115,13 @@ class EnhancementService(
             EnhanceRequestedEvent(
                 id,
                 tracker.id!!,
-                title,
-                profileDescription,
-                listOfAchievements,
-                listOfSkills
+                resume.title ?: "No title specified",
+                resume.profileDescription,
+                resume.achievements.map { it.description },
+                resume.skills.map { it.name }
             )
         )
+
+        return tracker.id!!
     }
 }

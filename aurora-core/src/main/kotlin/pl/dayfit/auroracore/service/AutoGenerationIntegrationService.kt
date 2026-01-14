@@ -53,13 +53,24 @@ class AutoGenerationIntegrationService(
         val generationData: AutoGenerationData = autoGenerationRepository.findById(id)
             .orElseThrow { IllegalStateException("Generation data not found") }
 
-        generationData.skills = event.result.skills.map { skillDto ->
+
+        val result = event.result
+
+        generationData.age = result.age
+        generationData.email = result.email
+        generationData.website = result.website
+        generationData.linkedIn = result.linkedIn
+        generationData.gitHub = result.gitHub
+        generationData.profileImage = result.profileImage
+        generationData.profileDescription = result.profileDescription
+
+        generationData.skills = result.skills.map { skillDto ->
             AutoGenerationData.Skill(
                 name = skillDto.name,
                 level = skillDto.level
             )
         }
-        generationData.education = event.result.education.map { educationDto ->
+        generationData.education = result.education.map { educationDto ->
             AutoGenerationData.Education(
                 institution = educationDto.institution,
                 major = educationDto.major,
@@ -68,7 +79,7 @@ class AutoGenerationIntegrationService(
                 toYear = educationDto.toYear
             )
         }
-        generationData.workExperiences = event.result.workExperiences.map { workExperienceDto ->
+        generationData.workExperiences = result.workExperiences.map { workExperienceDto ->
             AutoGenerationData.WorkExperience(
                 company = workExperienceDto.company,
                 position = workExperienceDto.position,
@@ -77,19 +88,21 @@ class AutoGenerationIntegrationService(
                 endDate = workExperienceDto.endDate
             )
         }
-        generationData.personalPortfolios = event.result.personalPortfolios.map { portfolioDto ->
+        generationData.personalPortfolios = result.personalPortfolios.map { portfolioDto ->
             AutoGenerationData.PersonalPortfolio(
                 name = portfolioDto.name,
                 description = portfolioDto.description
             )
         }
-        generationData.achievements = event.result.achievements.map { achievementDto ->
+        generationData.achievements = result.achievements.map { achievementDto ->
             AutoGenerationData.Achievement(
                 title = achievementDto.title,
                 description = achievementDto.description,
                 year = achievementDto.year
             )
         }
+
+        autoGenerationRepository.save(generationData)
 
         applicationEventPublisher
             .publishEvent(
