@@ -39,6 +39,13 @@ class TranslationIntegrationService(
         consumer.close()
     }
 
+    /**
+     * Handles an event indicating that a resume translation has been completed. Updates the resume data
+     * in the cache with the translated values and publishes an event to signal that the résumé is ready
+     * for export.
+     *
+     * @param event The event containing the translated resume data and associated metadata.
+     */
     @EventListener
     private fun handleTranslatedResume(event: TranslationDoneEvent)
     {
@@ -46,12 +53,12 @@ class TranslationIntegrationService(
 
         val translationResult = event.resume
         resume.title = translationResult.title
-        resume.description = translationResult.description
+        resume.profileDescription = translationResult.description
 
-        resume.workExperiences.zip(translationResult.experiencePositions)
+        resume.workExperience.zip(translationResult.experiencePositions)
             .forEach { (experience, position) -> experience.position = position}
 
-        resume.workExperiences.zip(translationResult.experienceDescriptions)
+        resume.workExperience.zip(translationResult.experienceDescriptions)
             .forEach { (experience, description) -> experience.description = description }
 
         resume.achievements.zip(translationResult.achievementsTitles)

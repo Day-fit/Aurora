@@ -3,9 +3,9 @@ import { callBackend } from "@/lib/backend/backend";
 
 export async function POST(req: NextRequest) {
   try {
-    const { endpoint, body } = await req.json();
+    const { endpoint, body, baseUrl } = await req.json();
 
-    const { status, data } = await callBackend({ endpoint, body });
+    const { status, data } = await callBackend({ endpoint, body, baseUrl });
 
     if ((data as any).accessToken) {
       const response = NextResponse.json(data);

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.resource.NoResourceFoundException
 import pl.dayfit.auroracore.exception.AutoGenerationFailedException
+import pl.dayfit.auroracore.exception.InvalidBase64Exception
 import pl.dayfit.auroracore.exception.ResourceNotReadyYetException
 import pl.dayfit.auroracore.exception.UuidInvalidException
 import java.security.NoSuchProviderException
@@ -103,6 +104,12 @@ class GlobalExceptionHandler {
         logger.trace("Requested resource not found: ", e)
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(mapOf("error" to (e.message ?: "Requested resource not found")))
+    }
+
+    @ExceptionHandler(InvalidBase64Exception::class)
+    fun handleInvalidBase64Exception(e: InvalidBase64Exception): ResponseEntity<Map<String, String>> {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(mapOf("error" to (e.message ?: "Invalid base64 string")))
     }
 
     @ExceptionHandler(Exception::class)

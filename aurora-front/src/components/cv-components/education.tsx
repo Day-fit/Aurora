@@ -14,8 +14,6 @@ export default function Education() {
     name: "education",
   });
 
-  console.log(fields);
-
   return (
     <div className="w-full">
       <div className="flex flex-col gap-3">
@@ -173,7 +171,7 @@ export default function Education() {
                     toYear: null,
                   });
                 }}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-aurora-blue-dark to-aurora-green-dark text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
+                className="inline-flex items-center gap-2 bg-linear-to-r from-aurora-blue-dark to-aurora-green-dark text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
                 text="Add new education"
                 icon={<FiPlus />}
               />

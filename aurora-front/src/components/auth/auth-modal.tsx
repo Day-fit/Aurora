@@ -69,6 +69,14 @@ export default function AuthModal({ mode, children }: AuthModalProps) {
                   : "Create an account to get started"}
               </p>
             </div>
+            <Dialog.Title className="text-3xl font-bold mb-2 text-heading-dark text-center">
+              {mode === AuthMode.register ? "Join Aurora" : "Welcome Back"}
+            </Dialog.Title>
+            <p className="text-text-dark/60 text-center mb-6">
+              {mode === AuthMode.register
+                ? "Create an account to start your journey"
+                : "Log in to continue your journey"}
+            </p>
 
             <div className="space-y-4">{children}</div>
 
@@ -86,9 +94,13 @@ export default function AuthModal({ mode, children }: AuthModalProps) {
                   }
                 >
                   {/*later change to have a first letter in uppercase*/}
-                  {mode == AuthMode.login
-                    ? AuthMode.register
-                    : AuthMode.login}{" "}
+                  {(mode == AuthMode.login ? AuthMode.register : AuthMode.login)
+                    .charAt(0)
+                    .toUpperCase() +
+                    (mode == AuthMode.login
+                      ? AuthMode.register
+                      : AuthMode.login
+                    ).slice(1)}{" "}
                   here
                 </span>
               </p>

@@ -4,19 +4,18 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
-import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
+import pl.dayfit.auroraauthlib.auth.entrypoint.AuroraAuthenticationEntryPoint
 import pl.dayfit.auroraauthlib.auth.provider.MicroserviceAuthProvider
 import pl.dayfit.auroraauthlib.auth.token.MicroserviceTokenCandidate
 
 @Component
 class MicroserviceJwtFilter(
     private val microserviceAuthProvider: MicroserviceAuthProvider,
-    private val entryPoint: AuthenticationEntryPoint
+    private val auroraAuthenticationEntryPoint: AuroraAuthenticationEntryPoint
     ) : OncePerRequestFilter() {
     private val log = LoggerFactory.getLogger(this::class.java)
 
@@ -25,41 +24,25 @@ class MicroserviceJwtFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val token: String? = request.getHeader("Authorization")?.let {
-            if (!it.startsWith("Bearer ")) {
-                filterChain.doFilter(request, response)
-                log.trace("Token is not prefixed with Bearer, skipping")
-                return
-            }
+        val accessToken: String? = request.cookies
+            ?.firstOrNull { it.name == "accessToken" }
+            ?.value
 
-            return@let it.substring(7)
-        }
-
-        if (token == null) {
+        if (accessToken == null) {
             filterChain.doFilter(request, response)
-            log.trace("Token is null, skipping")
+            log.trace("Access token not found, skipping")
             return
         }
 
-        runCatching {
+        try {
             val authentication = microserviceAuthProvider.authenticate(
-                MicroserviceTokenCandidate(token)
+                MicroserviceTokenCandidate(accessToken)
             )
             SecurityContextHolder.getContext().authentication = authentication
-        }.onFailure {
-            ex ->
+            filterChain.doFilter(request, response)
+        } catch (ex: AuthenticationException) {
             SecurityContextHolder.clearContext()
-            val authException = ex as? AuthenticationException ?:
-                BadCredentialsException(
-                    ex.message?:
-                    "Authentication failed"
-                )
-
-            entryPoint.commence(
-                request, response, authException
-            )
+            auroraAuthenticationEntryPoint.commence(request, response, ex)
         }
-
-        filterChain.doFilter(request, response)
     }
 }

@@ -28,15 +28,15 @@ data class GenerationRequestDto (
     val profileDescription: String?,
     val education: List<Education>,
     val skills: List<Skill>,
-    val experiences: List<Experience>,
+    val workExperience: List<Experience>,
     val achievements: List<Achievement>,
     val personalPortfolio: List<PersonalPortfolio>,
 
     @Min(1)
-    @Max(1) //TODO: Add more versions
+    @Max(5)
     val templateVersion: Int,
 
-    val enhanced : Boolean = false
+    val enhanced: Boolean = false
 )
 {
     data class Education (

@@ -11,6 +11,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import login from "@/lib/backend/login";
 import register from "@/lib/backend/register";
 import { FaGithub, FaGoogle } from "react-icons/fa";
+import { revalidateHeader } from "@/lib/backend/revalidate";
 
 export default function RegisterForm() {
   const method = useForm<RegisterValues>({
@@ -33,6 +34,8 @@ export default function RegisterForm() {
       const identifier = data.email;
 
       await login(identifier, data.password);
+
+      await revalidateHeader();
 
       router.push(redirectTo);
     } catch (error: any) {
