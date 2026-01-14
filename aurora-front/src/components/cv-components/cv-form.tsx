@@ -17,6 +17,7 @@ import { generateCv } from "@/lib/backend/resume-generation";
 import { useRouter } from "next/navigation";
 import { revalidateCvList } from "@/lib/backend/revalidate";
 import { fileToBase64 } from "@/lib/utils/image";
+import { useTracker } from "@/context/tracker-context";
 
 export default function CvForm() {
   //need to add validation, error handling, submit handling via request
@@ -27,6 +28,8 @@ export default function CvForm() {
     formState: { isSubmitting, errors },
   } = useFormContext();
 
+  const { startTracking } = useTracker();
+
   const router = useRouter();
 
   const onSubmit = async (data: any) => {
@@ -35,21 +38,13 @@ export default function CvForm() {
     try {
       const payload = { ...data };
 
-      // If there is a file, convert it to base64 string for the backend
       if (data.profileImage instanceof File) {
         payload.profileImage = await fileToBase64(data.profileImage);
       }
 
-      console.log("Payload:", payload);
+      startTracking();
 
-      const response = await generateCv(payload);
-      if (response.status >= 200 && response.status < 300) {
-        console.log("CV Generated successfully:", response.data);
-        // Maybe redirect or show success message
-      } else {
-        console.error("Failed to generate CV:", response.data);
-        alert("Failed to generate CV. Please try again.");
-      }
+      await generateCv(payload);
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("An unexpected error occurred.");
