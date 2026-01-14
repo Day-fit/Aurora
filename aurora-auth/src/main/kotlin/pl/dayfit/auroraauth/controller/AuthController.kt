@@ -13,6 +13,7 @@ import pl.dayfit.auroraauth.configuration.properties.CookiesConfigurationPropert
 import pl.dayfit.auroraauth.configuration.properties.JwtConfigurationProperties
 import pl.dayfit.auroraauth.dto.request.LoginRequestDto
 import pl.dayfit.auroraauth.dto.request.RegisterRequestDto
+import pl.dayfit.auroraauth.dto.response.JwtTokenPairDto
 import pl.dayfit.auroraauth.service.AuthService
 import java.security.Principal
 import java.util.UUID
@@ -52,8 +53,10 @@ class AuthController(
             .build()
 
         return ResponseEntity.ok()
-            .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
-            .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+            .headers {
+                it.add(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
+                it.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+            }
             .build()
     }
 
@@ -72,6 +75,33 @@ class AuthController(
             UUID.fromString(principal.name)
         )
 
-        return ResponseEntity.ok(pair)
+        val accessTokenCookie = ResponseCookie.from("accessToken", pair.accessToken)
+            .httpOnly(true)
+            .secure(cookiesConfigurationProperties.secure)
+            .sameSite("Lax")
+            .path("/")
+            .maxAge(jwtConfigurationProperties
+                .accessTokenValidity
+                .inWholeSeconds
+            )
+            .build()
+
+        val refreshTokenCookie = ResponseCookie.from("refreshToken", pair.refreshToken)
+            .httpOnly(true)
+            .secure(cookiesConfigurationProperties.secure)
+            .sameSite("Lax")
+            .path("/")
+            .maxAge(jwtConfigurationProperties
+                .refreshTokenValidity
+                .inWholeSeconds
+            )
+            .build()
+
+        return ResponseEntity.ok()
+            .headers {
+                it.add(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
+                it.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+            }
+            .build()
     }
 }
