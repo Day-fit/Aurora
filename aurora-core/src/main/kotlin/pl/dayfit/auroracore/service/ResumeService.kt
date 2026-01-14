@@ -31,6 +31,7 @@ import pl.dayfit.auroracore.type.TrackerType
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.time.Instant
+import java.util.Base64
 import java.util.UUID
 import kotlin.jvm.javaClass
 
@@ -58,14 +59,18 @@ class ResumeService(
     {
         return resumeCacheService
             .getAllResumesByOwnerId(userId)
-            .map {
+            .map { resume ->
                 ResumeInformationDto(
-                it.id!!,
-                it.language,
-                getGenerationResultSize(userId, it.id!!),
-                it.lastModified,
-                it.originalVersion?.id,
-                it.enhanced
+                resume.id!!,
+                resume.title,
+                resume.name,
+                resume.surname,
+                resume.profileImage?.let { Base64.getEncoder().encodeToString(it) },
+                resume.language,
+                getGenerationResultSize(userId, resume.id!!),
+                resume.lastModified,
+                resume.originalVersion?.id,
+                resume.enhanced
             ) }
     }
 

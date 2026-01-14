@@ -1,21 +1,28 @@
 package pl.dayfit.auroraauth.configuration
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.client.RestTemplate
-import pl.dayfit.auroraauth.configuration.properties.OAuthConfigurationProperties
-import java.time.Duration
+import org.springframework.core.annotation.Order
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.SecurityFilterChain
+import org.springframework.web.cors.CorsConfigurationSource
+import pl.dayfit.auroraauth.oauth.OAuthSuccessHandler
 
 @Configuration
-@EnableConfigurationProperties(OAuthConfigurationProperties::class)
 class OAuthConfiguration {
     @Bean
-    fun oauthRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate
-    {
-        return restTemplateBuilder
-            .connectTimeout(Duration.ofSeconds(2)) //Response needs to be fast
+    @Order(1)
+    fun oauthFilterChain(
+        http: HttpSecurity,
+        corsConfigurationSource: CorsConfigurationSource,
+        oAuthSuccessHandler: OAuthSuccessHandler
+    ): SecurityFilterChain {
+        return http
+            .securityMatcher("/oauth2/authorization/**", "/login/oauth2/code/**")
+            .authorizeHttpRequests { it.anyRequest().permitAll() }
+            .oauth2Login { it.successHandler(oAuthSuccessHandler) }
+            .cors { it.configurationSource(corsConfigurationSource)}
+            .csrf { it.disable() }
             .build()
     }
 }

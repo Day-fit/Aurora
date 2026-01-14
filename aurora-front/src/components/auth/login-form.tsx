@@ -9,6 +9,8 @@ import { ButtonType } from "@/lib/types/button";
 import * as Dialog from "@radix-ui/react-dialog";
 import login from "@/lib/backend/login";
 import { useSearchParams, useRouter } from "next/navigation";
+import { FaGithub, FaGoogle } from "react-icons/fa";
+import { revalidateHeader } from "@/lib/backend/revalidate";
 
 export default function LoginForm() {
   const method = useForm<LoginValues>({
@@ -23,10 +25,29 @@ export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/"; // fallback to home
+  const errorParam = searchParams.get("error");
+
+  const getErrorMessage = (error: string | null) => {
+    switch (error) {
+      case "OAuthFailed":
+        return "Social login failed. Please try again.";
+      case "ConnectionError":
+        return "Could not connect to the auth server.";
+      case "session_invalid":
+        return "Your session has expired. Please log in again.";
+      default:
+        return null;
+    }
+  };
+
+  const errorMessage = getErrorMessage(errorParam);
 
   const onSubmit = async (data: LoginValues) => {
     try {
       await login(data.identifier, data.password);
+
+      await revalidateHeader();
+
       router.push(redirectTo);
     } catch (error: any) {
       const message = error?.message || "Login failed. Please try again.";
@@ -35,12 +56,25 @@ export default function LoginForm() {
     }
   };
 
+  const handleOAuthLogin = (provider: string) => {
+    // We tell the backend: "After you finish with Google/GitHub, send the user here"
+    const callbackUrl = `${window.location.origin}/auth/callback`;
+
+    // Most Spring Boot / OAuth2 backends use 'redirect_uri'
+    window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_AUTH_URL}/oauth2/authorization/${provider}?redirect_uri=${callbackUrl}`;
+  };
+
   return (
     <FormProvider {...method}>
       <form
         onSubmit={method.handleSubmit(onSubmit)}
         className="flex flex-col gap-4"
       >
+        {errorMessage && (
+          <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-2 rounded-lg text-sm">
+            {errorMessage}
+          </div>
+        )}
         <Input
           label="Email"
           name="identifier"
@@ -55,6 +89,36 @@ export default function LoginForm() {
           disabled={method.formState.isSubmitting}
           text={method.formState.isSubmitting ? "Logging in..." : "Login"}
         />
+
+        <div className="relative my-4">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-gray-700"></span>
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-main-dark px-2 text-text-dark/50">
+              Or continue with
+            </span>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <button
+            type="button"
+            onClick={() => handleOAuthLogin("google")}
+            className="flex items-center justify-center gap-3 px-6 py-3 border border-gray-700 rounded-lg bg-gray-800/30 hover:bg-gray-800 hover:border-gray-600 transition-all text-sm font-semibold"
+          >
+            <FaGoogle className="text-lg" />
+            <span>Sign in with Google</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => handleOAuthLogin("github")}
+            className="flex items-center justify-center gap-3 px-6 py-3 border border-gray-700 rounded-lg bg-gray-800/30 hover:bg-gray-800 hover:border-gray-600 transition-all text-sm font-semibold"
+          >
+            <FaGithub className="text-lg" />
+            <span>Sign in with GitHub</span>
+          </button>
+        </div>
 
         {/* Cancel button wrapped in Dialog.Close to close modal */}
         <Dialog.Close asChild>

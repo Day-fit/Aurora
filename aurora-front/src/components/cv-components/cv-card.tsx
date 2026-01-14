@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { FaFileAlt, FaEdit, FaUserCircle } from "react-icons/fa";
-import Image from "next/image";
+import { useState, useEffect } from "react";
+import { base64ToDataUrl } from "@/lib/utils/image";
 
 interface CvCardProps {
   id: string;
@@ -8,23 +11,40 @@ interface CvCardProps {
     title: string;
     name: string;
     surname: string;
-    profileImage?: string;
+    profileImage?: string | File[] | null;
   };
 }
 
 export function CvCard({ id, data }: CvCardProps) {
   const { title, name, surname, profileImage } = data;
+  const [blobUrl, setBlobUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (Array.isArray(profileImage) && profileImage[0] instanceof File) {
+      const url = URL.createObjectURL(profileImage[0]);
+      setBlobUrl(url);
+      return () => {
+        URL.revokeObjectURL(url);
+      };
+    } else {
+      setBlobUrl(null);
+    }
+  }, [profileImage]);
+
+  // Handle different image formats
+  const imageUrl =
+    blobUrl ||
+    (typeof profileImage === "string" ? base64ToDataUrl(profileImage) : null);
 
   return (
     <div className="group bg-main-dark/90 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 hover:-translate-y-2 flex flex-col h-full">
       {/* Image Preview Section */}
       <div className="relative h-48 bg-white/5 flex items-center justify-center overflow-hidden border-b border-white/5">
-        {profileImage ? (
-          <Image
-            src={profileImage}
+        {imageUrl ? (
+          <img
+            src={imageUrl}
             alt={`${name} ${surname}`}
-            fill
-            className="object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100"
           />
         ) : (
           <div className="flex flex-col items-center text-text-dark/20">
@@ -51,7 +71,7 @@ export function CvCard({ id, data }: CvCardProps) {
           <Link
             href={{
               pathname: "/cv/create",
-              query: { id, data: JSON.stringify(data) },
+              query: { id },
             }}
             className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-linear-to-r from-aurora-blue-dark to-aurora-blue-dark/80 hover:from-aurora-green-dark hover:to-aurora-green-dark/80 text-white text-sm font-bold rounded-lg transition-all duration-300 shadow-lg active:scale-95"
           >

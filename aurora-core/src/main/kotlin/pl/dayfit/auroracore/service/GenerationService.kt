@@ -10,6 +10,7 @@ import com.itextpdf.styledxmlparser.css.media.MediaType
 import freemarker.template.Configuration
 import freemarker.template.Template
 import jakarta.transaction.Transactional
+import net.coobird.thumbnailator.Thumbnails
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -17,6 +18,7 @@ import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
 import pl.dayfit.auroracore.dto.GenerationRequestDto
 import pl.dayfit.auroracore.event.ResumeReadyToExport
+import pl.dayfit.auroracore.exception.InvalidBase64Exception
 import pl.dayfit.auroracore.model.Achievement
 import pl.dayfit.auroracore.model.Education
 import pl.dayfit.auroracore.model.PersonalPortfolio
@@ -38,6 +40,7 @@ class GenerationService(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val resumeService: ResumeService
 ) {
+    private val imageQuality = 0.75
     private val logger = LoggerFactory.getLogger(GenerationService::class.java)
 
     /**
@@ -103,7 +106,9 @@ class GenerationService(
                     it.year
                 )
             }.toMutableList(),
-            requestDto.profileImage?.let { Base64.decode(it) },
+            requestDto.profileImage?.let {
+                compressImage(it)
+            },
 
             requestDto.profileDescription,
             requestDto.email,
@@ -198,5 +203,21 @@ class GenerationService(
         }
 
         resumeCacheService.saveResume(resume)
+    }
+
+    private fun compressImage(image: String): ByteArray {
+        try {
+            val inputStream = ByteArrayInputStream(Base64.decode(image))
+            val outputStream = ByteArrayOutputStream()
+            Thumbnails.of(inputStream)
+                .outputQuality(imageQuality)
+                .size(600, 600)
+                .keepAspectRatio(true)
+                .toOutputStream(outputStream)
+
+            return outputStream.toByteArray()
+        } catch (_: IllegalArgumentException) {
+            throw InvalidBase64Exception("Profile image is invalid base64 string")
+        }
     }
 }

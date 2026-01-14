@@ -52,13 +52,8 @@ export default async function Header() {
               </Link>
             </li>
             <li>
-              <Link href="/cv/create" className="w-full">
-                Create
-              </Link>
-            </li>
-            <li>
               <Link href="/cv" className="w-full">
-                Edit
+                Your Cvs
               </Link>
             </li>
           </ul>
@@ -70,7 +65,7 @@ export default async function Header() {
               <Link href="/auth/login" className="w-full">
                 Log in
               </Link>
-              <Link href="/auth/register" className="w-full">
+              <Link href="/auth/register" className="w-full whitespace-nowrap">
                 Sign in
               </Link>
             </>

@@ -14,6 +14,9 @@ import ProfileLinks from "@/components/cv-components/profile-links";
 import FormStyling from "@/components/cv-components/form-styling";
 import PersonalPortfolio from "@/components/cv-components/personal-portfolio";
 import { generateCv } from "@/lib/backend/resume-generation";
+import { useRouter } from "next/navigation";
+import { revalidateCvList } from "@/lib/backend/revalidate";
+import { fileToBase64 } from "@/lib/utils/image";
 
 export default function CvForm() {
   //need to add validation, error handling, submit handling via request
@@ -21,15 +24,25 @@ export default function CvForm() {
   const {
     handleSubmit,
     reset,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = useFormContext();
+
+  const router = useRouter();
 
   const onSubmit = async (data: any) => {
     console.log("Submitting form:", data);
 
     try {
-      const response = await generateCv(data);
+      const payload = { ...data };
 
+      // If there is a file, convert it to base64 string for the backend
+      if (data.profileImage instanceof File) {
+        payload.profileImage = await fileToBase64(data.profileImage);
+      }
+
+      console.log("Payload:", payload);
+
+      const response = await generateCv(payload);
       if (response.status >= 200 && response.status < 300) {
         console.log("CV Generated successfully:", response.data);
         // Maybe redirect or show success message
@@ -41,6 +54,18 @@ export default function CvForm() {
       console.error("Error submitting form:", error);
       alert("An unexpected error occurred.");
     }
+
+    await revalidateCvList();
+
+    router.back();
+  };
+
+  // Add this to debug validation errors
+  const handleFormSubmit = (e: React.FormEvent) => {
+    console.log("Form submitted - checking for errors...");
+    console.log("Validation errors:", errors);
+    console.log("Submitting form...");
+    handleSubmit(onSubmit)(e);
   };
 
   return (
@@ -59,7 +84,7 @@ export default function CvForm() {
 
           <form
             className="w-full flex flex-col gap-4"
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleFormSubmit}
           >
             <FormSection title="Styling options">
               <FormStyling />
@@ -101,6 +126,7 @@ export default function CvForm() {
                 text={isSubmitting ? "Creating..." : "Create CV"}
               />
               <Button
+                type={ButtonType.button}
                 className="bg-transparent border border-white/8 text-text-dark px-4 py-3 rounded-lg hover:bg-aurora-green-dark hover:text-white transition"
                 text="Reset"
                 onClick={() => reset()}
