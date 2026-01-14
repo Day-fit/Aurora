@@ -12,8 +12,8 @@ import pl.dayfit.auroraauth.dto.response.JwtTokenPairDto
 import pl.dayfit.auroraauth.event.UserReadyForInitializingEvent
 import pl.dayfit.auroraauth.exception.UserAlreadyExistsException
 import pl.dayfit.auroraauth.model.AuroraUser
+import pl.dayfit.auroraauth.oauth.OAuthUserInfo
 import pl.dayfit.auroraauth.repository.UserRepository
-import pl.dayfit.auroraauth.type.AuthProvider
 import pl.dayfit.auroraauthlib.type.RoleType
 import java.util.UUID
 
@@ -26,11 +26,6 @@ class AuthService(
     private val rabbitTemplate: RabbitTemplate
 ) {
     fun handleLogin(loginDto: LoginRequestDto): JwtTokenPairDto {
-        if (loginDto.provider != AuthProvider.LOCAL)
-        {
-            throw IllegalArgumentException("Only local provider is supported for now")
-        }
-
         val authentication = credentialsAuthProvider.authenticate(
             CredentialsTokenCandidate(
                 loginDto.identifier,
@@ -46,7 +41,7 @@ class AuthService(
     }
 
     fun handleRegistration(registerDto: RegisterRequestDto) {
-        val result = userRepository.findByUsernameOrEmail(registerDto.username, registerDto.email!!)
+        val result = userRepository.findByUsernameOrEmail(registerDto.username, registerDto.email)
         if (result.isPresent){
             throw UserAlreadyExistsException("User with given username or email already exists")
         }
@@ -80,5 +75,23 @@ class AuthService(
             pair.first,
             pair.second
         )
+    }
+
+    fun handleRegistration(info: OAuthUserInfo): UUID
+    {
+        val user = AuroraUser(
+            null,
+            info.username,
+            info.email,
+            null,
+            mutableListOf(RoleType.STANDARD),
+            banned = false,
+            enabled = true, //TODO: Change to false when email verification is implemented
+            info.provider
+        )
+
+        return userRepository
+            .save(user)
+            .id!!
     }
 }

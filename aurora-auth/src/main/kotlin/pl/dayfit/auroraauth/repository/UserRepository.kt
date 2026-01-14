@@ -12,7 +12,7 @@ interface UserRepository : JpaRepository<AuroraUser, UUID> {
     fun findByUsername(username: String): Optional<AuroraUser>
     fun findByEmail(email: String): Optional<AuroraUser>
     @Query("""
-        SELECT u FROM AuroraUser u WHERE u.username = :username OR u.email = :email
+        SELECT u FROM AuroraUser u WHERE u.username = :username OR (u.email = :email AND u.email IS NOT NULL) 
     """)
-    fun findByUsernameOrEmail(username: String, email: String): Optional<AuroraUser>
+    fun findByUsernameOrEmail(username: String, email: String?): Optional<AuroraUser>
 }

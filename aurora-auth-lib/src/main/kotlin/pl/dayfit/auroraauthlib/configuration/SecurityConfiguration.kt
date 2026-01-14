@@ -4,7 +4,6 @@ import jakarta.servlet.DispatcherType
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.ProviderManager
@@ -40,7 +39,7 @@ class SecurityConfiguration {
     }
 
     @Bean
-    @Order(HIGHEST_PRECEDENCE)
+    @Order(2)
     fun filterChain(
         http: HttpSecurity,
         microserviceJwtFilter: MicroserviceJwtFilter,
