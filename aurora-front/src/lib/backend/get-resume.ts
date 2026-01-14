@@ -12,6 +12,7 @@ export default async function getResume(
       baseUrl: process.env.BACKEND_CORE_URL,
     });
 
+    console.log(`CV with id ${id} fetched:`, data);
     if (status !== 200) return null;
     return data;
   } catch (error) {

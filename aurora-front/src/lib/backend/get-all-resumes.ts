@@ -9,8 +9,6 @@ export default async function getAllResumes() {
       baseUrl: process.env.BACKEND_CORE_URL,
     });
 
-    console.log("Fetched CVs:", data);
-
     if (status !== 200) return [];
     return data as any[];
   } catch (error) {

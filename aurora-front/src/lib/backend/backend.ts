@@ -18,6 +18,9 @@ export async function callBackend<T = any>({
     throw new Error("Base URL is not defined");
   }
 
+  console.log(
+    `Calling backend with method ${method} and endpoint ${BASE_URL + endpoint}`,
+  );
   const cookieStore = await cookies();
 
   const buildCookieHeader = () =>
@@ -26,17 +29,41 @@ export async function callBackend<T = any>({
       .map((c) => `${c.name}=${c.value}`)
       .join("; ");
 
-  const getHeaders = () => ({
-    "Content-Type": "application/json",
-    Cookie: buildCookieHeader(),
-  });
+  const getHeaders = () => {
+    const headers: Record<string, string> = {
+      Cookie: buildCookieHeader(),
+    };
+    // ONLY add Content-Type if we are actually sending a body
+    if (body && method !== RequestMethod.GET) {
+      headers["Content-Type"] = "application/json";
+    }
+    return headers;
+  };
 
-  let res = await fetch(`${BASE_URL}${endpoint}`, {
+  const url = `${BASE_URL.replace(/\/$/, "")}/${endpoint.replace(/^\//, "")}`;
+
+  let res = await fetch(url, {
     method,
     headers: getHeaders(),
     body: body ? JSON.stringify(body) : undefined,
     cache: "no-store",
   });
+
+  // If the backend sent Set-Cookie headers (on login or any request),
+  // we must capture them and set them in Next.js
+  const setCookieHeader = res.headers.get("set-cookie");
+  if (setCookieHeader) {
+    const cookiesToSet = setCookieHeader.split(/,(?=[^;]+=[^;]+)/);
+    cookiesToSet.forEach((cookieString) => {
+      const [nameValue] = cookieString.split(";");
+      const [name, value] = nameValue.split("=");
+      cookieStore.set(name.trim(), value.trim(), {
+        httpOnly: true,
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      });
+    });
+  }
 
   if (res.status === 401) {
     const refreshToken = cookieStore.get("refreshToken")?.value;
@@ -51,21 +78,43 @@ export async function callBackend<T = any>({
         });
 
         if (refreshRes.ok) {
-          const { accessToken, refreshToken: newRefreshToken } =
-            await refreshRes.json();
+          // If your backend sends cookies via Set-Cookie headers,
+          // we need to parse them and set them in our Next.js cookie store.
+          const setCookieHeader = refreshRes.headers.get("set-cookie");
 
-          cookieStore.set("accessToken", accessToken, {
-            httpOnly: true,
-            path: "/",
-          });
+          if (setCookieHeader) {
+            // Simplified logic: your backend might send multiple cookies
+            // This logic ensures they get passed back to the client browser
+            const cookiesToSet = setCookieHeader.split(/,(?=[^;]+=[^;]+)/);
 
-          if (newRefreshToken) {
-            cookieStore.set("refreshToken", newRefreshToken, {
-              httpOnly: true,
-              path: "/",
+            cookiesToSet.forEach((cookieString) => {
+              const [nameValue] = cookieString.split(";");
+              const [name, value] = nameValue.split("=");
+              cookieStore.set(name.trim(), value.trim(), {
+                httpOnly: true,
+                path: "/",
+                secure: process.env.NODE_ENV === "production",
+              });
             });
+          } else {
+            // FALLBACK: If your backend still returns them in JSON for refresh
+            const { accessToken, refreshToken: newRefreshToken } =
+              await refreshRes.json();
+            if (accessToken) {
+              cookieStore.set("accessToken", accessToken, {
+                httpOnly: true,
+                path: "/",
+              });
+            }
+            if (newRefreshToken) {
+              cookieStore.set("refreshToken", newRefreshToken, {
+                httpOnly: true,
+                path: "/",
+              });
+            }
           }
 
+          // Retry the original request with the new cookies
           res = await fetch(`${BASE_URL}${endpoint}`, {
             method,
             headers: getHeaders(),

@@ -3,26 +3,23 @@ import { callBackend } from "@/lib/backend/backend";
 
 export async function POST(req: NextRequest) {
   try {
-    const { endpoint, body, baseUrl } = await req.json();
+    const { endpoint, body, baseUrl, method } = await req.json();
 
-    const { status, data } = await callBackend({ endpoint, body, baseUrl });
+    // callBackend already handles sending current cookies to the backend
+    // and refreshing the token if needed.
+    const { status, data } = await callBackend({
+      endpoint,
+      body,
+      baseUrl,
+      method,
+    });
 
-    if ((data as any).accessToken) {
-      const response = NextResponse.json(data);
-      response.cookies.set("accessToken", (data as any).accessToken, {
-        httpOnly: true,
-        path: "/",
-      });
-      response.cookies.set("refreshToken", (data as any).refreshToken, {
-        httpOnly: true,
-        path: "/",
-      });
-      return response;
-    }
-
+    // We return the data. Since callBackend uses 'cookies()' from next/headers,
+    // any 'cookieStore.set' calls made inside callBackend will automatically
+    // be applied to the outgoing response in Next.js.
     return NextResponse.json(data, { status });
   } catch (error) {
-    console.error(error);
+    console.error("Proxy error:", error);
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 },

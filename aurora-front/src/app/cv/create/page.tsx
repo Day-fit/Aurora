@@ -1,71 +1,72 @@
-"use client";
-
-import CvForm from "@/components/cv-components/cv-form";
-import TemplatePreview from "@/components/cv-components/cv-preview/template-preview";
-import { FormProvider, useForm } from "react-hook-form";
-import { TemplateType } from "@/lib/types/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { formSchema, FormValues } from "@/lib/types/form";
-import { useSearchParams } from "next/navigation";
 import getResume from "@/lib/backend/get-resume";
-import { useEffect } from "react";
+import CreateCvClient from "@/components/cv-components/create-cv-client";
+import { TemplateType } from "@/lib/types/form";
 
-export default function CreatePage() {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id");
+export default async function CreatePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ id?: string }>;
+}) {
+  const { id } = await searchParams;
+  let initialData = null;
 
-  const methods = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    mode: "onSubmit",
-    defaultValues: {
-      templateVersion: TemplateType.template1,
-      title: "",
-      name: "",
-      surname: "",
-      age: undefined,
-      email: "",
-      website: "",
-      linkedIn: "",
-      gitHub: "",
-      profileDescription: "",
-      profileImage: null,
-      workExperience: [],
-      achievements: [],
-      skills: [],
-      education: [],
-      personalPortfolio: [],
-    },
-  });
+  if (id) {
+    const data = await getResume(id);
+    if (data) {
+      initialData = {
+        // Basic fields with fallbacks
+        title: data.title || "",
+        name: data.name || "",
+        surname: data.surname || "",
+        age: data.age || undefined,
+        email: data.email || "",
+        website: data.website || "",
+        linkedIn: data.linkedIn || "",
+        gitHub: data.gitHub || "",
+        profileDescription: data.profileDescription || "",
+        profileImage: data.profileImage || null,
 
-  useEffect(() => {
-    if (!id) return;
+        // Arrays with fallbacks to empty arrays
+        workExperience: Array.isArray(data.workExperience)
+          ? data.workExperience
+          : [],
+        achievements: Array.isArray(data.achievements) ? data.achievements : [],
+        skills: Array.isArray(data.skills) ? data.skills : [],
+        education: Array.isArray(data.education) ? data.education : [],
+        personalPortfolio: Array.isArray(data.personalPortfolio)
+          ? data.personalPortfolio
+          : [],
 
-    const fetchResume = async () => {
-      try {
-        const data = await getResume(id);
-        if (data) {
-          methods.reset(data);
-        }
-        console.log("Resume fetched:", data);
-      } catch (error) {
-        console.error("Error fetching resume:", error);
-      }
-    };
+        // Template version with proper enum mapping
+        templateVersion: mapTemplateVersion(data.templateVersion),
+      };
+    }
+    console.log("Processed initialData:", initialData);
+  }
 
-    fetchResume();
-  }, [id, methods]);
+  return <CreateCvClient initialData={initialData} id={id} />;
+}
 
-  return (
-    <FormProvider {...methods}>
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
-        <div className="w-full md:w-1/2 min-w-0">
-          <CvForm />
-        </div>
+// Helper function to map template version from API to your enum
+function mapTemplateVersion(apiVersion: any): TemplateType {
+  // If it's already the correct enum value, return it
+  if (Object.values(TemplateType).includes(apiVersion)) {
+    return apiVersion;
+  }
 
-        <div className="w-full md:w-1/2 min-w-0">
-          <TemplatePreview />
-        </div>
-      </div>
-    </FormProvider>
-  );
+  // Map numeric values to enum
+  switch (apiVersion) {
+    case 1:
+      return TemplateType.template1;
+    case 2:
+      return TemplateType.template2;
+    case 3:
+      return TemplateType.template3;
+    case 4:
+      return TemplateType.template4;
+    case 5:
+      return TemplateType.template5;
+    default:
+      return TemplateType.template1; // Default fallback
+  }
 }
