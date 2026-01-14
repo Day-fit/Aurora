@@ -95,9 +95,9 @@ class OAuthSuccessHandler(
             )
             .build()
 
-        response.setHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
-        response.setHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+        response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
 
-        response.sendRedirect(callbackUri)
+        response.sendRedirect("$callbackUri?status=${response.status}")
     }
 }
