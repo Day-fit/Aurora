@@ -9,6 +9,7 @@ import { ButtonType } from "@/lib/types/button";
 import * as Dialog from "@radix-ui/react-dialog";
 import login from "@/lib/backend/login";
 import { useSearchParams, useRouter } from "next/navigation";
+import { FaGithub, FaGoogle } from "react-icons/fa";
 
 export default function LoginForm() {
   const method = useForm<LoginValues>({
@@ -37,6 +38,13 @@ export default function LoginForm() {
     }
   };
 
+  const handleOAuthLogin = (provider: string) => {
+    // Usually, you'd redirect to your backend's OAuth endpoint
+    // For example: window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/oauth/${provider}`;
+    console.log(`Logging in with ${provider}`);
+    alert(`OAuth with ${provider} is being initiated...`);
+  };
+
   return (
     <FormProvider {...method}>
       <form
@@ -57,6 +65,36 @@ export default function LoginForm() {
           disabled={method.formState.isSubmitting}
           text={method.formState.isSubmitting ? "Logging in..." : "Login"}
         />
+
+        <div className="relative my-4">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-gray-700"></span>
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-main-dark px-2 text-text-dark/50">
+              Or continue with
+            </span>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <button
+            type="button"
+            onClick={() => handleOAuthLogin("google")}
+            className="flex items-center justify-center gap-3 px-6 py-3 border border-gray-700 rounded-lg bg-gray-800/30 hover:bg-gray-800 hover:border-gray-600 transition-all text-sm font-semibold"
+          >
+            <FaGoogle className="text-lg" />
+            <span>Sign in with Google</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => handleOAuthLogin("github")}
+            className="flex items-center justify-center gap-3 px-6 py-3 border border-gray-700 rounded-lg bg-gray-800/30 hover:bg-gray-800 hover:border-gray-600 transition-all text-sm font-semibold"
+          >
+            <FaGithub className="text-lg" />
+            <span>Sign in with GitHub</span>
+          </button>
+        </div>
 
         {/* Cancel button wrapped in Dialog.Close to close modal */}
         <Dialog.Close asChild>

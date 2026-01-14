@@ -10,6 +10,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useRouter, useSearchParams } from "next/navigation";
 import login from "@/lib/backend/login";
 import register from "@/lib/backend/register";
+import { FaGithub, FaGoogle } from "react-icons/fa";
 
 export default function RegisterForm() {
   const method = useForm<RegisterValues>({
@@ -41,6 +42,11 @@ export default function RegisterForm() {
     }
   };
 
+  const handleOAuthLogin = (provider: string) => {
+    window.location.href = `${process.env.BACKEND_AUTH_URL}/oauth/authorization/${provider}`;
+    console.log(`Logging in with ${provider}`);
+  };
+
   return (
     <FormProvider {...method}>
       <form
@@ -69,6 +75,36 @@ export default function RegisterForm() {
           disabled={method.formState.isSubmitting}
           text={method.formState.isSubmitting ? "Registering..." : "Register"}
         />
+
+        <div className="relative my-4">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-gray-700"></span>
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-main-dark px-2 text-text-dark/50">
+              Or continue with
+            </span>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <button
+            type="button"
+            onClick={() => handleOAuthLogin("google")}
+            className="flex items-center justify-center gap-3 px-6 py-3 border border-gray-700 rounded-lg bg-gray-800/30 hover:bg-gray-800 hover:border-gray-600 transition-all text-sm font-semibold"
+          >
+            <FaGoogle className="text-lg" />
+            <span>Sign in with Google</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => handleOAuthLogin("github")}
+            className="flex items-center justify-center gap-3 px-6 py-3 border border-gray-700 rounded-lg bg-gray-800/30 hover:bg-gray-800 hover:border-gray-600 transition-all text-sm font-semibold"
+          >
+            <FaGithub className="text-lg" />
+            <span>Sign in with GitHub</span>
+          </button>
+        </div>
 
         <Dialog.Close asChild>
           <Button
