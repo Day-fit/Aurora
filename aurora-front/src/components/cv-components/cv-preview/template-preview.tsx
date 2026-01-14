@@ -29,17 +29,17 @@ export default function TemplatePreview() {
     template: useWatch({ control, name: "template" }),
     personalPortfolio: useWatch({ control, name: "personalPortfolio" }),
   };
+  const profileImage = formData.profileImage;
 
   useEffect(() => {
-    if (!formData.profileImage?.length) {
-      return undefined;
+    if (profileImage instanceof File) {
+      const url = URL.createObjectURL(profileImage);
+      setPreview(url);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setPreview(undefined);
     }
-
-    const url = URL.createObjectURL(formData.profileImage[0]);
-    setPreview(url);
-
-    return () => URL.revokeObjectURL(url);
-  }, [formData.profileImage]);
+  }, [profileImage]);
 
   return (
     <section className="relative overflow-hidden rounded-xl p-6 lg:p-10 min-h-[60vh]">
