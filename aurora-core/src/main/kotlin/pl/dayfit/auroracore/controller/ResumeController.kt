@@ -51,8 +51,8 @@ class ResumeController (
      * @param id the ID of the résumé to retrieve, provided as a string
      * @return a ResponseEntity containing a StreamingResponseBody with the PDF content of the requested résumé
      */
-    @GetMapping("/get")
-    fun getResume(@AuthenticationPrincipal principal: Principal, @RequestParam id: String): ResponseEntity<StreamingResponseBody> {
+    @GetMapping("/getPdf")
+    fun getResumeAsPdf(@AuthenticationPrincipal principal: Principal, @RequestParam id: String): ResponseEntity<StreamingResponseBody> {
         val userId = UUID.fromString(principal.name)
         val resumeId = UUID.fromString(id)
 
@@ -72,6 +72,15 @@ class ResumeController (
             .contentType(MediaType.APPLICATION_PDF)
             .contentLength(contentLength)
             .body(body)
+    }
+
+    @GetMapping("/get")
+    fun getResume(@AuthenticationPrincipal principal: Principal, @RequestParam id: UUID): ResponseEntity<ResumeInformationDto> {
+        return ResponseEntity
+            .ok(
+                resumeService
+                    .getResume(UUID.fromString(principal.name), id)
+            )
     }
 
     /**

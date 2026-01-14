@@ -73,6 +73,35 @@ class ResumeService(
     }
 
     /**
+     * Retrieves the resume information for the specified user and resume identifiers.
+     *
+     * @param userId The unique identifier of the user requesting the resume.
+     * @param resumeId The unique identifier of the resume to be retrieved.
+     * @return A `ResumeInformationDto` containing the details of the requested resume.
+     * @throws AccessDeniedException If the user does not have access to the requested resume.
+     */
+    fun getResume(userId: UUID, resumeId: UUID): ResumeInformationDto {
+        val resume = resumeCacheService.getResumeById(resumeId)
+
+        if(!accessHelper.isOwner(resume, userId))
+        {
+            throw AccessDeniedException("You are not allowed to access this resume")
+        }
+
+        return ResumeInformationDto(
+            resume.id!!,
+            resume.title,
+            resume.name,
+            resume.surname,
+            resume.profileImage?.let { Base64.getEncoder().encodeToString(it) },
+            resume.language, getGenerationResultSize(userId, resume.id!!),
+            resume.lastModified,
+            resume.originalVersion?.id,
+            resume.enhanced
+        )
+    }
+
+    /**
      * Handles saving of a resume PDF file to MinIO for a specific owner and resume identifier.
      *
      * This method ensures that the target bucket corresponding to the owner's ID exists
