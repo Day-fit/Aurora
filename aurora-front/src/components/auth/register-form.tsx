@@ -46,10 +46,10 @@ export default function RegisterForm() {
   };
 
   const handleOAuthLogin = (provider: string) => {
-    window.location.href = `${process.env.BACKEND_AUTH_URL}/oauth/authorization/${provider}`;
+    // Usually, you'd redirect to your backend's OAuth endpoint
+    window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_AUTH_URL}/oauth2/authorization/${provider}`;
     console.log(`Logging in with ${provider}`);
   };
-
   return (
     <FormProvider {...method}>
       <form

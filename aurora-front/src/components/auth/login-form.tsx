@@ -42,9 +42,8 @@ export default function LoginForm() {
 
   const handleOAuthLogin = (provider: string) => {
     // Usually, you'd redirect to your backend's OAuth endpoint
-    // For example: window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/oauth/${provider}`;
+    window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_AUTH_URL}/oauth2/authorization/${provider}`;
     console.log(`Logging in with ${provider}`);
-    alert(`OAuth with ${provider} is being initiated...`);
   };
 
   return (
