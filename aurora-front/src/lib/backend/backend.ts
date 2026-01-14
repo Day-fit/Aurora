@@ -1,4 +1,5 @@
 "use server";
+
 import {
   BackendResponse,
   RequestMethod,
@@ -16,23 +17,24 @@ export async function callBackend<T = any>({
   if (!BASE_URL) {
     throw new Error("Base URL is not defined");
   }
-  console.log("Calling backend:", endpoint, method, body, BASE_URL);
 
   const cookieStore = await cookies();
-  let accessToken = cookieStore.get("accessToken")?.value;
 
-  const getHeaders = (token?: string) => {
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-    };
-    if (token) headers["Authorization"] = `Bearer ${token}`;
-    return headers;
-  };
+  const buildCookieHeader = () =>
+    cookieStore
+      .getAll()
+      .map((c) => `${c.name}=${c.value}`)
+      .join("; ");
+
+  const getHeaders = () => ({
+    "Content-Type": "application/json",
+    Cookie: buildCookieHeader(),
+  });
 
   let res = await fetch(`${BASE_URL}${endpoint}`, {
     method,
-    headers: getHeaders(accessToken),
-    body: body ? JSON.stringify(body) : null,
+    headers: getHeaders(),
+    body: body ? JSON.stringify(body) : undefined,
     cache: "no-store",
   });
 
@@ -45,17 +47,18 @@ export async function callBackend<T = any>({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ refreshToken }),
+          cache: "no-store",
         });
 
         if (refreshRes.ok) {
-          const refreshData = await refreshRes.json();
-          const newAccessToken = refreshData.accessToken;
-          const newRefreshToken = refreshData.refreshToken;
+          const { accessToken, refreshToken: newRefreshToken } =
+            await refreshRes.json();
 
-          cookieStore.set("accessToken", newAccessToken, {
+          cookieStore.set("accessToken", accessToken, {
             httpOnly: true,
             path: "/",
           });
+
           if (newRefreshToken) {
             cookieStore.set("refreshToken", newRefreshToken, {
               httpOnly: true,
@@ -65,25 +68,28 @@ export async function callBackend<T = any>({
 
           res = await fetch(`${BASE_URL}${endpoint}`, {
             method,
-            headers: getHeaders(newAccessToken),
-            body: body ? JSON.stringify(body) : null,
+            headers: getHeaders(),
+            body: body ? JSON.stringify(body) : undefined,
             cache: "no-store",
           });
         }
-      } catch (error) {
-        console.error("Token refresh failed:", error);
+      } catch (err) {
+        console.error("Token refresh failed:", err);
       }
     }
   }
 
-  // Handle cases where response might not be JSON (optional but safer)
   const text = await res.text();
   let data: T;
+
   try {
     data = JSON.parse(text);
   } catch {
     data = text as any;
   }
 
-  return { status: res.status, data };
+  return {
+    status: res.status,
+    data,
+  };
 }
