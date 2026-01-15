@@ -26,8 +26,7 @@ class TrackerHandshakeInterceptor(
         val cookies = serverHttpRequest.servletRequest.cookies ?: throw BadCredentialsException("No access token found")
 
         val accessToken = (cookies
-            .filter { it.name == "accessToken" }
-            .getOrNull(0)
+            .find { it.name == "accessToken" }
             ?: throw BadCredentialsException("No access token found"))
             .value
 

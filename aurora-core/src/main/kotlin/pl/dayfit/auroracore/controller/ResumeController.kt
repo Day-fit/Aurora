@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import pl.dayfit.auroracore.dto.EditResumeDto
-import pl.dayfit.auroracore.dto.EnhanceResumeDto
 import pl.dayfit.auroracore.dto.GenerationRequestDto
 import pl.dayfit.auroracore.dto.ResumeInformationDto
 import pl.dayfit.auroracore.dto.TranslationRequestDto
@@ -121,10 +120,18 @@ class ResumeController (
         )
     }
 
+    /**
+     * Initiates the enhancement process for a specified résumé associated with the authenticated user.
+     *
+     * @param id the unique identifier of the résumé to be enhanced
+     * @param principal the security principal representing the currently authenticated user
+     * @return a ResponseEntity containing a map with a single entry where the key is "trackingId"
+     *         and the value is a string representing the unique tracking identifier for the enhancement process
+     */
     @PostMapping("/enhance")
-    fun enhance(@RequestBody enhanceResumeDto: EnhanceResumeDto, @AuthenticationPrincipal principal: Principal): ResponseEntity<Map<String, String>> {
+    fun enhance(@RequestParam id: UUID, @AuthenticationPrincipal principal: Principal): ResponseEntity<Map<String, String>> {
         val trackingId = enhancementService.requestEnhancement(
-            enhanceResumeDto.id,
+            id,
             UUID.fromString(principal.name)
         )
 
