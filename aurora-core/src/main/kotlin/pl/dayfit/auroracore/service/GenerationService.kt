@@ -26,6 +26,8 @@ import pl.dayfit.auroracore.model.WorkExperience
 import pl.dayfit.auroracore.model.Resume
 import pl.dayfit.auroracore.model.Skill
 import pl.dayfit.auroracore.service.cache.ResumeCacheService
+import pl.dayfit.auroracore.type.LanguageType
+import pl.dayfit.auroracore.util.LocaleMapper
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.StringWriter
@@ -237,10 +239,10 @@ class GenerationService(
     /**
      * Format an Instant date according to the target language locale
      */
-    private fun formatDate(instant: Instant?, languageType: pl.dayfit.auroracore.type.LanguageType?): String? {
+    private fun formatDate(instant: Instant?, languageType: LanguageType?): String? {
         if (instant == null) return null
         
-        val locale = pl.dayfit.auroracore.util.LocaleMapper.toLocale(languageType)
+        val locale = LocaleMapper.toLocale(languageType)
         
         val formatter = DateTimeFormatter
             .ofLocalizedDate(FormatStyle.MEDIUM)
