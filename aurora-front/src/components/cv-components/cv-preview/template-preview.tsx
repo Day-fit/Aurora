@@ -1,3 +1,4 @@
+// aurora-front/src/components/cv-components/cv-preview/template-preview.tsx
 import { useFormContext, useWatch } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { TemplateType } from "@/lib/types/form";
@@ -7,9 +8,16 @@ import Template3 from "@/components/cv-components/cv-preview/template3";
 import Template4 from "@/components/cv-components/cv-preview/template4";
 import Template5 from "@/components/cv-components/cv-preview/template5";
 
+const TEMPLATE_MAP: Record<number, React.ComponentType<any>> = {
+  [TemplateType.template1]: Template1,
+  [TemplateType.template2]: Template2,
+  [TemplateType.template3]: Template3,
+  [TemplateType.template4]: Template4,
+  [TemplateType.template5]: Template5,
+};
+
 export default function TemplatePreview() {
   const [preview, setPreview] = useState<string | undefined>(undefined);
-
   const { control } = useFormContext();
 
   const formData = {
@@ -23,42 +31,28 @@ export default function TemplatePreview() {
     gitHub: useWatch({ control, name: "gitHub" }),
     education: useWatch({ control, name: "education" }),
     skills: useWatch({ control, name: "skills" }),
-    experience: useWatch({ control, name: "experience" }),
+    experience: useWatch({ control, name: "workExperience" }),
     achievements: useWatch({ control, name: "achievements" }),
     profileImage: useWatch({ control, name: "profileImage" }),
-    template: useWatch({ control, name: "template" }),
+    templateVersion: useWatch({ control, name: "templateVersion" }),
     personalPortfolio: useWatch({ control, name: "personalPortfolio" }),
   };
-  const profileImage = formData.profileImage;
 
   useEffect(() => {
-    if (profileImage instanceof File) {
-      const url = URL.createObjectURL(profileImage);
+    if (formData.profileImage instanceof File) {
+      const url = URL.createObjectURL(formData.profileImage);
       setPreview(url);
       return () => URL.revokeObjectURL(url);
-    } else {
-      setPreview(undefined);
     }
-  }, [profileImage]);
+    setPreview(undefined);
+  }, [formData.profileImage]);
+
+  const TemplateComponent = TEMPLATE_MAP[formData.templateVersion] || Template1;
 
   return (
     <section className="relative overflow-hidden rounded-xl p-6 lg:p-10 min-h-[60vh]">
       <div className="w-full max-w-[800px] aspect-[1/1.4142] mx-auto">
-        {formData.template == TemplateType.template1 && (
-          <Template1 formData={formData} preview={preview} />
-        )}
-        {formData.template == TemplateType.template2 && (
-          <Template2 formData={formData} preview={preview} />
-        )}
-        {formData.template == TemplateType.template3 && (
-          <Template3 formData={formData} preview={preview} />
-        )}
-        {formData.template == TemplateType.template4 && (
-          <Template4 formData={formData} preview={preview} />
-        )}
-        {formData.template == TemplateType.template5 && (
-          <Template5 formData={formData} preview={preview} />
-        )}
+        <TemplateComponent formData={formData} preview={preview} />
       </div>
     </section>
   );

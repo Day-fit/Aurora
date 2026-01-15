@@ -13,7 +13,7 @@ export enum TemplateType {
 export enum SkillLevel {
   BEGINNER = "BEGINNER",
   INTERMEDIATE = "INTERMEDIATE",
-  FLUENT = "FLUENT",
+  ADVANCED = "ADVANCED",
   EXPERT = "EXPERT",
   MASTER = "MASTER",
 }

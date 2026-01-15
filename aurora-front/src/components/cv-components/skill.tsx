@@ -32,7 +32,7 @@ export default function Skills() {
             <Button
               type={ButtonType.button}
               onClick={() => append({ name: "", level: SkillLevel.BEGINNER })}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-aurora-blue-dark to-aurora-green-dark text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
+              className="inline-flex items-center gap-2 bg-linear-to-r from-aurora-blue-dark to-aurora-green-dark text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
               text="Add your first skill"
               icon={<FiPlus />}
             />
@@ -52,7 +52,7 @@ export default function Skills() {
                       <input
                         {...field}
                         placeholder="e.g. Java, Spring Boot, PHP"
-                        className="flex-grow min-w-[120px] bg-transparent placeholder:text-text-dark/40 text-text-dark px-2 py-1 rounded-md border-none focus:outline-none focus:ring-0"
+                        className="grow min-w-[120px] bg-transparent placeholder:text-text-dark/40 text-text-dark px-2 py-1 rounded-md border-none focus:outline-none focus:ring-0"
                       />
                       <p className="text-red-800 text-sm mt-1">
                         {
@@ -68,10 +68,12 @@ export default function Skills() {
                   <Controller
                     control={control}
                     name={`skills.${index}.level`}
-                    render={({ field }) => (
+                    render={({ field: { value, onChange, ...rest } }) => (
                       <select
-                        {...field}
-                        className="flex-grow sm:flex-grow-0 bg-transparent border-none text-sm text-text-dark/70 focus:ring-0 cursor-pointer py-1 px-2 hover:text-aurora-green-dark transition-colors"
+                        {...rest}
+                        value={String(value).toUpperCase()}
+                        onChange={(e) => onChange(e.target.value)}
+                        className="grow sm:grow-0 bg-transparent border-none text-sm text-text-dark/70 focus:ring-0 cursor-pointer py-1 px-2 hover:text-aurora-green-dark transition-colors"
                       >
                         {Object.values(SkillLevel).map((level) => (
                           <option
@@ -102,10 +104,9 @@ export default function Skills() {
                 type={ButtonType.button}
                 onClick={() => {
                   if (fields.length >= 5) return;
-
                   append({ name: "", level: SkillLevel.BEGINNER });
                 }}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-aurora-blue-dark to-aurora-green-dark text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
+                className="inline-flex items-center gap-2 bg-linear-to-r from-aurora-blue-dark to-aurora-green-dark text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
                 text="Add new skill"
                 icon={<FiPlus />}
               />
