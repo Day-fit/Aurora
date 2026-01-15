@@ -13,12 +13,10 @@ import jakarta.transaction.Transactional
 import net.coobird.thumbnailator.Thumbnails
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.rabbit.stream.producer.RabbitStreamTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
 import pl.dayfit.auroracore.dto.GenerationRequestDto
-import pl.dayfit.auroracore.event.EnhanceRequestedEvent
 import pl.dayfit.auroracore.event.ResumeReadyToExport
 import pl.dayfit.auroracore.exception.InvalidBase64Exception
 import pl.dayfit.auroracore.model.Achievement
@@ -40,7 +38,6 @@ class GenerationService(
     private val resumeCacheService: ResumeCacheService,
     private val freeMarkerConfiguration: Configuration,
     private val applicationEventPublisher: ApplicationEventPublisher,
-    private val enhancementStreamTemplate: RabbitStreamTemplate,
     private val resumeService: ResumeService
 ) {
     private val imageQuality = 0.75
@@ -125,28 +122,11 @@ class GenerationService(
         val id = resumeCacheService.saveResume(resume)
             .id!!
 
-        if (!requestDto.enhanced)
-        {
-            applicationEventPublisher.publishEvent(
-                ResumeReadyToExport(id)
-            )
-            logger.trace("Resume ready to export: {}", id)
-            return id
-        }
 
-        enhancementStreamTemplate.convertAndSend(
-            EnhanceRequestedEvent(
-                id,
-                requestDto.title,
-                requestDto.profileDescription,
-                requestDto.achievements
-                    .map { it.description }.toList(),
-                requestDto.skills
-                    .map { it.name }.toList()
-            )
+        applicationEventPublisher.publishEvent(
+            ResumeReadyToExport(id)
         )
-
-        logger.trace("Resume ready to export: {}", resume.id)
+        logger.trace("Resume ready to export: {}", id)
         return id
     }
 

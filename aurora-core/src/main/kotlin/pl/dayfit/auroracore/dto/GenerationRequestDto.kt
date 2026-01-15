@@ -35,8 +35,6 @@ data class GenerationRequestDto (
     @Min(1)
     @Max(5)
     val templateVersion: Int,
-
-    val enhanced: Boolean = false
 )
 {
     data class Education (

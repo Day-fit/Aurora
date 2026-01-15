@@ -8,7 +8,7 @@ import org.springframework.messaging.handler.annotation.support.MethodArgumentNo
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.resource.NoResourceFoundException
-import pl.dayfit.auroracore.exception.AutoGenerationFailedException
+import pl.dayfit.auroracore.exception.TrackerFailedException
 import pl.dayfit.auroracore.exception.InvalidBase64Exception
 import pl.dayfit.auroracore.exception.ResourceNotReadyYetException
 import pl.dayfit.auroracore.exception.UuidInvalidException
@@ -48,8 +48,8 @@ class GlobalExceptionHandler {
             )
     }
 
-    @ExceptionHandler(AutoGenerationFailedException::class)
-    fun handleAutoGenerationFailedException(e: AutoGenerationFailedException): ResponseEntity<Map<String, String>> {
+    @ExceptionHandler(TrackerFailedException::class)
+    fun handleAutoGenerationFailedException(e: TrackerFailedException): ResponseEntity<Map<String, String>> {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(
                 mapOf("error" to (e.message ?: "Auto generation failed"))

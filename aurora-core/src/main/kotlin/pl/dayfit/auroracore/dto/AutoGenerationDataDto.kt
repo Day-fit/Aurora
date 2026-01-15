@@ -4,7 +4,7 @@ import pl.dayfit.auroracore.type.EducationDegree
 import pl.dayfit.auroracore.type.SkillLevel
 import java.time.Instant
 
-data class AutoGenerationDto (
+data class AutoGenerationDataDto (
     val age: Int?,
     val email: String?,
     val website: String?,

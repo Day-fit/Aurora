@@ -16,6 +16,7 @@ import pl.dayfit.auroracore.dto.GenerationRequestDto
 import pl.dayfit.auroracore.dto.ResumeDetailsDto
 import pl.dayfit.auroracore.dto.ResumeInformationDto
 import pl.dayfit.auroracore.dto.TranslationRequestDto
+import pl.dayfit.auroracore.service.EnhancementService
 import pl.dayfit.auroracore.service.GenerationService
 import pl.dayfit.auroracore.service.ResumeService
 import pl.dayfit.auroracore.service.TranslationService
@@ -28,7 +29,8 @@ import java.util.UUID
 class ResumeController (
     private val translationService: TranslationService,
     private val generationService: GenerationService,
-    private val resumeService: ResumeService
+    private val resumeService: ResumeService,
+    private val enhancementService: EnhancementService
 ){
     /**
      * Retrieves all resume IDs associated with the currently authenticated user.
@@ -125,6 +127,24 @@ class ResumeController (
         return ResponseEntity.ok(
             mapOf("resumeId" to resumeId.toString())
         )
+    }
+
+    /**
+     * Initiates the enhancement process for a specified résumé associated with the authenticated user.
+     *
+     * @param id the unique identifier of the résumé to be enhanced
+     * @param principal the security principal representing the currently authenticated user
+     * @return a ResponseEntity containing a map with a single entry where the key is "trackingId"
+     *         and the value is a string representing the unique tracking identifier for the enhancement process
+     */
+    @PostMapping("/enhance")
+    fun enhance(@RequestParam id: UUID, @AuthenticationPrincipal principal: Principal): ResponseEntity<Map<String, String>> {
+        val trackingId = enhancementService.requestEnhancement(
+            id,
+            UUID.fromString(principal.name)
+        )
+
+        return ResponseEntity.ok(mapOf("trackingId" to trackingId))
     }
 
     /**
