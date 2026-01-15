@@ -4,6 +4,7 @@ import Header from "@/components/layout/header/header";
 import React from "react";
 import FooterWrapper from "@/components/layout/footer/footer-wrapper";
 import { TrackerProvider } from "@/context/tracker-context";
+import TrackerNotification from "@/components/cv-components/tracker-notification";
 
 export const metadata: Metadata = {
   title: "Aurora",
@@ -28,6 +29,7 @@ export default function RootLayout({
           <div className="pointer-events-none absolute -right-24 -bottom-10 w-96 h-96 rounded-full bg-linear-to-br from-aurora-green-dark/30 to-aurora-blue-dark/20 blur-3xl opacity-25 transform -rotate-6" />
           <div className="grow">{children}</div>
           <FooterWrapper />
+          <TrackerNotification />
         </TrackerProvider>
       </body>
     </html>

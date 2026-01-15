@@ -1,67 +1,77 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { IoSync, IoCloudDownload, IoClose } from "react-icons/io5";
+import { IoSync, IoClose, IoCheckmark, IoAlertCircle } from "react-icons/io5";
 import { useTracker } from "@/context/tracker-context";
+import { useRouter } from "next/navigation";
 
 export default function TrackerNotification() {
-  const { isTracking, stopTracking } = useTracker();
-  const [status, setStatus] = useState<string>("Initializing...");
-  const [step, setStep] = useState<number>(1);
-  const [isFinished, setIsFinished] = useState(false);
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const {
+    isTracking,
+    status,
+    statusMessage,
+    isFinished,
+    hasError,
+    resourceId,
+    stopTracking,
+  } = useTracker();
+  const router = useRouter();
 
-  useEffect(() => {
-    if (!isTracking) return;
-
-    const socket = new WebSocket("ws://localhost:8081/api/v1/core/ws/tracker");
-
-    socket.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        setStatus(data.status || "Processing...");
-        setStep(data.step || 1);
-        if (data.finished) {
-          setIsFinished(true);
-          setDownloadUrl(data.downloadUrl); // Assuming backend sends the link
-        }
-      } catch (e) {
-        setStatus(event.data);
-      }
-    };
-
-    return () => socket.close();
-  }, [isTracking]);
-
-  const handleDownload = () => {
-    if (downloadUrl) {
-      window.open(downloadUrl, "_blank");
-      stopTracking(); // Close after download
+  const handleFinish = () => {
+    if (isFinished && resourceId) {
+      router.push(`/dashboard/cv/${resourceId}`);
     }
+    stopTracking();
+    router.refresh();
   };
 
   if (!isTracking) return null;
 
-  // ... existing getStepColor and return statement ...
-  // Inside the return, wrap the content in a button or add a download link:
+  const getStepColor = () => {
+    if (hasError) return "bg-red-600";
+    if (isFinished) return "bg-aurora-green-dark";
+    if (status === "STARTING") return "bg-aurora-blue-dark";
+    if (status === "SEARCHING_INFORMATION") return "bg-aurora-purple-dark";
+    return "bg-aurora-green-dark";
+  };
+
+  const getStepNumber = () => {
+    switch (status) {
+      case "STARTING":
+        return 1;
+      case "SEARCHING_INFORMATION":
+        return 2;
+      case "PROCESSING_INFORMATION":
+        return 3;
+      case "DONE":
+        return 4;
+      default:
+        return 1;
+    }
+  };
+
   return (
     <AnimatePresence>
       {isTracking && (
         <motion.div
-          // ... existing motion props ...
-          className={`fixed bottom-6 right-6 p-4 rounded-2xl shadow-2xl z-50 flex items-center gap-4 text-white min-w-[300px] transition-colors duration-500 ${isFinished ? "bg-aurora-green-dark cursor-pointer" : "bg-aurora-blue-dark"}`}
-          onClick={isFinished ? handleDownload : undefined}
+          initial={{ opacity: 0, y: 50, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 50, scale: 0.9 }}
+          className={`fixed bottom-6 right-6 p-4 rounded-2xl shadow-2xl z-[9999] flex items-center gap-4 text-white min-w-[300px] transition-colors duration-500 ${getStepColor()} ${isFinished ? "cursor-pointer" : ""}`}
+          onClick={isFinished ? handleFinish : undefined}
         >
-          {/* ... existing content ... */}
           <div className="flex flex-col flex-1">
             <span className="text-xs font-medium opacity-80 uppercase">
-              {isFinished ? "Click to Download" : `Step ${step} of 3`}
+              {isFinished
+                ? "Click to complete"
+                : `Step ${getStepNumber()} of 4`}
             </span>
-            <span className="text-sm font-bold">{status}</span>
+            <span className="text-sm font-bold">{statusMessage}</span>
           </div>
-          {isFinished ? (
-            <IoCloudDownload className="text-2xl animate-bounce" />
+          {hasError ? (
+            <IoAlertCircle className="text-2xl" />
+          ) : isFinished ? (
+            <IoCheckmark className="text-2xl" />
           ) : (
             <IoSync className="text-2xl animate-spin" />
           )}

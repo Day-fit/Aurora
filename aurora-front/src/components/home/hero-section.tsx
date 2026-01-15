@@ -1,8 +1,12 @@
+"use client";
 import Button from "@/components/button";
 import heroPicture from "../../../public/template2.png";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function HeroSection() {
+  const router = useRouter();
+
   return (
     <section className="rounded-xl p- md:p-16 min-h-[calc(100vh-80px)] ">
       <div className="bg-main-dark/80 backdrop-blur-sm rounded-xl p-8 md:p-12 flex flex-col md:flex-row gap-10 items-center text-text-dark shadow-2xl">
@@ -24,6 +28,7 @@ export default function HeroSection() {
           <div className="flex flex-col sm:flex-row gap-4 mt-6">
             <Button
               text="Get Started"
+              onClick={() => router.push("cv")}
               className="px-6 py-3 bg-aurora-blue-dark text-white hover:scale-105 transform transition-all duration-200 font-semibold shadow-xl rounded-lg text-lg"
             />
             <Button
