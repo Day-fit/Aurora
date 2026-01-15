@@ -13,13 +13,14 @@ import PersonalInfo from "@/components/cv-components/personal-info";
 import ProfileLinks from "@/components/cv-components/profile-links";
 import FormStyling from "@/components/cv-components/form-styling";
 import PersonalPortfolio from "@/components/cv-components/personal-portfolio";
-import { generateCv } from "@/lib/backend/resume-generation";
+import { generateResume } from "@/lib/backend/resume-generation";
 import { useRouter } from "next/navigation";
 import { revalidateCvList } from "@/lib/backend/revalidate";
 import { fileToBase64 } from "@/lib/utils/image";
 import { getChangedFields } from "@/components/cv-components/get-changed-fields";
 import { editResume } from "@/lib/backend/edit-resume";
 import { useTracker } from "@/context/tracker-context";
+import { getResumePdf } from "@/lib/backend/get-resume-pdf";
 
 interface CvFormProps {
   originalData?: any;
@@ -41,9 +42,16 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
     console.log("Submitting form:", data);
 
     try {
+      const payload = { ...data };
+
+      if (data.profileImage instanceof File) {
+        payload.profileImage = await fileToBase64(data.profileImage);
+      }
+      console.log("Payload:", payload);
+
       if (cvId && originalData) {
         // Edit existing CV - only send changed fields
-        const changes = await getChangedFields(originalData, data);
+        const changes = await getChangedFields(originalData, payload);
 
         if (Object.keys(changes).length === 0) {
           console.log("No changes detected");
@@ -54,21 +62,11 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
         const result = await editResume(cvId, changes);
         console.log("CV updated:", result);
       } else {
-        const payload = { ...data };
-
-        if (data.profileImage instanceof File) {
-          payload.profileImage = await fileToBase64(data.profileImage);
-        }
-        // If there is a file, convert it to base64 string for the backend
-        if (data.profileImage instanceof File) {
-          payload.profileImage = await fileToBase64(data.profileImage);
-        }
-
-        startTracking();
-        console.log("Payload:", payload);
-
-        await generateCv(payload);
+        await generateResume(payload);
       }
+      startTracking();
+
+      await getResumePdf(payload);
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("An unexpected error occurred.");
