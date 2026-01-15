@@ -153,23 +153,23 @@ class GenerationService(
         val template: Template = freeMarkerConfiguration.getTemplate("resume${resume.templateVersion}.ftl")
         val data: MutableMap<String, Any> = HashMap()
 
-        //Personal data
+        // Personal data
         data["name"] = resume.name
         data["title"] = resume.title!!
         data["surname"] = resume.surname
         data["age"] = resume.age
 
-        //Profile
+        // Profile
         resume.profileImage?.let { data["profileImage"] = "data:image/png;base64, ${Base64.encode(it)}" }
         resume.profileDescription?.let { data["profileDescription"] = it }
 
-        //Contact information
+        // Contact information
         data["email"] = resume.email
         resume.website?.let { data["website"] = it }
         resume.gitHub?.let { data["gitHub"] = it }
         resume.linkedIn?.let { data["linkedIn"] = it }
 
-        //Localized template strings
+        // Localized template strings
         val locale = LocaleMapper.toLocale(resume.language)
         data["i18n_contact"] = messageSource.getMessage("template.contact", null, "Contact", locale)
         data["i18n_education"] = messageSource.getMessage("template.education", null, "Education", locale)
@@ -194,7 +194,7 @@ class GenerationService(
         data["i18n_website"] = messageSource.getMessage("template.website", null, "Website", locale)
         data["i18n_portfolio"] = messageSource.getMessage("template.portfolio", null, "Portfolio", locale)
 
-        //Other information
+        // Other information
         resume.education.let { educationList ->
             data["education"] = educationList.map { edu ->
                 mapOf(
