@@ -276,11 +276,11 @@
                                 <div class="item-subtitle">${exp.company!''}</div>
                                 <div class="date-range">
                                     <#if exp.startDate?has_content>
-                                        ${exp.startDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")}
+                                        ${exp.startDate}
                                     </#if>
                                     -
                                     <#if exp.endDate?has_content>
-                                        ${exp.endDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")}
+                                        ${exp.endDate}
                                     <#else>Present</#if>
                                 </div>
                                 <#if exp.description?has_content>

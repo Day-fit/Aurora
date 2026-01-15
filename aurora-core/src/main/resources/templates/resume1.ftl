@@ -221,7 +221,7 @@
                     <div class="bold">${exp.position!''}</div>
                     <div class="mt-tiny">${exp.company!''}</div>
                     <div class="date-range">
-                        ${exp.startDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")} - <#if exp.endDate?has_content>${exp.endDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")}<#else>Present</#if>
+                        ${exp.startDate} - <#if exp.endDate?has_content>${exp.endDate}<#else>Present</#if>
                     </div>
                     <#if exp.description?has_content>
                         <p class="description">${exp.description}</p>

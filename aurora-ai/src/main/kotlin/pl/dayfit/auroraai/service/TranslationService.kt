@@ -88,6 +88,7 @@ class TranslationService(
 
         postTranslationStreamTemplate.convertAndSend(
             TranslationDoneEvent(
+                event.trackerId,
                 event.targetLanguage,
                 TranslationResumeDto(
                     resume.id,

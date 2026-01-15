@@ -18,7 +18,7 @@ class EnumLocalizationService(
     /**
      * Get localized label for a SkillLevel enum
      */
-    fun getLocalizedSkillLevel(skillLevel: SkillLevel, languageType: LanguageType?): String {
+    fun getLocalizedSkillLevel(skillLevel: SkillLevel, languageType: LanguageType?): String? {
         val locale = LocaleMapper.toLocale(languageType)
         val key = "enum.skillLevel.${skillLevel.name}"
         return messageSource.getMessage(key, null, skillLevel.label, locale)
@@ -27,7 +27,7 @@ class EnumLocalizationService(
     /**
      * Get localized label for an EducationDegree enum
      */
-    fun getLocalizedEducationDegree(degree: EducationDegree, languageType: LanguageType?): String {
+    fun getLocalizedEducationDegree(degree: EducationDegree, languageType: LanguageType?): String? {
         val locale = LocaleMapper.toLocale(languageType)
         val key = "enum.educationDegree.${degree.name}"
         return messageSource.getMessage(key, null, degree.label, locale)

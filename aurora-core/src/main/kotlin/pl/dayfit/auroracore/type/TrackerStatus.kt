@@ -6,4 +6,5 @@ enum class TrackerStatus {
     PROCESSING_INFORMATION,
     DONE,
     FAILED,
+    TRANSLATION_IN_PROGRESS
 }
