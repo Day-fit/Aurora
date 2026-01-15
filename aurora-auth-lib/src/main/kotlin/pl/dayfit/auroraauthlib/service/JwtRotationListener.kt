@@ -36,8 +36,8 @@ class JwtRotationListener(
     @PostConstruct
     private fun init() {
         try {
-            jwtClaimsService.jwksSupplier = Supplier { jwks }
             updateJwks()
+            jwtClaimsService.jwksSupplier = Supplier { jwks }
             log.info("JWKS synchronization went successful")
         } catch (ex: ResourceAccessException) {
             log.warn("JWKS synchronization failed, given URI is unreachable", ex)
