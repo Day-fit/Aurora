@@ -211,10 +211,10 @@
             <div class="contact-item">🌐 <a href="${website}" target="_blank">${website}</a></div>
         </#if>
         <#if linkedIn?has_content>
-            <div class="contact-item">🔗 <a href="${linkedIn}" target="_blank">LinkedIn</a></div>
+            <div class="contact-item">🔗 <a href="${linkedIn}" target="_blank">${i18n_linkedin}</a></div>
         </#if>
         <#if gitHub?has_content>
-            <div class="contact-item">🐱 <a href="${gitHub}" target="_blank">GitHub</a></div>
+            <div class="contact-item">🐱 <a href="${gitHub}" target="_blank">${i18n_github}</a></div>
         </#if>
     </div>
 
@@ -223,14 +223,14 @@
             <div class="main-column">
                 <#if profileDescription?has_content>
                     <div class="section">
-                        <div class="section-title">Professional Summary</div>
+                        <div class="section-title">${i18n_professionalSummary}</div>
                         <p class="profile-text">${profileDescription}</p>
                     </div>
                 </#if>
 
                 <#if experiences?has_content>
                     <div class="section">
-                        <div class="section-title">Work Experience</div>
+                        <div class="section-title">${i18n_workExperience}</div>
                         <#list experiences![] as exp>
                             <div class="experience-item">
                                 <div class="item-title">${exp.position!''}</div>
@@ -241,9 +241,9 @@
                                     </#if>
                                     -
                                     <#if exp.endDate?has_content>
-                                        ${exp.startDate}
+                                        ${exp.endDate}
                                     <#else>
-                                        Present
+                                        ${i18n_present}
                                     </#if>
                                 </div>
                                 <#if exp.description?has_content>
@@ -256,7 +256,7 @@
 
                 <#if personalPortfolio?has_content>
                     <div class="section">
-                        <div class="section-title">Featured Projects</div>
+                        <div class="section-title">${i18n_featuredProjects}</div>
                         <#list personalPortfolio![] as portfolio>
                             <div class="portfolio-item">
                                 <div class="item-title">${portfolio.name!''}</div>
@@ -268,7 +268,7 @@
 
                 <#if achievements?has_content>
                     <div class="section">
-                        <div class="section-title">Achievements & Awards</div>
+                        <div class="section-title">${i18n_achievementsAndAwards}</div>
                         <ul>
                             <#list achievements![] as ach>
                                 <li>
@@ -283,7 +283,7 @@
             <div class="side-column">
                 <#if skills?has_content>
                     <div class="section">
-                        <div class="section-title">Skills</div>
+                        <div class="section-title">${i18n_skills}</div>
                         <#list skills![] as skill>
                             <div class="skill-item">
                                 ${skill.name!''}<#if skill.level?has_content><span class="skill-level">${skill.level}</span></#if>
@@ -294,7 +294,7 @@
 
                 <#if education?has_content>
                     <div class="section">
-                        <div class="section-title">Education</div>
+                        <div class="section-title">${i18n_education}</div>
                         <#list education![] as edu>
                             <div class="education-item">
                                 <div class="item-title">${edu.institution!''}</div>
@@ -307,7 +307,7 @@
                                     <#if edu.toYear?has_content>
                                         ${edu.toYear?c}
                                     <#else>
-                                        Present
+                                        ${i18n_present}
                                     </#if>
                                 </div>
                             </div>

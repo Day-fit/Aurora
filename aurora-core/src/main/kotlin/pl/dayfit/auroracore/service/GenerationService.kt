@@ -45,7 +45,8 @@ class GenerationService(
     private val freeMarkerConfiguration: Configuration,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val resumeService: ResumeService,
-    private val enumLocalizationService: EnumLocalizationService
+    private val enumLocalizationService: EnumLocalizationService,
+    private val messageSource: org.springframework.context.MessageSource
 ) {
     private val imageQuality = 0.75
     private val logger = LoggerFactory.getLogger(GenerationService::class.java)
@@ -152,23 +153,48 @@ class GenerationService(
         val template: Template = freeMarkerConfiguration.getTemplate("resume${resume.templateVersion}.ftl")
         val data: MutableMap<String, Any> = HashMap()
 
-        //Personal data
+        // Personal data
         data["name"] = resume.name
         data["title"] = resume.title!!
         data["surname"] = resume.surname
         data["age"] = resume.age
 
-        //Profile
+        // Profile
         resume.profileImage?.let { data["profileImage"] = "data:image/png;base64, ${Base64.encode(it)}" }
         resume.profileDescription?.let { data["profileDescription"] = it }
 
-        //Contact information
+        // Contact information
         data["email"] = resume.email
         resume.website?.let { data["website"] = it }
         resume.gitHub?.let { data["gitHub"] = it }
         resume.linkedIn?.let { data["linkedIn"] = it }
 
-        //Other information
+        // Localized template strings
+        val locale = LocaleMapper.toLocale(resume.language)
+        data["i18n_contact"] = messageSource.getMessage("template.contact", null, "Contact", locale)
+        data["i18n_education"] = messageSource.getMessage("template.education", null, "Education", locale)
+        data["i18n_skills"] = messageSource.getMessage("template.skills", null, "Skills", locale)
+        data["i18n_workExperience"] = messageSource.getMessage("template.workExperience", null, "Work Experience", locale)
+        data["i18n_profile"] = messageSource.getMessage("template.profile", null, "Profile", locale)
+        data["i18n_about"] = messageSource.getMessage("template.about", null, "About", locale)
+        data["i18n_projects"] = messageSource.getMessage("template.projects", null, "Projects", locale)
+        data["i18n_achievements"] = messageSource.getMessage("template.achievements", null, "Achievements", locale)
+        data["i18n_present"] = messageSource.getMessage("template.present", null, "Present", locale)
+        data["i18n_professionalSummary"] = messageSource.getMessage("template.professionalSummary", null, "Professional Summary", locale)
+        data["i18n_experience"] = messageSource.getMessage("template.experience", null, "Experience", locale)
+        data["i18n_featuredProjects"] = messageSource.getMessage("template.featuredProjects", null, "Featured Projects", locale)
+        data["i18n_achievementsAndAwards"] = messageSource.getMessage("template.achievementsAndAwards", null, "Achievements & Awards", locale)
+        data["i18n_aboutMe"] = messageSource.getMessage("template.aboutMe", null, "About Me", locale)
+        data["i18n_skillsAndCompetencies"] = messageSource.getMessage("template.skillsAndCompetencies", null, "Skills & Competencies", locale)
+        data["i18n_projectsAndPortfolio"] = messageSource.getMessage("template.projectsAndPortfolio", null, "Projects & Portfolio", locale)
+        data["i18n_professionalExperience"] = messageSource.getMessage("template.professionalExperience", null, "Professional Experience", locale)
+        data["i18n_honorsAndAchievements"] = messageSource.getMessage("template.honorsAndAchievements", null, "Honors & Achievements", locale)
+        data["i18n_linkedin"] = messageSource.getMessage("template.linkedin", null, "LinkedIn", locale)
+        data["i18n_github"] = messageSource.getMessage("template.github", null, "GitHub", locale)
+        data["i18n_website"] = messageSource.getMessage("template.website", null, "Website", locale)
+        data["i18n_portfolio"] = messageSource.getMessage("template.portfolio", null, "Portfolio", locale)
+
+        // Other information
         resume.education.let { educationList ->
             data["education"] = educationList.map { edu ->
                 mapOf(
