@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import pl.dayfit.auroracore.dto.EditResumeDto
 import pl.dayfit.auroracore.dto.GenerationRequestDto
+import pl.dayfit.auroracore.dto.ResumeDetailsDto
 import pl.dayfit.auroracore.dto.ResumeInformationDto
 import pl.dayfit.auroracore.dto.TranslationRequestDto
 import pl.dayfit.auroracore.service.GenerationService
@@ -52,16 +53,15 @@ class ResumeController (
      * @return a ResponseEntity containing a StreamingResponseBody with the PDF content of the requested résumé
      */
     @GetMapping("/getPdf")
-    fun getResumeAsPdf(@AuthenticationPrincipal principal: Principal, @RequestParam id: String): ResponseEntity<StreamingResponseBody> {
+    fun getResumeAsPdf(@AuthenticationPrincipal principal: Principal, @RequestParam id: UUID): ResponseEntity<StreamingResponseBody> {
         val userId = UUID.fromString(principal.name)
-        val resumeId = UUID.fromString(id)
 
-        val contentLength = resumeService.getGenerationResultSize(userId, resumeId)
+        val contentLength = resumeService.getGenerationResultSize(userId, id)
 
         val body = StreamingResponseBody { os: OutputStream ->
             resumeService.getGenerationResult(
                 userId,
-                resumeId
+                id
             ).use { input ->
                 input.transferTo(os)
                 os.flush()
@@ -75,7 +75,7 @@ class ResumeController (
     }
 
     @GetMapping("/get")
-    fun getResume(@AuthenticationPrincipal principal: Principal, @RequestParam id: UUID): ResponseEntity<ResumeInformationDto> {
+    fun getResume(@AuthenticationPrincipal principal: Principal, @RequestParam id: UUID): ResponseEntity<ResumeDetailsDto> {
         return ResponseEntity
             .ok(
                 resumeService
