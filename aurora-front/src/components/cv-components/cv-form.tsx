@@ -17,11 +17,16 @@ import { generateCv } from "@/lib/backend/resume-generation";
 import { useRouter } from "next/navigation";
 import { revalidateCvList } from "@/lib/backend/revalidate";
 import { fileToBase64 } from "@/lib/utils/image";
+import { getChangedFields } from "@/components/cv-components/get-changed-fields";
+import { editResume } from "@/lib/backend/edit-resume";
 import { useTracker } from "@/context/tracker-context";
 
-export default function CvForm() {
-  //need to add validation, error handling, submit handling via request
+interface CvFormProps {
+  originalData?: any;
+  cvId?: string;
+}
 
+export default function CvForm({ originalData, cvId }: CvFormProps) {
   const {
     handleSubmit,
     reset,
@@ -36,15 +41,34 @@ export default function CvForm() {
     console.log("Submitting form:", data);
 
     try {
-      const payload = { ...data };
+      if (cvId && originalData) {
+        // Edit existing CV - only send changed fields
+        const changes = await getChangedFields(originalData, data);
 
-      if (data.profileImage instanceof File) {
-        payload.profileImage = await fileToBase64(data.profileImage);
+        if (Object.keys(changes).length === 0) {
+          console.log("No changes detected");
+          return;
+        }
+
+        console.log("Sending changes:", changes);
+        const result = await editResume(cvId, changes);
+        console.log("CV updated:", result);
+      } else {
+        const payload = { ...data };
+
+        if (data.profileImage instanceof File) {
+          payload.profileImage = await fileToBase64(data.profileImage);
+        }
+        // If there is a file, convert it to base64 string for the backend
+        if (data.profileImage instanceof File) {
+          payload.profileImage = await fileToBase64(data.profileImage);
+        }
+
+        startTracking();
+        console.log("Payload:", payload);
+
+        await generateCv(payload);
       }
-
-      startTracking();
-
-      await generateCv(payload);
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("An unexpected error occurred.");
