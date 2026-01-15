@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
 import org.springframework.rabbit.stream.producer.RabbitStreamTemplate
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import pl.dayfit.auroracore.event.EnhanceDoneEvent
 import pl.dayfit.auroracore.event.EnhanceRequestedEvent
 import pl.dayfit.auroracore.event.ResumeReadyToExport
@@ -61,6 +62,7 @@ class EnhancementService(
      *  - `newSkillsNames`: A list of updated names for the résumé's skills.
      */
     @EventListener
+    @Transactional
     fun handleEnhancedResume(event: EnhanceDoneEvent)
     {
         val resume = resumeCacheService.getResumeById(event.id)
