@@ -30,6 +30,10 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.StringWriter
 import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.Locale
 import java.util.UUID
 import kotlin.io.encoding.Base64
 
@@ -38,7 +42,8 @@ class GenerationService(
     private val resumeCacheService: ResumeCacheService,
     private val freeMarkerConfiguration: Configuration,
     private val applicationEventPublisher: ApplicationEventPublisher,
-    private val resumeService: ResumeService
+    private val resumeService: ResumeService,
+    private val enumLocalizationService: EnumLocalizationService
 ) {
     private val imageQuality = 0.75
     private val logger = LoggerFactory.getLogger(GenerationService::class.java)
@@ -162,10 +167,40 @@ class GenerationService(
         resume.linkedIn?.let { data["linkedIn"] = it }
 
         //Other information
-        resume.education.let { data["education"] = it }
-        resume.skills.let { data["skills"] = it }
+        resume.education.let { educationList ->
+            data["education"] = educationList.map { edu ->
+                mapOf(
+                    "id" to edu.id,
+                    "institution" to edu.institution,
+                    "major" to edu.major,
+                    "degree" to enumLocalizationService.getLocalizedEducationDegree(edu.degree, resume.language),
+                    "fromYear" to edu.fromYear,
+                    "toYear" to edu.toYear
+                )
+            }
+        }
+        resume.skills.let { skillsList ->
+            data["skills"] = skillsList.map { skill ->
+                mapOf(
+                    "id" to skill.id,
+                    "name" to skill.name,
+                    "level" to enumLocalizationService.getLocalizedSkillLevel(skill.level, resume.language)
+                )
+            }
+        }
         resume.achievements.let { data["achievements"] = it}
-        resume.workExperience.let { data["experiences"] = it}
+        resume.workExperience.let { experienceList ->
+            data["experiences"] = experienceList.map { exp ->
+                mapOf(
+                    "id" to exp.id,
+                    "company" to exp.company,
+                    "position" to exp.position,
+                    "startDate" to formatDate(exp.startDate, resume.language),
+                    "endDate" to formatDate(exp.endDate, resume.language),
+                    "description" to exp.description
+                )
+            }
+        }
         resume.personalPortfolio.let { data["personalPortfolio"] = it }
 
         StringWriter().use {
@@ -197,6 +232,35 @@ class GenerationService(
         }
 
         resumeCacheService.saveResume(resume)
+    }
+
+    /**
+     * Format an Instant date according to the target language locale
+     */
+    private fun formatDate(instant: Instant?, languageType: pl.dayfit.auroracore.type.LanguageType?): String? {
+        if (instant == null) return null
+        
+        val locale = when (languageType) {
+            pl.dayfit.auroracore.type.LanguageType.SPANISH -> Locale("es")
+            pl.dayfit.auroracore.type.LanguageType.FRENCH -> Locale("fr")
+            pl.dayfit.auroracore.type.LanguageType.GERMAN -> Locale("de")
+            pl.dayfit.auroracore.type.LanguageType.ITALIAN -> Locale("it")
+            pl.dayfit.auroracore.type.LanguageType.PORTUGUESE -> Locale("pt")
+            pl.dayfit.auroracore.type.LanguageType.RUSSIAN -> Locale("ru")
+            pl.dayfit.auroracore.type.LanguageType.POLISH -> Locale("pl")
+            pl.dayfit.auroracore.type.LanguageType.DUTCH -> Locale("nl")
+            pl.dayfit.auroracore.type.LanguageType.MANDARIN -> Locale("zh")
+            pl.dayfit.auroracore.type.LanguageType.JAPANESE -> Locale("ja")
+            pl.dayfit.auroracore.type.LanguageType.KOREAN -> Locale("ko")
+            else -> Locale.ENGLISH
+        }
+        
+        val formatter = DateTimeFormatter
+            .ofLocalizedDate(FormatStyle.MEDIUM)
+            .withLocale(locale)
+            .withZone(ZoneId.systemDefault())
+        
+        return formatter.format(instant)
     }
 
     private fun compressImage(image: String): ByteArray {

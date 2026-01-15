@@ -61,7 +61,6 @@ class TranslationService(
                 - Description: ${resume.description},
                 
                 - Skills: ${resume.skillsNames.joinToString(", ")}
-                - Skill Levels: ${resume.skillsLevels.joinToString(", ")}
                 - Achievements: ${resume.achievementsTitles.zip(resume.achievementsDescriptions)
                     .joinToString(", ") {(title, description) -> "$title: $description"}}
                     
@@ -69,9 +68,9 @@ class TranslationService(
                     .joinToString( ", " ){(pos, desc) -> "$pos: $desc"}}
                 
                 - Education Majors: ${resume.educationMajors.joinToString(", ")}
-                - Education Degrees: ${resume.educationDegrees.joinToString(", ")}
                 
                 Keep everything as close to the original as possible.
+                Note: Do NOT translate skill levels or education degrees - return them exactly as provided in the skillsLevels and educationDegrees fields.
             """
             )
             .text(TranslationResumeAiDto::class.java)
@@ -98,9 +97,9 @@ class TranslationService(
                     response.achievementsTitles,
                     response.achievementsDescriptions,
                     response.skillsNames,
-                    response.skillsLevels,
+                    resume.skillsLevels, // Keep original enum labels, not AI translated
                     response.educationMajors,
-                    response.educationDegrees,
+                    resume.educationDegrees, // Keep original enum labels, not AI translated
                     response.experiencePositions,
                     response.experienceDescriptions
                 )
