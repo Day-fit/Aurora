@@ -240,20 +240,7 @@ class GenerationService(
     private fun formatDate(instant: Instant?, languageType: pl.dayfit.auroracore.type.LanguageType?): String? {
         if (instant == null) return null
         
-        val locale = when (languageType) {
-            pl.dayfit.auroracore.type.LanguageType.SPANISH -> Locale("es")
-            pl.dayfit.auroracore.type.LanguageType.FRENCH -> Locale("fr")
-            pl.dayfit.auroracore.type.LanguageType.GERMAN -> Locale("de")
-            pl.dayfit.auroracore.type.LanguageType.ITALIAN -> Locale("it")
-            pl.dayfit.auroracore.type.LanguageType.PORTUGUESE -> Locale("pt")
-            pl.dayfit.auroracore.type.LanguageType.RUSSIAN -> Locale("ru")
-            pl.dayfit.auroracore.type.LanguageType.POLISH -> Locale("pl")
-            pl.dayfit.auroracore.type.LanguageType.DUTCH -> Locale("nl")
-            pl.dayfit.auroracore.type.LanguageType.MANDARIN -> Locale("zh")
-            pl.dayfit.auroracore.type.LanguageType.JAPANESE -> Locale("ja")
-            pl.dayfit.auroracore.type.LanguageType.KOREAN -> Locale("ko")
-            else -> Locale.ENGLISH
-        }
+        val locale = pl.dayfit.auroracore.util.LocaleMapper.toLocale(languageType)
         
         val formatter = DateTimeFormatter
             .ofLocalizedDate(FormatStyle.MEDIUM)
