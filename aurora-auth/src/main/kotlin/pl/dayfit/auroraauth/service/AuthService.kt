@@ -14,6 +14,7 @@ import pl.dayfit.auroraauth.exception.UserAlreadyExistsException
 import pl.dayfit.auroraauth.model.AuroraUser
 import pl.dayfit.auroraauth.oauth.OAuthUserInfo
 import pl.dayfit.auroraauth.repository.UserRepository
+import pl.dayfit.auroraauthlib.service.JwtClaimsService
 import pl.dayfit.auroraauthlib.type.RoleType
 import java.util.UUID
 
@@ -23,7 +24,8 @@ class AuthService(
     private val credentialsAuthProvider: CredentialsAuthProvider,
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val rabbitTemplate: RabbitTemplate
+    private val rabbitTemplate: RabbitTemplate,
+    private val jwtClaimsService: JwtClaimsService
 ) {
     fun handleLogin(loginDto: LoginRequestDto): JwtTokenPairDto {
         val authentication = credentialsAuthProvider.authenticate(
@@ -68,9 +70,11 @@ class AuthService(
         ))
     }
 
-    fun handleRefresh(userId: UUID): JwtTokenPairDto
+    fun handleRefresh(refreshToken: String): JwtTokenPairDto
     {
-        val pair = jwtGenerationService.generateTokenPair(userId)
+        jwtClaimsService.validate(refreshToken)
+        val sub = jwtClaimsService.getSubject(refreshToken)
+        val pair = jwtGenerationService.generateTokenPair(sub)
         return JwtTokenPairDto(
             pair.first,
             pair.second

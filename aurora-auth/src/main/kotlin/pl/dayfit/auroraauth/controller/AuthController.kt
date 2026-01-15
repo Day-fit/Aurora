@@ -5,6 +5,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -72,10 +73,10 @@ class AuthController(
     }
 
     @PostMapping("/refresh")
-    fun refresh(@AuthenticationPrincipal principal: Principal): ResponseEntity<JwtTokenPairDto>
+    fun refresh(@CookieValue(name = "refreshToken") refreshToken: String): ResponseEntity<JwtTokenPairDto>
     {
         val pair = authService.handleRefresh(
-            UUID.fromString(principal.name)
+            refreshToken
         )
 
         val accessTokenCookie = ResponseCookie.from("accessToken", pair.accessToken)
