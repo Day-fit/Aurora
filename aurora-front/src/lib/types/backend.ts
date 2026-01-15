@@ -7,6 +7,7 @@ export enum RequestMethod {
   POST = "POST",
   PUT = "PUT",
   DELETE = "DELETE",
+  PATCH = "PATCH",
 }
 export interface RequestType {
   token?: string | null;

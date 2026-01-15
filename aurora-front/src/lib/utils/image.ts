@@ -30,7 +30,28 @@ export function base64ToDataUrl(
   // Otherwise, assume it's a raw base64 string and prepend the data URL prefix
   return `data:${mimeType};base64,${base64String}`;
 }
+/**
+ * Converts a base64 string to a File object
+ */
+export function base64ToFile(
+  base64String: string,
+  filename: string = "profile.png",
+): File | null {
+  try {
+    const base64Data = base64String.replace(/^data:image\/\w+;base64,/, "");
+    const binaryString = atob(base64Data);
+    const bytes = new Uint8Array(binaryString.length);
 
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    return new File([bytes], filename, { type: "image/png" });
+  } catch (error) {
+    console.error("Failed to convert base64 to file:", error);
+    return null;
+  }
+}
 /**
  * Converts a base64 string to a Blob object
  * @param base64String - The base64 encoded image string

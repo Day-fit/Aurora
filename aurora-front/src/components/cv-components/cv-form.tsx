@@ -17,10 +17,15 @@ import { generateCv } from "@/lib/backend/resume-generation";
 import { useRouter } from "next/navigation";
 import { revalidateCvList } from "@/lib/backend/revalidate";
 import { fileToBase64 } from "@/lib/utils/image";
+import { getChangedFields } from "@/components/cv-components/get-changed-fields";
+import { editResume } from "@/lib/backend/edit-resume";
 
-export default function CvForm() {
-  //need to add validation, error handling, submit handling via request
+interface CvFormProps {
+  originalData?: any;
+  cvId?: string;
+}
 
+export default function CvForm({ originalData, cvId }: CvFormProps) {
   const {
     handleSubmit,
     reset,
@@ -33,22 +38,36 @@ export default function CvForm() {
     console.log("Submitting form:", data);
 
     try {
-      const payload = { ...data };
+      if (cvId && originalData) {
+        // Edit existing CV - only send changed fields
+        const changes = await getChangedFields(originalData, data);
 
-      // If there is a file, convert it to base64 string for the backend
-      if (data.profileImage instanceof File) {
-        payload.profileImage = await fileToBase64(data.profileImage);
-      }
+        if (Object.keys(changes).length === 0) {
+          console.log("No changes detected");
+          return;
+        }
 
-      console.log("Payload:", payload);
-
-      const response = await generateCv(payload);
-      if (response.status >= 200 && response.status < 300) {
-        console.log("CV Generated successfully:", response.data);
-        // Maybe redirect or show success message
+        console.log("Sending changes:", changes);
+        const result = await editResume(cvId, changes);
+        console.log("CV updated:", result);
       } else {
-        console.error("Failed to generate CV:", response.data);
-        alert("Failed to generate CV. Please try again.");
+        const payload = { ...data };
+
+        // If there is a file, convert it to base64 string for the backend
+        if (data.profileImage instanceof File) {
+          payload.profileImage = await fileToBase64(data.profileImage);
+        }
+
+        console.log("Payload:", payload);
+
+        const response = await generateCv(payload);
+        if (response.status >= 200 && response.status < 300) {
+          console.log("CV Generated successfully:", response.data);
+          // Maybe redirect or show success message
+        } else {
+          console.error("Failed to generate CV:", response.data);
+          alert("Failed to generate CV. Please try again.");
+        }
       }
     } catch (error) {
       console.error("Error submitting form:", error);
