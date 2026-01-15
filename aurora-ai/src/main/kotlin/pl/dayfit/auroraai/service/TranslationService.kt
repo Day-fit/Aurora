@@ -61,13 +61,15 @@ class TranslationService(
                 - Description: ${resume.description},
                 
                 - Skills: ${resume.skillsNames.joinToString(", ")}
+                - Skill Levels: ${resume.skillsLevels.joinToString(", ")}
                 - Achievements: ${resume.achievementsTitles.zip(resume.achievementsDescriptions)
                     .joinToString(", ") {(title, description) -> "$title: $description"}}
                     
                 - Experiences: ${resume.experiencePositions.zip(resume.experienceDescriptions)
                     .joinToString( ", " ){(pos, desc) -> "$pos: $desc"}}
                 
-                - Education Majors ${resume.educationMajors.joinToString(", ")}
+                - Education Majors: ${resume.educationMajors.joinToString(", ")}
+                - Education Degrees: ${resume.educationDegrees.joinToString(", ")}
                 
                 Keep everything as close to the original as possible.
             """
@@ -96,7 +98,9 @@ class TranslationService(
                     response.achievementsTitles,
                     response.achievementsDescriptions,
                     response.skillsNames,
+                    response.skillsLevels,
                     response.educationMajors,
+                    response.educationDegrees,
                     response.experiencePositions,
                     response.experienceDescriptions
                 )
