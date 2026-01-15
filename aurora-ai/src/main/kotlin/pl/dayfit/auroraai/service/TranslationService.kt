@@ -70,7 +70,6 @@ class TranslationService(
                 - Education Majors: ${resume.educationMajors.joinToString(", ")}
                 
                 Keep everything as close to the original as possible.
-                Note: Do NOT translate skill levels or education degrees - return them exactly as provided in the skillsLevels and educationDegrees fields.
             """
             )
             .text(TranslationResumeAiDto::class.java)
@@ -97,9 +96,7 @@ class TranslationService(
                     response.achievementsTitles,
                     response.achievementsDescriptions,
                     response.skillsNames,
-                    resume.skillsLevels, // Keep original enum labels, not AI translated
                     response.educationMajors,
-                    resume.educationDegrees, // Keep original enum labels, not AI translated
                     response.experiencePositions,
                     response.experienceDescriptions
                 )

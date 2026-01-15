@@ -74,9 +74,7 @@ class TranslationService (
                     originalResume.achievements.map { it.title },
                     originalResume.achievements.map { it.description },
                     originalResume.skills.map { it.name },
-                    originalResume.skills.map { it.level.label },
                     originalResume.education.map { it.major.orEmpty() },
-                    originalResume.education.map { it.degree.label },
                     originalResume.workExperience.map { it.position },
                     originalResume.workExperience.map { it.description.orEmpty() }
                 )
