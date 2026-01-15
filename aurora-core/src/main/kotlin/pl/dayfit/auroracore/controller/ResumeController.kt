@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import pl.dayfit.auroracore.dto.EditResumeDto
 import pl.dayfit.auroracore.dto.GenerationRequestDto
+import pl.dayfit.auroracore.dto.ResumeDetailsDto
 import pl.dayfit.auroracore.dto.ResumeInformationDto
 import pl.dayfit.auroracore.dto.TranslationRequestDto
 import pl.dayfit.auroracore.service.GenerationService
@@ -51,17 +52,16 @@ class ResumeController (
      * @param id the ID of the résumé to retrieve, provided as a string
      * @return a ResponseEntity containing a StreamingResponseBody with the PDF content of the requested résumé
      */
-    @GetMapping("/get")
-    fun getResume(@AuthenticationPrincipal principal: Principal, @RequestParam id: String): ResponseEntity<StreamingResponseBody> {
+    @GetMapping("/getPdf")
+    fun getResumeAsPdf(@AuthenticationPrincipal principal: Principal, @RequestParam id: UUID): ResponseEntity<StreamingResponseBody> {
         val userId = UUID.fromString(principal.name)
-        val resumeId = UUID.fromString(id)
 
-        val contentLength = resumeService.getGenerationResultSize(userId, resumeId)
+        val contentLength = resumeService.getGenerationResultSize(userId, id)
 
         val body = StreamingResponseBody { os: OutputStream ->
             resumeService.getGenerationResult(
                 userId,
-                resumeId
+                id
             ).use { input ->
                 input.transferTo(os)
                 os.flush()
@@ -72,6 +72,15 @@ class ResumeController (
             .contentType(MediaType.APPLICATION_PDF)
             .contentLength(contentLength)
             .body(body)
+    }
+
+    @GetMapping("/get")
+    fun getResume(@AuthenticationPrincipal principal: Principal, @RequestParam id: UUID): ResponseEntity<ResumeDetailsDto> {
+        return ResponseEntity
+            .ok(
+                resumeService
+                    .getResume(UUID.fromString(principal.name), id)
+            )
     }
 
     /**
