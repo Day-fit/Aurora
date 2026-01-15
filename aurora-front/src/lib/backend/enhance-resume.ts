@@ -1,3 +1,5 @@
+"use server";
+
 import { callBackend } from "@/lib/backend/backend";
 import { RequestMethod } from "@/lib/types/backend";
 

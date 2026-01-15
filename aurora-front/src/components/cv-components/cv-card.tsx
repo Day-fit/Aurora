@@ -1,10 +1,20 @@
+// aurora-front/src/components/cv-components/cv-card.tsx
 "use client";
 
 import Link from "next/link";
-import { FaFileAlt, FaEdit, FaUserCircle, FaMagic } from "react-icons/fa";
+import {
+  FaFileAlt,
+  FaEdit,
+  FaUserCircle,
+  FaMagic,
+  FaDownload,
+  FaLanguage,
+} from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { base64ToDataUrl } from "@/lib/utils/image";
 import { AutoGenerateModal } from "./auto-generate-modal";
+import { TranslateModal } from "./translate-modal";
+import { getResumePdf } from "@/lib/backend/get-resume-pdf";
 
 interface CvCardProps {
   id: string;
@@ -19,7 +29,9 @@ interface CvCardProps {
 export function CvCard({ id, data }: CvCardProps) {
   const { title, name, surname, profileImage } = data;
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEnhanceModalOpen, setIsEnhanceModalOpen] = useState(false);
+  const [isTranslateModalOpen, setIsTranslateModalOpen] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     if (Array.isArray(profileImage) && profileImage[0] instanceof File) {
@@ -34,6 +46,35 @@ export function CvCard({ id, data }: CvCardProps) {
   const imageUrl =
     blobUrl ||
     (typeof profileImage === "string" ? base64ToDataUrl(profileImage) : null);
+
+  const handleDownload = async () => {
+    setIsDownloading(true);
+    try {
+      const { data: pdfBase64, status } = await getResumePdf(id);
+      if (status === 200 && pdfBase64) {
+        const byteCharacters = atob(pdfBase64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: "application/pdf" });
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${title || "resume"}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error("Download failed:", error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   return (
     <>
@@ -75,18 +116,40 @@ export function CvCard({ id, data }: CvCardProps) {
               EDIT RESUME
             </Link>
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => setIsEnhanceModalOpen(true)}
               className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-linear-to-r from-aurora-green-dark to-aurora-green-dark/80 hover:from-aurora-blue-dark hover:to-aurora-blue-dark/80 text-white text-sm font-bold rounded-lg transition-all duration-300 shadow-lg active:scale-95"
             >
               <FaMagic className="w-4 h-4" />
               ENHANCE CV
             </button>
+            <div className="flex gap-2">
+              <button
+                onClick={handleDownload}
+                disabled={isDownloading}
+                className="flex items-center justify-center gap-2 flex-1 py-3 px-4 bg-white/5 hover:bg-white/10 text-text-dark text-sm font-bold rounded-lg transition-all duration-300 active:scale-95 disabled:opacity-50"
+              >
+                <FaDownload className="w-4 h-4" />
+                {isDownloading ? "..." : "PDF"}
+              </button>
+              <button
+                onClick={() => setIsTranslateModalOpen(true)}
+                className="flex items-center justify-center gap-2 flex-1 py-3 px-4 bg-white/5 hover:bg-white/10 text-text-dark text-sm font-bold rounded-lg transition-all duration-300 active:scale-95"
+              >
+                <FaLanguage className="w-4 h-4" />
+                TRANSLATE
+              </button>
+            </div>
           </div>
         </div>
       </div>
       <AutoGenerateModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isEnhanceModalOpen}
+        onClose={() => setIsEnhanceModalOpen(false)}
+        cvId={id}
+      />
+      <TranslateModal
+        isOpen={isTranslateModalOpen}
+        onClose={() => setIsTranslateModalOpen(false)}
         cvId={id}
       />
     </>
