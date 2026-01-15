@@ -1,3 +1,4 @@
+// aurora-front/src/components/cv-components/cv-form.tsx
 "use client";
 
 import Button from "@/components/button";
@@ -6,7 +7,7 @@ import Skills from "@/components/cv-components/skill";
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import Education from "@/components/cv-components/education";
-import Experience from "@/components/cv-components/experience";
+import WorkExperience from "@/components/cv-components/workExperience";
 import Achievement from "@/components/cv-components/achievement";
 import FormSection from "@/components/cv-components/form-section";
 import PersonalInfo from "@/components/cv-components/personal-info";
@@ -19,8 +20,6 @@ import { revalidateCvList } from "@/lib/backend/revalidate";
 import { fileToBase64 } from "@/lib/utils/image";
 import { getChangedFields } from "@/components/cv-components/get-changed-fields";
 import { editResume } from "@/lib/backend/edit-resume";
-import { useTracker } from "@/context/tracker-context";
-import { getResumePdf } from "@/lib/backend/get-resume-pdf";
 
 interface CvFormProps {
   originalData?: any;
@@ -31,58 +30,37 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
   const {
     handleSubmit,
     reset,
-    formState: { isSubmitting, errors },
+    formState: { isSubmitting },
   } = useFormContext();
-
-  const { startTracking } = useTracker();
 
   const router = useRouter();
 
   const onSubmit = async (data: any) => {
-    console.log("Submitting form:", data);
-
     try {
       const payload = { ...data };
 
       if (data.profileImage instanceof File) {
         payload.profileImage = await fileToBase64(data.profileImage);
       }
-      console.log("Payload:", payload);
 
       if (cvId && originalData) {
-        // Edit existing CV - only send changed fields
         const changes = await getChangedFields(originalData, payload);
-
         if (Object.keys(changes).length === 0) {
           console.log("No changes detected");
           return;
         }
-
-        console.log("Sending changes:", changes);
-        const result = await editResume(cvId, changes);
-        console.log("CV updated:", result);
+        await editResume(cvId, changes);
+        console.log("Changes detected:", changes);
       } else {
         await generateResume(payload);
       }
-      startTracking();
 
-      await getResumePdf(payload);
+      await revalidateCvList();
+      router.back();
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("An unexpected error occurred.");
     }
-
-    await revalidateCvList();
-
-    router.back();
-  };
-
-  // Add this to debug validation errors
-  const handleFormSubmit = (e: React.FormEvent) => {
-    console.log("Form submitted - checking for errors...");
-    console.log("Validation errors:", errors);
-    console.log("Submitting form...");
-    handleSubmit(onSubmit)(e);
   };
 
   return (
@@ -91,7 +69,7 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
         <div className="w-full">
           <header className="mb-6">
             <h2 className="text-3xl md:text-4xl font-extrabold leading-tight bg-clip-text text-transparent bg-linear-to-r from-aurora-blue-dark to-aurora-green-dark">
-              Create your CV
+              {cvId ? "Edit your CV" : "Create your CV"}
             </h2>
             <p className="text-sm text-text-dark/70 mt-2 max-w-prose">
               Fill the form on the left. AI tips and a live preview are on the
@@ -101,7 +79,9 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
 
           <form
             className="w-full flex flex-col gap-4"
-            onSubmit={handleFormSubmit}
+            onSubmit={handleSubmit(onSubmit, (validationErrors) => {
+              console.log("Validation failed:", validationErrors);
+            })}
           >
             <FormSection title="Styling options">
               <FormStyling />
@@ -124,7 +104,7 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
             </FormSection>
 
             <FormSection title="Your work experience">
-              <Experience />
+              <WorkExperience />
             </FormSection>
 
             <FormSection title="Your skills">
@@ -140,7 +120,15 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
                 type={ButtonType.submit}
                 className="flex-1 bg-aurora-blue-dark text-white px-6 py-3 rounded-lg shadow-xl hover:scale-102 transition-transform font-semibold"
                 disabled={isSubmitting}
-                text={isSubmitting ? "Creating..." : "Create CV"}
+                text={
+                  isSubmitting
+                    ? cvId
+                      ? "Saving..."
+                      : "Creating..."
+                    : cvId
+                      ? "Save CV"
+                      : "Create CV"
+                }
               />
               <Button
                 type={ButtonType.button}
