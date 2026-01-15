@@ -32,6 +32,11 @@ export function CvCard({ id, data }: CvCardProps) {
   const [isEnhanceModalOpen, setIsEnhanceModalOpen] = useState(false);
   const [isTranslateModalOpen, setIsTranslateModalOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     if (Array.isArray(profileImage) && profileImage[0] instanceof File) {
@@ -43,9 +48,10 @@ export function CvCard({ id, data }: CvCardProps) {
     }
   }, [profileImage]);
 
-  const imageUrl =
-    blobUrl ||
-    (typeof profileImage === "string" ? base64ToDataUrl(profileImage) : null);
+  const imageUrl = isMounted
+    ? blobUrl ||
+      (typeof profileImage === "string" ? base64ToDataUrl(profileImage) : null)
+    : null;
 
   const handleDownload = async () => {
     setIsDownloading(true);

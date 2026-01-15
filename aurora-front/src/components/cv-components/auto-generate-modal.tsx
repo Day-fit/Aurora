@@ -4,10 +4,8 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaTimes } from "react-icons/fa";
-import { useRouter } from "next/navigation";
 import resumeAutogeneration from "@/lib/backend/resume-autogenertion";
 import enhanceResume from "@/lib/backend/enhance-resume";
-import { useTracker } from "@/context/tracker-context";
 
 interface AutoGenerateModalProps {
   isOpen: boolean;
@@ -28,8 +26,6 @@ export function AutoGenerateModal({
 }: AutoGenerateModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
-  const { startTracking } = useTracker();
 
   const {
     register,
@@ -49,29 +45,18 @@ export function AutoGenerateModal({
     setError(null);
     try {
       if (cvId) {
-        const { status, data: responseData } = await enhanceResume(cvId);
-        console.log(status, responseData, "enhance resume response");
+        const { status } = await enhanceResume(cvId);
         if (status !== 200 && status !== 201) {
           throw new Error("Failed to enhance resume");
         }
-        // Start tracking with the returned trackingId
-        if (responseData?.trackingId) {
-          console.log(responseData.trackingId, "enhanced resume trackingId");
-          startTracking(responseData.trackingId);
-        }
       } else {
-        const { status, data: responseData } = await resumeAutogeneration(data);
+        const { status } = await resumeAutogeneration(data);
         if (status !== 200 && status !== 201) {
           throw new Error("Failed to auto-generate resume");
-        }
-        // Start tracking with trackingId and autoGenerationId
-        if (responseData?.trackingId) {
-          startTracking(responseData.trackingId, responseData.autoGenerationId);
         }
       }
       reset();
       onClose();
-      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
