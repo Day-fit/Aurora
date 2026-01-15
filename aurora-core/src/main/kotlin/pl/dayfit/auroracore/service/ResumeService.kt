@@ -16,6 +16,7 @@ import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import pl.dayfit.auroracore.dto.EditResumeDto
+import pl.dayfit.auroracore.dto.ResumeDetailsDto
 import pl.dayfit.auroracore.dto.ResumeInformationDto
 import pl.dayfit.auroracore.event.EnhanceRequestedEvent
 import pl.dayfit.auroracore.event.ResumeReadyToExport
@@ -72,6 +73,56 @@ class ResumeService(
                 resume.originalVersion?.id,
                 resume.enhanced
             ) }
+    }
+
+    /**
+     * Retrieves the resume information for the specified user and resume identifiers.
+     *
+     * @param userId The unique identifier of the user requesting the résumé.
+     * @param resumeId The unique identifier of the résumé to be retrieved.
+     * @return A `ResumeInformationDto` containing the details of the requested résumé.
+     * @throws AccessDeniedException If the user does not have access to the requested résumé.
+     */
+    fun getResume(userId: UUID, resumeId: UUID): ResumeDetailsDto {
+        val resume = resumeCacheService.getResumeById(resumeId)
+
+        if(!accessHelper.isOwner(resume, userId)) {
+            throw AccessDeniedException("You are not allowed to access this resume")
+        }
+
+        return ResumeDetailsDto(
+            resume.language,
+            resume.originalVersion?.id,
+            resume.name,
+            resume.surname,
+            resume.age,
+            resume.title,
+            resume.workExperience
+                .map { ResumeDetailsDto.WorkExperience(it.company, it.position, it.startDate, it.endDate, it.description) }
+                .toMutableList(),
+            resume.personalPortfolio
+                .map { ResumeDetailsDto.PersonalPortfolio(it.name, it.description) }
+                .toMutableList(),
+            resume.skills
+                .map { ResumeDetailsDto.Skill(it.name, it.level) }
+                .toMutableList(),
+            resume.education
+                .map { ResumeDetailsDto.Education(it.institution, it.major, it.degree, it.fromYear, it.toYear) }
+                .toMutableList(),
+            resume.achievements
+                .map { ResumeDetailsDto.Achievement(it.title, it.description, it.year) }
+                .toMutableList(),
+            resume.profileImage
+                ?.let { Base64.getEncoder().encodeToString(it) },
+            resume.profileDescription,
+            resume.email,
+            resume.website,
+            resume.linkedIn,
+            resume.gitHub,
+            resume.templateVersion,
+            resume.lastModified,
+            resume.enhanced
+        )
     }
 
     /**

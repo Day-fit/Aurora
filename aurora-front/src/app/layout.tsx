@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/layout/header/header";
 import React from "react";
 import FooterWrapper from "@/components/layout/footer/footer-wrapper";
+import { TrackerProvider } from "@/context/tracker-context";
 
 export const metadata: Metadata = {
   title: "Aurora",
@@ -21,11 +22,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="overflow-x-hidden relative">
-        <Header />
-        <div className="pointer-events-none absolute -left-24 -top-10 w-80 h-80 rounded-full bg-linear-to-tr from-aurora-blue-dark/40 to-aurora-green-dark/30 blur-3xl opacity-30 transform rotate-12 animate-pulse" />
-        <div className="pointer-events-none absolute -right-24 -bottom-10 w-96 h-96 rounded-full bg-linear-to-br from-aurora-green-dark/30 to-aurora-blue-dark/20 blur-3xl opacity-25 transform -rotate-6" />
-        <div className="grow">{children}</div>
-        <FooterWrapper />
+        <TrackerProvider>
+          <Header />
+          <div className="pointer-events-none absolute -left-24 -top-10 w-80 h-80 rounded-full bg-linear-to-tr from-aurora-blue-dark/40 to-aurora-green-dark/30 blur-3xl opacity-30 transform rotate-12 animate-pulse" />
+          <div className="pointer-events-none absolute -right-24 -bottom-10 w-96 h-96 rounded-full bg-linear-to-br from-aurora-green-dark/30 to-aurora-blue-dark/20 blur-3xl opacity-25 transform -rotate-6" />
+          <div className="grow">{children}</div>
+          <FooterWrapper />
+        </TrackerProvider>
       </body>
     </html>
   );
