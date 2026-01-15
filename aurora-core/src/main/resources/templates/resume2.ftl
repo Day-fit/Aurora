@@ -241,7 +241,7 @@
                                     </#if>
                                     -
                                     <#if exp.endDate?has_content>
-                                        ${exp.startDate}
+                                        ${exp.endDate}
                                     <#else>
                                         ${i18n_present}
                                     </#if>
