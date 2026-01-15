@@ -7,6 +7,7 @@ import jakarta.annotation.PreDestroy
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import pl.dayfit.auroracore.event.ResumeReadyToExport
 import pl.dayfit.auroracore.event.StatusChangedEvent
 import pl.dayfit.auroracore.event.TranslationDoneEvent
@@ -49,7 +50,8 @@ class TranslationIntegrationService(
      * @param event The event containing the translated resume data and associated metadata.
      */
     @EventListener
-    private fun handleTranslatedResume(event: TranslationDoneEvent)
+    @Transactional
+    fun handleTranslatedResume(event: TranslationDoneEvent)
     {
         val resume = resumeCacheService.getResumeById(event.resume.id)
 

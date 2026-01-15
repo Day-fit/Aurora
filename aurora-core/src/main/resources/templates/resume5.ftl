@@ -195,24 +195,24 @@
                 <#if email?has_content> • </#if><a href="${website}" target="_blank">${website}</a>
             </#if>
             <#if linkedIn?has_content>
-                <#if email?has_content || website?has_content> • </#if><a href="${linkedIn}" target="_blank">LinkedIn</a>
+                <#if email?has_content || website?has_content> • </#if><a href="${linkedIn}" target="_blank">${i18n_linkedin}</a>
             </#if>
             <#if gitHub?has_content>
-                <#if email?has_content || website?has_content || linkedIn?has_content> • </#if><a href="${gitHub}" target="_blank">GitHub</a>
+                <#if email?has_content || website?has_content || linkedIn?has_content> • </#if><a href="${gitHub}" target="_blank">${i18n_github}</a>
             </#if>
         </div>
     </div>
 
     <#if profileDescription?has_content>
         <div class="section">
-            <div class="section-title">Professional Summary</div>
+            <div class="section-title">${i18n_professionalSummary}</div>
             <p class="profile-text">${profileDescription}</p>
         </div>
     </#if>
 
     <#if experiences?has_content>
         <div class="section">
-            <div class="section-title">Professional Experience</div>
+            <div class="section-title">${i18n_professionalExperience}</div>
             <#list experiences![] as exp>
                 <div class="experience-item">
                     <div class="item-header">
@@ -222,12 +222,12 @@
                         </div>
                         <div class="date-range">
                             <#if exp.startDate?has_content>
-                                ${exp.startDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")}
+                                ${exp.startDate}
                             </#if>
                             -
                             <#if exp.endDate?has_content>
-                                ${exp.endDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")}
-                            <#else>Present</#if>
+                                ${exp.endDate}
+                            <#else>${i18n_present}</#if>
                         </div>
                     </div>
                     <#if exp.description?has_content>
@@ -240,7 +240,7 @@
 
     <#if education?has_content>
         <div class="section">
-            <div class="section-title">Education</div>
+            <div class="section-title">${i18n_education}</div>
             <div class="education-grid">
                 <#list education![] as edu>
                     <div class="education-item">
@@ -254,7 +254,7 @@
                             <div class="date-range">
                                 <#if edu.fromYear?has_content>${edu.fromYear?c}</#if>
                                 -
-                                <#if edu.toYear?has_content>${edu.toYear?c}<#else>Present</#if>
+                                <#if edu.toYear?has_content>${edu.toYear?c}<#else>${i18n_present}</#if>
                             </div>
                         </div>
                     </div>
@@ -265,7 +265,7 @@
 
     <#if skills?has_content>
         <div class="section">
-            <div class="section-title">Skills & Competencies</div>
+            <div class="section-title">${i18n_skillsAndCompetencies}</div>
             <div class="skills-section">
                 <#list skills![] as skill>
                     <div class="skill-item">
@@ -281,7 +281,7 @@
 
     <#if personalPortfolio?has_content>
         <div class="section">
-            <div class="section-title">Projects & Portfolio</div>
+            <div class="section-title">${i18n_projectsAndPortfolio}</div>
             <#list personalPortfolio![] as portfolio>
                 <div class="portfolio-item">
                     <div class="item-title">${portfolio.name!''}</div>
@@ -293,7 +293,7 @@
 
     <#if achievements?has_content>
         <div class="section">
-            <div class="section-title">Honors & Achievements</div>
+            <div class="section-title">${i18n_honorsAndAchievements}</div>
             <ul>
                 <#list achievements![] as ach>
                     <li>

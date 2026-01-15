@@ -1,14 +1,17 @@
 package pl.dayfit.auroracore.service
 
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.rabbit.stream.producer.RabbitStreamTemplate
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import pl.dayfit.auroracore.dto.TranslationResumeDto
+import pl.dayfit.auroracore.event.StatusChangedEvent
 import pl.dayfit.auroracore.event.TranslationRequestedEvent
 import pl.dayfit.auroracore.helper.AccessHelper
 import pl.dayfit.auroracore.model.Resume
 import pl.dayfit.auroracore.service.cache.ResumeCacheService
 import pl.dayfit.auroracore.type.LanguageType
+import pl.dayfit.auroracore.type.TrackerStatus
 import pl.dayfit.auroracore.type.TrackerType
 import java.time.Instant
 import java.util.UUID
@@ -18,7 +21,8 @@ class TranslationService (
     private val resumeCacheService: ResumeCacheService,
     private val translateStreamTemplate: RabbitStreamTemplate,
     private val accessHelper: AccessHelper,
-    private val trackerService: TrackerService
+    private val trackerService: TrackerService,
+    private val applicationEventPublisher: ApplicationEventPublisher
 ){
     /**
      * Translates a résumé into the specified language by creating a new translated version.
@@ -64,8 +68,15 @@ class TranslationService (
         val saved = resumeCacheService
             .saveResume(translatedResume)
 
+        val tracker = trackerService.createNewTracker(
+            ownerId,
+            TrackerType.TRANSLATION,
+            saved.id!!
+        )
+
         translateStreamTemplate.convertAndSend(
             TranslationRequestedEvent(
+                tracker.id!!,
                 language,
                 TranslationResumeDto(
                     saved.id!!,
@@ -81,10 +92,8 @@ class TranslationService (
             )
         )
 
-        trackerService.createNewTracker(
-            ownerId,
-            TrackerType.TRANSLATION,
-            saved.id!!
+        applicationEventPublisher.publishEvent(
+            StatusChangedEvent(tracker.id!!, TrackerStatus.TRANSLATION_IN_PROGRESS)
         )
 
         return saved.id!!

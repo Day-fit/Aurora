@@ -251,16 +251,16 @@
                 <h2>${title!''}</h2>
                 <div class="contact-chips">
                     <#if email?has_content><div class="chip">📧 ${email}</div></#if>
-                    <#if website?has_content><div class="chip">🌐 <a href="${website}" target="_blank">Website</a></div></#if>
-                    <#if linkedIn?has_content><div class="chip">🔗 <a href="${linkedIn}" target="_blank">LinkedIn</a></div></#if>
-                    <#if gitHub?has_content><div class="chip">🐱 <a href="${gitHub}" target="_blank">GitHub</a></div></#if>
+                    <#if website?has_content><div class="chip">🌐 <a href="${website}" target="_blank">${i18n_website}</a></div></#if>
+                    <#if linkedIn?has_content><div class="chip">🔗 <a href="${linkedIn}" target="_blank">${i18n_linkedin}</a></div></#if>
+                    <#if gitHub?has_content><div class="chip">🐱 <a href="${gitHub}" target="_blank">${i18n_github}</a></div></#if>
                 </div>
             </div>
         </div>
 
         <#if profileDescription?has_content>
             <div class="section">
-                <div class="section-title">About Me</div>
+                <div class="section-title">${i18n_aboutMe}</div>
                 <p class="profile-text">${profileDescription}</p>
             </div>
         </#if>
@@ -269,19 +269,19 @@
             <div class="main-column">
                 <#if experiences?has_content>
                     <div class="section">
-                        <div class="section-title">Work Experience</div>
+                        <div class="section-title">${i18n_workExperience}</div>
                         <#list experiences![] as exp>
                             <div class="experience-item">
                                 <div class="item-title">${exp.position!''}</div>
                                 <div class="item-subtitle">${exp.company!''}</div>
                                 <div class="date-range">
                                     <#if exp.startDate?has_content>
-                                        ${exp.startDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")}
+                                        ${exp.startDate}
                                     </#if>
                                     -
                                     <#if exp.endDate?has_content>
-                                        ${exp.endDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")}
-                                    <#else>Present</#if>
+                                        ${exp.endDate}
+                                    <#else>${i18n_present}</#if>
                                 </div>
                                 <#if exp.description?has_content>
                                     <p class="description">${exp.description}</p>
@@ -293,7 +293,7 @@
 
                 <#if personalPortfolio?has_content>
                     <div class="section">
-                        <div class="section-title">Featured Projects</div>
+                        <div class="section-title">${i18n_featuredProjects}</div>
                         <#list personalPortfolio![] as portfolio>
                             <div class="portfolio-item">
                                 <div class="item-title">${portfolio.name!''}</div>
@@ -305,7 +305,7 @@
 
                 <#if achievements?has_content>
                     <div class="section">
-                        <div class="section-title">Achievements</div>
+                        <div class="section-title">${i18n_achievements}</div>
                         <ul class="achievement-list">
                             <#list achievements![] as ach>
                                 <li>
@@ -322,7 +322,7 @@
             <div class="side-column">
                 <#if skills?has_content>
                     <div class="section">
-                        <div class="section-title">Skills</div>
+                        <div class="section-title">${i18n_skills}</div>
                         <div class="skill-category">
                             <div class="skills-list">
                                 <#list skills![] as skill>
@@ -340,7 +340,7 @@
 
                 <#if education?has_content>
                     <div class="section">
-                        <div class="section-title">Education</div>
+                        <div class="section-title">${i18n_education}</div>
                         <#list education![] as edu>
                             <div class="education-item">
                                 <div class="education-title">${edu.institution!''}</div>
@@ -350,7 +350,7 @@
                                 <div class="date-range">
                                     <#if edu.fromYear?has_content>${edu.fromYear?c}</#if>
                                     -
-                                    <#if edu.toYear?has_content>${edu.toYear?c}<#else>Present</#if>
+                                    <#if edu.toYear?has_content>${edu.toYear?c}<#else>${i18n_present}</#if>
                                 </div>
                             </div>
                         </#list>

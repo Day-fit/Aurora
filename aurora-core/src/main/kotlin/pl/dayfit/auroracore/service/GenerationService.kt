@@ -26,10 +26,15 @@ import pl.dayfit.auroracore.model.WorkExperience
 import pl.dayfit.auroracore.model.Resume
 import pl.dayfit.auroracore.model.Skill
 import pl.dayfit.auroracore.service.cache.ResumeCacheService
+import pl.dayfit.auroracore.type.LanguageType
+import pl.dayfit.auroracore.util.LocaleMapper
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.StringWriter
 import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.UUID
 import kotlin.io.encoding.Base64
 
@@ -38,7 +43,9 @@ class GenerationService(
     private val resumeCacheService: ResumeCacheService,
     private val freeMarkerConfiguration: Configuration,
     private val applicationEventPublisher: ApplicationEventPublisher,
-    private val resumeService: ResumeService
+    private val resumeService: ResumeService,
+    private val enumLocalizationService: EnumLocalizationService,
+    private val messageSource: org.springframework.context.MessageSource
 ) {
     private val imageQuality = 0.75
     private val logger = LoggerFactory.getLogger(GenerationService::class.java)
@@ -143,29 +150,85 @@ class GenerationService(
             .getResumeById(event.id)
 
         val template: Template = freeMarkerConfiguration.getTemplate("resume${resume.templateVersion}.ftl")
-        val data: MutableMap<String, Any> = HashMap()
+        val data: MutableMap<String, Any?> = HashMap()
 
-        //Personal data
+        // Personal data
         data["name"] = resume.name
         data["title"] = resume.title!!
         data["surname"] = resume.surname
         data["age"] = resume.age
 
-        //Profile
+        // Profile
         resume.profileImage?.let { data["profileImage"] = "data:image/png;base64, ${Base64.encode(it)}" }
         resume.profileDescription?.let { data["profileDescription"] = it }
 
-        //Contact information
+        // Contact information
         data["email"] = resume.email
         resume.website?.let { data["website"] = it }
         resume.gitHub?.let { data["gitHub"] = it }
         resume.linkedIn?.let { data["linkedIn"] = it }
 
-        //Other information
-        resume.education.let { data["education"] = it }
-        resume.skills.let { data["skills"] = it }
+        // Localized template strings
+        val locale = LocaleMapper.toLocale(resume.language)
+        val messageArgs: Array<Any> = arrayOf()
+        data["i18n_contact"] = messageSource.getMessage("template.contact", messageArgs, "Contact", locale)
+        data["i18n_education"] = messageSource.getMessage("template.education", messageArgs, "Education", locale)
+        data["i18n_skills"] = messageSource.getMessage("template.skills", messageArgs, "Skills", locale)
+        data["i18n_workExperience"] = messageSource.getMessage("template.workExperience", messageArgs, "Work Experience", locale)
+        data["i18n_profile"] = messageSource.getMessage("template.profile", messageArgs, "Profile", locale)
+        data["i18n_about"] = messageSource.getMessage("template.about", messageArgs, "About", locale)
+        data["i18n_projects"] = messageSource.getMessage("template.projects", messageArgs, "Projects", locale)
+        data["i18n_achievements"] = messageSource.getMessage("template.achievements", messageArgs, "Achievements", locale)
+        data["i18n_present"] = messageSource.getMessage("template.present", messageArgs, "Present", locale)
+        data["i18n_professionalSummary"] = messageSource.getMessage("template.professionalSummary", messageArgs, "Professional Summary", locale)
+        data["i18n_experience"] = messageSource.getMessage("template.experience", messageArgs, "Experience", locale)
+        data["i18n_featuredProjects"] = messageSource.getMessage("template.featuredProjects", messageArgs, "Featured Projects", locale)
+        data["i18n_achievementsAndAwards"] = messageSource.getMessage("template.achievementsAndAwards", messageArgs, "Achievements & Awards", locale)
+        data["i18n_aboutMe"] = messageSource.getMessage("template.aboutMe", messageArgs, "About Me", locale)
+        data["i18n_skillsAndCompetencies"] = messageSource.getMessage("template.skillsAndCompetencies", messageArgs, "Skills & Competencies", locale)
+        data["i18n_projectsAndPortfolio"] = messageSource.getMessage("template.projectsAndPortfolio", messageArgs, "Projects & Portfolio", locale)
+        data["i18n_professionalExperience"] = messageSource.getMessage("template.professionalExperience", messageArgs, "Professional Experience", locale)
+        data["i18n_honorsAndAchievements"] = messageSource.getMessage("template.honorsAndAchievements", messageArgs, "Honors & Achievements", locale)
+        data["i18n_linkedin"] = messageSource.getMessage("template.linkedin", messageArgs, "LinkedIn", locale)
+        data["i18n_github"] = messageSource.getMessage("template.github", messageArgs, "GitHub", locale)
+        data["i18n_website"] = messageSource.getMessage("template.website", messageArgs, "Website", locale)
+        data["i18n_portfolio"] = messageSource.getMessage("template.portfolio", messageArgs, "Portfolio", locale)
+
+        // Other information
+        resume.education.let { educationList ->
+            data["education"] = educationList.map { edu ->
+                mapOf(
+                    "id" to edu.id,
+                    "institution" to edu.institution,
+                    "major" to edu.major,
+                    "degree" to enumLocalizationService.getLocalizedEducationDegree(edu.degree, resume.language),
+                    "fromYear" to edu.fromYear,
+                    "toYear" to edu.toYear
+                )
+            }
+        }
+        resume.skills.let { skillsList ->
+            data["skills"] = skillsList.map { skill ->
+                mapOf(
+                    "id" to skill.id,
+                    "name" to skill.name,
+                    "level" to enumLocalizationService.getLocalizedSkillLevel(skill.level, resume.language)
+                )
+            }
+        }
         resume.achievements.let { data["achievements"] = it}
-        resume.workExperience.let { data["experiences"] = it}
+        resume.workExperience.let { experienceList ->
+            data["experiences"] = experienceList.map { exp ->
+                mapOf(
+                    "id" to exp.id,
+                    "company" to exp.company,
+                    "position" to exp.position,
+                    "startDate" to formatDate(exp.startDate, resume.language),
+                    "endDate" to formatDate(exp.endDate, resume.language),
+                    "description" to exp.description
+                )
+            }
+        }
         resume.personalPortfolio.let { data["personalPortfolio"] = it }
 
         StringWriter().use {
@@ -197,6 +260,22 @@ class GenerationService(
         }
 
         resumeCacheService.saveResume(resume)
+    }
+
+    /**
+     * Format an Instant date according to the target language locale
+     */
+    private fun formatDate(instant: Instant?, languageType: LanguageType?): String? {
+        if (instant == null) return null
+        
+        val locale = LocaleMapper.toLocale(languageType)
+        
+        val formatter = DateTimeFormatter
+            .ofLocalizedDate(FormatStyle.MEDIUM)
+            .withLocale(locale)
+            .withZone(ZoneId.systemDefault())
+        
+        return formatter.format(instant)
     }
 
     private fun compressImage(image: String): ByteArray {

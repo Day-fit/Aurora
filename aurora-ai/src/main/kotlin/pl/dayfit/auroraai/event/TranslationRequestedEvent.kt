@@ -4,6 +4,7 @@ import pl.dayfit.auroraai.dto.TranslationResumeDto
 import pl.dayfit.auroraai.type.LanguageType
 
 data class TranslationRequestedEvent(
+    val trackerId: String,
     val targetLanguage: LanguageType,
     val originalResume: TranslationResumeDto
 )

@@ -169,34 +169,34 @@
         </#if>
 
         <#if email?has_content || website?has_content || linkedIn?has_content || gitHub?has_content>
-            <div class="section-title">Contact</div>
+            <div class="section-title">${i18n_contact}</div>
             <#if email?has_content>
                 <div class="contact-item">📧<span>${email}</span></div>
             </#if>
             <#if website?has_content>
-                <div class="contact-item">🌐<span><a href="${website}" target="_blank">Portfolio</a></span></div>
+                <div class="contact-item">🌐<span><a href="${website}" target="_blank">${i18n_portfolio}</a></span></div>
             </#if>
             <#if linkedIn?has_content>
-                <div class="social-item">🔗<span><a href="${linkedIn}" target="_blank">LinkedIn</a></span></div>
+                <div class="social-item">🔗<span><a href="${linkedIn}" target="_blank">${i18n_linkedin}</a></span></div>
             </#if>
             <#if gitHub?has_content>
-                <div class="social-item">🐱<span><a href="${gitHub}" target="_blank">GitHub</a></span></div>
+                <div class="social-item">🐱<span><a href="${gitHub}" target="_blank">${i18n_github}</a></span></div>
             </#if>
         </#if>
 
         <#if education?has_content>
-            <div class="section-title">Education</div>
+            <div class="section-title">${i18n_education}</div>
             <#list education![] as edu>
                 <div class="education-item">
                     <div class="mt-small bold">${edu.institution!''}</div>
                     <div class="mt-tiny">${edu.degree!''}<#if edu.major?has_content> in ${edu.major}</#if></div>
-                    <div class="date-range">${edu.fromYear?c!''} - <#if edu.toYear?has_content>${edu.toYear?c}<#else>Present</#if></div>
+                    <div class="date-range">${edu.fromYear?c!''} - <#if edu.toYear?has_content>${edu.toYear?c}<#else>${i18n_present}</#if></div>
                 </div>
             </#list>
         </#if>
 
         <#if skills?has_content>
-            <div class="section-title">Skills</div>
+            <div class="section-title">${i18n_skills}</div>
             <ul>
                 <#list skills![] as skill>
                     <li>${skill.name!''}<#if skill.level?has_content> <span class="skill-level">(${skill.level})</span></#if></li>
@@ -210,18 +210,18 @@
         <h2>${title!''}</h2>
 
         <#if profileDescription?has_content>
-            <div class="section-title">Profile</div>
+            <div class="section-title">${i18n_profile}</div>
             <p>${profileDescription}</p>
         </#if>
 
         <#if experiences?has_content>
-            <div class="section-title">Work Experience</div>
+            <div class="section-title">${i18n_workExperience}</div>
             <#list experiences![] as exp>
                 <div class="experience-item">
                     <div class="bold">${exp.position!''}</div>
                     <div class="mt-tiny">${exp.company!''}</div>
                     <div class="date-range">
-                        ${exp.startDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")} - <#if exp.endDate?has_content>${exp.endDate?datetime("yyyy-MM-dd'T'HH:mm:ssX")?string("MMM yyyy")}<#else>Present</#if>
+                        ${exp.startDate} - <#if exp.endDate?has_content>${exp.endDate}<#else>${i18n_present}</#if>
                     </div>
                     <#if exp.description?has_content>
                         <p class="description">${exp.description}</p>
@@ -231,7 +231,7 @@
         </#if>
 
         <#if personalPortfolio?has_content>
-            <div class="section-title">Projects</div>
+            <div class="section-title">${i18n_projects}</div>
             <#list personalPortfolio![] as portfolio>
                 <div class="portfolio-item">
                     <div class="bold">${portfolio.name!''}</div>
@@ -241,7 +241,7 @@
         </#if>
 
         <#if achievements?has_content>
-            <div class="section-title">Achievements</div>
+            <div class="section-title">${i18n_achievements}</div>
             <ul>
                 <#list achievements![] as ach>
                     <li class="mt-small">
