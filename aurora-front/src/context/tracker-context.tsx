@@ -30,7 +30,7 @@ interface TrackerContextType {
   statusMessage: string;
   isFinished: boolean;
   hasError: boolean;
-  startTracking: () => void;
+  startTracking: () => Promise<void>;
   stopTracking: () => void;
 }
 
@@ -66,7 +66,7 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
     setHasError(false);
   }, []);
 
-  const startTracking = useCallback(() => {
+  const startTracking = useCallback(async () => {
     if (socketRef.current) {
       socketRef.current.close();
     }
@@ -76,12 +76,26 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
     setHasError(false);
     setStatus("STARTING");
 
-    console.log("Cookies:", document.cookie);
-    // Get token from cookie
-    const accessToken = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("accessToken="))
-      ?.split("=")[1];
+    let accessToken: string | undefined;
+    try {
+      const response = await fetch("/api/proxy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          endpoint: "/api/v1/auth/refresh",
+          method: "POST",
+        }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        accessToken = data?.accessToken;
+      } else {
+        console.error("Refresh failed with status:", response.status);
+      }
+    } catch (error) {
+      console.error("Failed to refresh access token:", error);
+    }
 
     const wsUrl = accessToken
       ? `ws://localhost:8081/api/v1/core/ws/tracker?token=${accessToken}`

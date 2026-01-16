@@ -23,16 +23,70 @@ export async function callBackend<T = any>({
   );
   const cookieStore = await cookies();
 
-  const buildCookieHeader = () =>
-    cookieStore
-      .getAll()
-      .map((c) => `${c.name}=${c.value}`)
-      .join("; ");
+  const getAccessToken = () => cookieStore.get("accessToken")?.value;
+  const getRefreshToken = () => cookieStore.get("refreshToken")?.value;
 
-  const getHeaders = () => {
+  const buildCookieHeader = () => {
+    const refreshToken = getRefreshToken();
+    return refreshToken ? `refreshToken=${refreshToken}` : "";
+  };
+
+  const applySetCookieHeader = (setCookieHeader: string | null) => {
+    if (!setCookieHeader) {
+      return;
+    }
+
+    const cookiesToSet = setCookieHeader.split(/,(?=[^;]+=[^;]+)/);
+    cookiesToSet.forEach((cookieString) => {
+      const [nameValue] = cookieString.split(";");
+      const [name, value] = nameValue.split("=");
+      const cookieName = name.trim();
+      cookieStore.set(cookieName, value.trim(), {
+        httpOnly: cookieName === "refreshToken",
+        path: "/",
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+      });
+    });
+  };
+
+  const storeAccessToken = (token?: string) => {
+    if (!token) {
+      return;
+    }
+
+    cookieStore.set("accessToken", token, {
+      httpOnly: true,
+      path: "/",
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    });
+  };
+
+  const parseBearerToken = (headerValue?: string | null) =>
+    headerValue ? headerValue.replace(/^Bearer\s+/i, "").trim() : undefined;
+
+  const parseJson = <U,>(value: string): U | null => {
+    try {
+      return JSON.parse(value) as U;
+    } catch {
+      return null;
+    }
+  };
+
+  const getHeaders = (includeAuth = true) => {
     const headers: Record<string, string> = {
-      Cookie: buildCookieHeader(),
     };
+    const cookieHeader = buildCookieHeader();
+    if (cookieHeader) {
+      headers.Cookie = cookieHeader;
+    }
+    if (includeAuth) {
+      const accessToken = getAccessToken();
+      if (accessToken) {
+        headers.Authorization = `Bearer ${accessToken}`;
+      }
+    }
     // ONLY add Content-Type if we are actually sending a body
     if (body && method !== RequestMethod.GET) {
       headers["Content-Type"] = "application/json";
@@ -51,76 +105,39 @@ export async function callBackend<T = any>({
 
   // If the backend sent Set-Cookie headers (on login or any request),
   // we must capture them and set them in Next.js
-  const setCookieHeader = res.headers.get("set-cookie");
-  if (setCookieHeader) {
-    const cookiesToSet = setCookieHeader.split(/,(?=[^;]+=[^;]+)/);
-    cookiesToSet.forEach((cookieString) => {
-      const [nameValue] = cookieString.split(";");
-      const [name, value] = nameValue.split("=");
-      cookieStore.set(name.trim(), value.trim(), {
-        httpOnly: true,
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-      });
-    });
-  }
+  applySetCookieHeader(res.headers.get("set-cookie"));
 
   if (res.status === 401) {
-    const refreshToken = cookieStore.get("refreshToken")?.value;
+    const refreshToken = getRefreshToken();
 
     if (refreshToken) {
       try {
         const refreshRes = await fetch(`${BASE_URL}/api/v1/auth/refresh`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ refreshToken }),
+          headers: getHeaders(false),
           cache: "no-store",
         });
 
+        applySetCookieHeader(refreshRes.headers.get("set-cookie"));
+        const refreshText = await refreshRes.text();
+        const refreshData = refreshText
+          ? parseJson<{ accessToken?: string }>(refreshText)
+          : null;
+
+        const refreshAccessToken =
+          parseBearerToken(refreshRes.headers.get("authorization")) ||
+          refreshData?.accessToken;
+        storeAccessToken(refreshAccessToken);
+
         if (refreshRes.ok) {
-          // If your backend sends cookies via Set-Cookie headers,
-          // we need to parse them and set them in our Next.js cookie store.
-          const setCookieHeader = refreshRes.headers.get("set-cookie");
-
-          if (setCookieHeader) {
-            // Simplified logic: your backend might send multiple cookies
-            // This logic ensures they get passed back to the client browser
-            const cookiesToSet = setCookieHeader.split(/,(?=[^;]+=[^;]+)/);
-
-            cookiesToSet.forEach((cookieString) => {
-              const [nameValue] = cookieString.split(";");
-              const [name, value] = nameValue.split("=");
-              cookieStore.set(name.trim(), value.trim(), {
-                httpOnly: true,
-                path: "/",
-                secure: process.env.NODE_ENV === "production",
-              });
-            });
-          } else {
-            // FALLBACK: If your backend still returns them in JSON for refresh
-            const { accessToken, refreshToken: newRefreshToken } =
-              await refreshRes.json();
-            if (accessToken) {
-              cookieStore.set("accessToken", accessToken, {
-                httpOnly: true,
-                path: "/",
-              });
-            }
-            if (newRefreshToken) {
-              cookieStore.set("refreshToken", newRefreshToken, {
-                httpOnly: true,
-                path: "/",
-              });
-            }
-          }
-
-          // Retry the original request with the new cookies
-          res = await fetch(`${BASE_URL}${endpoint}`, {
+          // Retry the original request with the new Authorization header
+          res = await fetch(url, {
             method,
             headers: getHeaders(),
             body: body ? JSON.stringify(body) : undefined,
             cache: "no-store",
           });
+          applySetCookieHeader(res.headers.get("set-cookie"));
         }
       } catch (err) {
         console.error("Token refresh failed:", err);
@@ -136,6 +153,13 @@ export async function callBackend<T = any>({
   } catch {
     data = text as any;
   }
+
+  const responseAccessToken =
+    parseBearerToken(res.headers.get("authorization")) ||
+    (typeof data === "object" && data && "accessToken" in data
+      ? (data as { accessToken?: string }).accessToken
+      : undefined);
+  storeAccessToken(responseAccessToken);
 
   return {
     status: res.status,

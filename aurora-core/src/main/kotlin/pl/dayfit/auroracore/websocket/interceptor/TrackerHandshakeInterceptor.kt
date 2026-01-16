@@ -1,5 +1,6 @@
 package pl.dayfit.auroracore.websocket.interceptor
 
+import org.springframework.http.HttpHeaders
 import org.springframework.http.server.ServerHttpRequest
 import org.springframework.http.server.ServerHttpResponse
 import org.springframework.http.server.ServletServerHttpRequest
@@ -23,12 +24,13 @@ class TrackerHandshakeInterceptor(
         attributes: MutableMap<String, Any>
     ): Boolean {
         val serverHttpRequest = request as? ServletServerHttpRequest ?: return false
-        val cookies = serverHttpRequest.servletRequest.cookies ?: throw BadCredentialsException("No access token found")
-
-        val accessToken = (cookies
-            .find { it.name == "accessToken" }
-            ?: throw BadCredentialsException("No access token found"))
-            .value
+        val accessToken = serverHttpRequest.servletRequest.getHeader(HttpHeaders.AUTHORIZATION)
+            ?.takeIf { it.startsWith("Bearer ") }
+            ?.removePrefix("Bearer ")
+            ?.trim()
+            ?: serverHttpRequest.servletRequest.getParameter("token")
+                ?.trim()
+            ?: throw BadCredentialsException("No access token found")
 
         val auth = microserviceAuthProvider
             .authenticate(
