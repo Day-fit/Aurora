@@ -34,10 +34,16 @@ export async function callBackend<T = any>({
       .map((c) => `${c.name}=${c.value}`)
       .join("; ");
 
+  const getAccessToken = () => cookieStore.get("accessToken")?.value;
+
   const getHeaders = () => {
     const headers: Record<string, string> = {
       Cookie: buildCookieHeader(),
     };
+    const accessToken = getAccessToken();
+    if (accessToken) {
+      headers.Authorization = `Bearer ${accessToken}`;
+    }
     // ONLY add Content-Type if we are actually sending a body
     if (body && method !== RequestMethod.GET) {
       headers["Content-Type"] = "application/json";

@@ -23,12 +23,17 @@ class TrackerHandshakeInterceptor(
         attributes: MutableMap<String, Any>
     ): Boolean {
         val serverHttpRequest = request as? ServletServerHttpRequest ?: return false
-        val cookies = serverHttpRequest.servletRequest.cookies ?: throw BadCredentialsException("No access token found")
+        val servletRequest = serverHttpRequest.servletRequest
+        val bearer = servletRequest.getHeader("Authorization")
+        val cookies = servletRequest.cookies
 
-        val accessToken = (cookies
-            .find { it.name == "accessToken" }
-            ?: throw BadCredentialsException("No access token found"))
-            .value
+        val accessToken = when {
+            bearer?.startsWith("Bearer ") == true -> bearer.removePrefix("Bearer ").trim()
+            cookies != null -> cookies
+                .find { it.name == "accessToken" }
+                ?.value
+            else -> null
+        } ?: throw BadCredentialsException("No access token found")
 
         val auth = microserviceAuthProvider
             .authenticate(
