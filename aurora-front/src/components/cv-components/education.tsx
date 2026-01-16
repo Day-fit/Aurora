@@ -25,7 +25,7 @@ export default function Education() {
           >
             <FiHash className="text-2xl" />
             <p className="max-w-xs">
-              You haven't added any education yet. Click the button below to add
+              You haven&apos;t added any education yet. Click the button below to add
               your first school.
             </p>
             <Button

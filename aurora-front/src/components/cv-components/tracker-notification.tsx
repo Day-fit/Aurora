@@ -19,7 +19,7 @@ export default function TrackerNotification() {
 
   const handleFinish = () => {
     if (isFinished && resourceId) {
-      router.push(`/dashboard/cv/${resourceId}`);
+      router.push(`/cv/create?id=${resourceId}`);
     }
     stopTracking();
     router.refresh();

@@ -24,7 +24,7 @@ export default function PersonalPortfolio() {
           >
             <FiHash className="text-2xl" />
             <p className="max-w-xs">
-              You haven't added any personal portfolio yet. Click the button
+              You haven&apos;t added any personal portfolio yet. Click the button
               below to add your first role.
             </p>
             <Button

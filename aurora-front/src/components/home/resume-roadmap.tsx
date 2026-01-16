@@ -51,7 +51,7 @@ export default function ResumeRoadmap() {
   ];
 
   return (
-    <section className="text-text-dark py-16 px-6 md:px-10">
+    <section id="how-it-works" className="text-text-dark py-16 px-6 md:px-10 scroll-mt-20">
       <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-aurora-blue-dark to-aurora-green-dark bg-clip-text text-transparent">
         How It Works
       </h2>

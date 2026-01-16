@@ -26,7 +26,7 @@ export default function Skills() {
           >
             <FiHash className="text-2xl" />
             <p className="max-w-xs">
-              You haven't added any skills yet. Click the button below to add
+              You haven&apos;t added any skills yet. Click the button below to add
               your first skill.
             </p>
             <Button

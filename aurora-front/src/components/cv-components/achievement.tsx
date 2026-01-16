@@ -24,7 +24,7 @@ export default function Achievement() {
           >
             <FiHash className="text-2xl" />
             <p className="max-w-xs">
-              You haven't added any achievements yet. Click the button below.
+              You haven&apos;t added any achievements yet. Click the button below.
             </p>
             <Button
               type={ButtonType.button}

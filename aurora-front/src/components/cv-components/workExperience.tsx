@@ -35,7 +35,7 @@ export default function WorkExperience() {
           >
             <FiHash className="text-2xl" />
             <p className="max-w-xs">
-              You haven't added any experience yet. Click the button below to
+              You haven&apos;t added any experience yet. Click the button below to
               add your first role.
             </p>
             <Button

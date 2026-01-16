@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { AutoGenerateModal } from "./auto-generate-modal";
 
 export function CvHeader() {
@@ -10,28 +11,33 @@ export function CvHeader() {
   return (
     <>
       <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full border-b border-white/5 pb-8 gap-6">
-        <h1 className="text-4xl md:text-5xl lg:text-3xl font-extrabold leading-tight tracking-tighter">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-3xl font-extrabold leading-tight tracking-tighter">
           Your{" "}
           <span className="bg-clip-text text-transparent bg-linear-to-r from-aurora-blue-dark via-aurora-green-dark to-aurora-blue-dark">
             CVs
           </span>
         </h1>
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           <Link
             href="/cv/create"
-            className="group flex items-center gap-2 px-6 py-3 bg-aurora-blue-dark text-white hover:scale-105 transform transition-all duration-200 font-semibold shadow-xl rounded-lg text-lg"
+            className="group flex items-center justify-center gap-2 px-6 py-3 bg-aurora-blue-dark text-white hover:bg-aurora-blue-dark/80 transform transition-all duration-200 font-semibold shadow-xl rounded-lg text-lg active:scale-95"
           >
-            <span className="transition-transform group-hover:rotate-90">
+            <motion.span 
+              className="transition-transform"
+              whileHover={{ rotate: 90 }}
+              transition={{ duration: 0.2 }}
+            >
               +
-            </span>
+            </motion.span>
             Create New CV
           </Link>
-          <button
+          <motion.button
             onClick={() => setIsModalOpen(true)}
-            className="px-6 py-3 bg-aurora-green-dark text-white hover:bg-aurora-green-dark/80 hover:scale-105 transform transition-all duration-200 font-semibold shadow-xl rounded-lg text-lg"
+            whileTap={{ scale: 0.95 }}
+            className="px-6 py-3 bg-aurora-green-dark text-white hover:bg-aurora-green-dark/80 transform transition-all duration-200 font-semibold shadow-xl rounded-lg text-lg text-center"
           >
             Auto-Generate
-          </button>
+          </motion.button>
         </div>
       </header>
       <AutoGenerateModal

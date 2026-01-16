@@ -76,56 +76,70 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
     setHasError(false);
     setStatus("STARTING");
 
-    console.log("Cookies:", document.cookie);
-    // Get token from cookie
-    const accessToken = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("accessToken="))
-      ?.split("=")[1];
+    // Use environment variable for WebSocket URL
+    // Priority: NEXT_PUBLIC_WS_URL > NEXT_PUBLIC_BACKEND_CORE_URL (with ws:// protocol) > same origin
+    let wsBaseUrl: string;
+    
+    if (process.env.NEXT_PUBLIC_WS_URL) {
+      wsBaseUrl = process.env.NEXT_PUBLIC_WS_URL;
+    } else if (process.env.NEXT_PUBLIC_BACKEND_CORE_URL) {
+      wsBaseUrl = process.env.NEXT_PUBLIC_BACKEND_CORE_URL.replace(/^http/, 'ws');
+    } else {
+      // Fallback to same origin WebSocket
+      wsBaseUrl = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`;
+    }
+    
+    // The backend WebSocket endpoint is /api/v1/core/ws/tracker (context-path + endpoint)
+    // Cookies will be sent automatically for same-origin or properly configured CORS
+    const wsUrl = `${wsBaseUrl}/api/v1/core/ws/tracker`;
 
-    const wsUrl = accessToken
-      ? `ws://localhost:8081/api/v1/core/ws/tracker?token=${accessToken}`
-      : "ws://localhost:8081/api/v1/core/ws/tracker";
+    try {
+      const socket = new WebSocket(wsUrl);
+      socketRef.current = socket;
 
-    console.log("Token found:", accessToken ? "yes" : "no");
-    console.log("WS URL:", wsUrl);
+      socket.onopen = () => {
+        console.log("WebSocket connected to tracker");
+      };
 
-    const socket = new WebSocket(wsUrl);
-    socketRef.current = socket;
+      socket.onmessage = (event) => {
+        try {
+          const data: TrackerMessage = JSON.parse(event.data);
+          console.log("Tracker message:", data);
 
-    socket.onopen = () => {
-      console.log("WebSocket connected");
-    };
+          setTrackingId(data.trackerId);
+          setStatus(data.status);
+          setResourceId(data.resourceId);
 
-    socket.onmessage = (event) => {
-      try {
-        const data: TrackerMessage = JSON.parse(event.data);
-        console.log("Tracker message:", data);
-
-        setTrackingId(data.trackerId);
-        setStatus(data.status);
-        setResourceId(data.resourceId);
-
-        if (data.status === "DONE") {
-          setIsFinished(true);
-        } else if (data.status === "ERROR") {
-          setHasError(true);
-          setIsFinished(true);
+          if (data.status === "DONE") {
+            setIsFinished(true);
+          } else if (data.status === "ERROR") {
+            setHasError(true);
+            setIsFinished(true);
+          }
+        } catch (err) {
+          console.error("Failed to parse tracker message:", err);
         }
-      } catch (err) {
-        console.error("Failed to parse tracker message:", err);
-      }
-    };
+      };
 
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
+      socket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        setHasError(true);
+        setStatus("ERROR");
+      };
+
+      socket.onclose = (event) => {
+        console.log("WebSocket closed:", event.code, event.reason);
+        // If closed unexpectedly and not finished, show error
+        if (!event.wasClean && status !== "DONE") {
+          setHasError(true);
+        }
+      };
+    } catch (err) {
+      console.error("Failed to create WebSocket:", err);
       setHasError(true);
-    };
-
-    socket.onclose = (event) => {
-      console.log("WebSocket closed:", event.code, event.reason);
-    };
-  }, []);
+      setStatus("ERROR");
+    }
+  }, [status]);
 
   const statusMessage = status ? STATUS_MESSAGES[status] : "Connecting...";
 

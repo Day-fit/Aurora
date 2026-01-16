@@ -11,7 +11,7 @@ export default function CreateCvClient({
   initialData,
   id,
 }: {
-  initialData: any;
+  initialData: FormValues | null;
   id?: string;
 }) {
   const originalDataForComparison = initialData;
@@ -58,11 +58,11 @@ export default function CreateCvClient({
 
   return (
     <FormProvider {...methods}>
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
-        <div className="w-full md:w-1/2 min-w-0">
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 items-start p-2 sm:p-4">
+        <div className="w-full lg:w-1/2 min-w-0 order-2 lg:order-1">
           <CvForm originalData={originalDataForComparison} cvId={id} />
         </div>
-        <div className="w-full md:w-1/2 min-w-0">
+        <div className="w-full lg:w-1/2 min-w-0 order-1 lg:order-2 lg:sticky lg:top-20">
           <TemplatePreview />
         </div>
       </div>

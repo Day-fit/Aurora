@@ -3,12 +3,21 @@ import Button from "@/components/button";
 import heroPicture from "../../../public/template2.png";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
 
 export default function HeroSection() {
   const router = useRouter();
+  const howItWorksRef = useRef<HTMLElement | null>(null);
+
+  const scrollToHowItWorks = () => {
+    const section = document.getElementById("how-it-works");
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
-    <section className="rounded-xl p- md:p-16 min-h-[calc(100vh-80px)] ">
+    <section className="rounded-xl p-4 md:p-16 min-h-[calc(100vh-80px)]">
       <div className="bg-main-dark/80 backdrop-blur-sm rounded-xl p-8 md:p-12 flex flex-col md:flex-row gap-10 items-center text-text-dark shadow-2xl">
         <div className="md:w-1/2 space-y-6">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
@@ -28,12 +37,13 @@ export default function HeroSection() {
           <div className="flex flex-col sm:flex-row gap-4 mt-6">
             <Button
               text="Get Started"
-              onClick={() => router.push("cv")}
-              className="px-6 py-3 bg-aurora-blue-dark text-white hover:scale-105 transform transition-all duration-200 font-semibold shadow-xl rounded-lg text-lg"
+              onClick={() => router.push("/cv")}
+              className="px-6 py-3 bg-aurora-blue-dark text-white hover:scale-105 transform transition-all duration-200 font-semibold shadow-xl rounded-lg text-lg active:scale-95"
             />
             <Button
               text="Learn More"
-              className="px-6 py-3 bg-transparent border-2 border-aurora-green-dark text-text-dark hover:bg-aurora-green-dark hover:text-white hover:scale-105 transition-all duration-200 font-semibold rounded-lg text-lg"
+              onClick={scrollToHowItWorks}
+              className="px-6 py-3 bg-transparent border-2 border-aurora-green-dark text-text-dark hover:bg-aurora-green-dark hover:text-white hover:scale-105 transition-all duration-200 font-semibold rounded-lg text-lg active:scale-95"
             />
           </div>
         </div>
