@@ -13,7 +13,12 @@ export async function callBackend<T = any>({
   body = null,
   baseUrl,
 }: RequestType): Promise<BackendResponse<T>> {
-  const BASE_URL = baseUrl || process.env.BACKEND_AUTH_URL;
+  const BASE_URL =
+    baseUrl ||
+    process.env.BACKEND_AUTH_URL ||
+    process.env.BACKEND_CORE_URL ||
+    process.env.NEXT_PUBLIC_BACKEND_AUTH_URL ||
+    process.env.NEXT_PUBLIC_BACKEND_CORE_URL;
   if (!BASE_URL) {
     throw new Error("Base URL is not defined");
   }
@@ -40,7 +45,9 @@ export async function callBackend<T = any>({
     return headers;
   };
 
-  const url = `${BASE_URL.replace(/\/$/, "")}/${endpoint.replace(/^\//, "")}`;
+  const normalizedBase = BASE_URL.replace(/\/$/, "");
+  const normalizedEndpoint = endpoint.replace(/^\//, "");
+  const url = `${normalizedBase}/${normalizedEndpoint}`;
 
   let res = await fetch(url, {
     method,
@@ -70,12 +77,15 @@ export async function callBackend<T = any>({
 
     if (refreshToken) {
       try {
-        const refreshRes = await fetch(`${BASE_URL}/api/v1/auth/refresh`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ refreshToken }),
-          cache: "no-store",
-        });
+        const refreshRes = await fetch(
+          `${normalizedBase}/api/v1/auth/refresh`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ refreshToken }),
+            cache: "no-store",
+          },
+        );
 
         if (refreshRes.ok) {
           // If your backend sends cookies via Set-Cookie headers,
@@ -115,7 +125,7 @@ export async function callBackend<T = any>({
           }
 
           // Retry the original request with the new cookies
-          res = await fetch(`${BASE_URL}${endpoint}`, {
+          res = await fetch(`${normalizedBase}/${normalizedEndpoint}`, {
             method,
             headers: getHeaders(),
             body: body ? JSON.stringify(body) : undefined,

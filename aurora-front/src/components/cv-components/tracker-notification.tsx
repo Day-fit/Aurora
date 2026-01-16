@@ -5,6 +5,8 @@ import { IoSync, IoClose, IoCheckmark, IoAlertCircle } from "react-icons/io5";
 import { useTracker } from "@/context/tracker-context";
 import { useRouter } from "next/navigation";
 
+type TrackerType = "AUTOGENERATION" | "TRANSLATION" | "ENHANCEMENT";
+
 export default function TrackerNotification() {
   const {
     isTracking,
@@ -14,14 +16,24 @@ export default function TrackerNotification() {
     hasError,
     resourceId,
     stopTracking,
+    type,
   } = useTracker();
   const router = useRouter();
 
   const handleFinish = () => {
-    if (isFinished && resourceId) {
-      router.push(`/dashboard/cv/${resourceId}`);
-    }
     stopTracking();
+    if (isFinished && resourceId && type) {
+      const routeByType: Record<TrackerType, string | null> = {
+        AUTOGENERATION: null,
+        TRANSLATION: `/cv/create?id=${resourceId}`,
+        ENHANCEMENT: `/cv/create?id=${resourceId}`,
+      };
+      const target = routeByType[type];
+      if (target) {
+        router.push(target);
+        return;
+      }
+    }
     router.refresh();
   };
 
@@ -30,24 +42,36 @@ export default function TrackerNotification() {
   const getStepColor = () => {
     if (hasError) return "bg-red-600";
     if (isFinished) return "bg-aurora-green-dark";
-    if (status === "STARTING") return "bg-aurora-blue-dark";
-    if (status === "SEARCHING_INFORMATION") return "bg-aurora-purple-dark";
-    return "bg-aurora-green-dark";
+    const colorByStatus: Record<string, string> = {
+      STARTING: "bg-aurora-blue-dark",
+      SEARCHING_INFORMATION: "bg-aurora-purple-dark",
+      PROCESSING_INFORMATION: "bg-aurora-green-dark",
+      TRANSLATION_IN_PROGRESS: "bg-aurora-blue-dark",
+      DONE: "bg-aurora-green-dark",
+      FAILED: "bg-red-600",
+    };
+    return colorByStatus[status ?? "STARTING"] || "bg-aurora-blue-dark";
   };
 
   const getStepNumber = () => {
-    switch (status) {
-      case "STARTING":
-        return 1;
-      case "SEARCHING_INFORMATION":
-        return 2;
-      case "PROCESSING_INFORMATION":
-        return 3;
-      case "DONE":
-        return 4;
-      default:
-        return 1;
-    }
+    const stepByStatus: Record<string, number> = {
+      STARTING: 1,
+      SEARCHING_INFORMATION: 2,
+      PROCESSING_INFORMATION: 3,
+      TRANSLATION_IN_PROGRESS: 2,
+      DONE: 4,
+      FAILED: 4,
+    };
+    return stepByStatus[status ?? "STARTING"] || 1;
+  };
+
+  const typeLabel = () => {
+    const labelByType: Record<TrackerType, string> = {
+      AUTOGENERATION: "Auto-generation",
+      TRANSLATION: "Translation",
+      ENHANCEMENT: "Enhancement",
+    };
+    return type ? labelByType[type] : "Background task";
   };
 
   return (
@@ -63,8 +87,10 @@ export default function TrackerNotification() {
           <div className="flex flex-col flex-1">
             <span className="text-xs font-medium opacity-80 uppercase">
               {isFinished
-                ? "Click to complete"
-                : `Step ${getStepNumber()} of 4`}
+                ? hasError
+                  ? `${typeLabel()} failed`
+                  : `${typeLabel()} complete`
+                : `${typeLabel()} · Step ${getStepNumber()} of 4`}
             </span>
             <span className="text-sm font-bold">{statusMessage}</span>
           </div>

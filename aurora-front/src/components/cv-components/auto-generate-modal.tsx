@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form";
 import { FaTimes } from "react-icons/fa";
 import resumeAutogeneration from "@/lib/backend/resume-autogenertion";
 import enhanceResume from "@/lib/backend/enhance-resume";
+import { useTracker } from "@/context/tracker-context";
+import { IoSync } from "react-icons/io5";
 
 interface AutoGenerateModalProps {
   isOpen: boolean;
@@ -26,6 +28,8 @@ export function AutoGenerateModal({
 }: AutoGenerateModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { startTracking, statusMessage, isTracking, isFinished, stopTracking } =
+    useTracker();
 
   const {
     register,
@@ -44,6 +48,7 @@ export function AutoGenerateModal({
     setIsLoading(true);
     setError(null);
     try {
+      startTracking();
       if (cvId) {
         const { status } = await enhanceResume(cvId);
         if (status !== 200 && status !== 201) {
@@ -59,6 +64,7 @@ export function AutoGenerateModal({
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
+      stopTracking();
     } finally {
       setIsLoading(false);
     }
@@ -167,6 +173,14 @@ export function AutoGenerateModal({
               {isLoading ? "Generating..." : cvId ? "Enhance" : "Generate"}
             </button>
           </div>
+          {isTracking && (
+            <div className="mt-4 flex items-center gap-2 text-text-dark/80 text-sm">
+              <IoSync
+                className={`h-4 w-4 ${isFinished ? "" : "animate-spin"}`}
+              />
+              <span>{statusMessage}</span>
+            </div>
+          )}
         </form>
       </div>
     </div>
