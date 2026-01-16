@@ -1,7 +1,7 @@
 // aurora-front/src/components/cv-components/auto-generate-modal.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { FaTimes, FaSpinner } from "react-icons/fa";
 import { useRouter } from "next/navigation";
@@ -32,6 +32,14 @@ export function AutoGenerateModal({
   const [success, setSuccess] = useState(false);
   const router = useRouter();
   const { startTracking } = useTracker();
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const {
     register,
@@ -58,9 +66,11 @@ export function AutoGenerateModal({
         }
         setSuccess(true);
         setTimeout(() => {
-          reset();
-          onClose();
-          router.refresh();
+          if (isMountedRef.current) {
+            reset();
+            onClose();
+            router.refresh();
+          }
         }, 1500);
       } else {
         startTracking();

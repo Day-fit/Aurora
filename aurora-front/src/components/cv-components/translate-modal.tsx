@@ -1,7 +1,7 @@
 // aurora-front/src/components/cv-components/translate-modal.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FaTimes, FaSpinner } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -46,6 +46,14 @@ export function TranslateModal({ isOpen, onClose, cvId }: TranslateModalProps) {
   const [selectedLanguage, setSelectedLanguage] =
     useState<TranslateLanguage>("ENGLISH");
   const router = useRouter();
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,8 +69,10 @@ export function TranslateModal({ isOpen, onClose, cvId }: TranslateModalProps) {
 
       setSuccess(true);
       setTimeout(() => {
-        onClose();
-        router.refresh();
+        if (isMountedRef.current) {
+          onClose();
+          router.refresh();
+        }
       }, 1500);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");

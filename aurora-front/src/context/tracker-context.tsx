@@ -129,8 +129,8 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
 
       socket.onclose = (event) => {
         console.log("WebSocket closed:", event.code, event.reason);
-        // If closed unexpectedly and not finished, show error
-        if (!event.wasClean && status !== "DONE") {
+        // If closed unexpectedly, show error
+        if (!event.wasClean) {
           setHasError(true);
         }
       };
@@ -139,7 +139,7 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
       setHasError(true);
       setStatus("ERROR");
     }
-  }, [status]);
+  }, []);
 
   const statusMessage = status ? STATUS_MESSAGES[status] : "Connecting...";
 

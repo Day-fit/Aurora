@@ -4,7 +4,7 @@
 import Button from "@/components/button";
 import { ButtonType } from "@/lib/types/button";
 import Skills from "@/components/cv-components/skill";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import Education from "@/components/cv-components/education";
 import WorkExperience from "@/components/cv-components/workExperience";
@@ -39,6 +39,14 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
   const router = useRouter();
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error' | 'no-changes'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const onSubmit = async (data: FormValues) => {
     setSubmitStatus('idle');
@@ -55,7 +63,11 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
         const changes = await getChangedFields(originalData, payload);
         if (Object.keys(changes).length === 0) {
           setSubmitStatus('no-changes');
-          setTimeout(() => setSubmitStatus('idle'), 3000);
+          setTimeout(() => {
+            if (isMountedRef.current) {
+              setSubmitStatus('idle');
+            }
+          }, 3000);
           return;
         }
         const { status } = await editResume(cvId, changes);
@@ -73,7 +85,9 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
       await revalidateCvList();
       
       setTimeout(() => {
-        router.push('/cv');
+        if (isMountedRef.current) {
+          router.push('/cv');
+        }
       }, 1000);
     } catch (error) {
       console.error("Error submitting form:", error);

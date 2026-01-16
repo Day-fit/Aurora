@@ -1,6 +1,6 @@
 // aurora-front/src/components/cv-components/cv-preview/template-preview.tsx
 import { useFormContext, useWatch } from "react-hook-form";
-import { useMemo, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TemplateType, FormValues } from "@/lib/types/form";
 import Template1 from "@/components/cv-components/cv-preview/template1";
 import Template2 from "@/components/cv-components/cv-preview/template2";
