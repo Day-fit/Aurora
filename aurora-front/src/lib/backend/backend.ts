@@ -6,6 +6,7 @@ import {
   RequestType,
 } from "@/lib/types/backend";
 import { cookies } from "next/headers";
+import { parseBearerToken } from "@/lib/utils/parse-bearer-token";
 
 export async function callBackend<T = any>({
   method = RequestMethod.POST,
@@ -62,9 +63,6 @@ export async function callBackend<T = any>({
       secure: process.env.NODE_ENV === "production",
     });
   };
-
-  const parseBearerToken = (headerValue?: string | null) =>
-    headerValue ? headerValue.replace(/^Bearer\s+/i, "").trim() : undefined;
 
   const parseJson = <U,>(value: string): U | null => {
     try {

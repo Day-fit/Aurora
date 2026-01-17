@@ -7,6 +7,7 @@ import React, {
   useRef,
   useCallback,
 } from "react";
+import { parseBearerToken } from "@/lib/utils/parse-bearer-token";
 
 type TrackerStatus =
   | "STARTING"
@@ -35,9 +36,6 @@ interface TrackerContextType {
 }
 
 const TrackerContext = createContext<TrackerContextType | undefined>(undefined);
-
-const parseBearerToken = (headerValue?: string | null) =>
-  headerValue ? headerValue.replace(/^Bearer\s+/i, "").trim() : undefined;
 
 const STATUS_MESSAGES: Record<TrackerStatus, string> = {
   STARTING: "Starting generation...",

@@ -21,7 +21,9 @@ export async function POST(req: NextRequest) {
     const response = NextResponse.json(data, { status });
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
-    if (accessToken) {
+    const shouldExposeToken =
+      typeof endpoint === "string" && endpoint.startsWith("/api/v1/auth/");
+    if (accessToken && shouldExposeToken) {
       response.headers.set("Authorization", `Bearer ${accessToken}`);
     }
     return response;
