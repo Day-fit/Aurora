@@ -36,6 +36,9 @@ interface TrackerContextType {
 
 const TrackerContext = createContext<TrackerContextType | undefined>(undefined);
 
+const parseBearerToken = (headerValue?: string | null) =>
+  headerValue ? headerValue.replace(/^Bearer\s+/i, "").trim() : undefined;
+
 const STATUS_MESSAGES: Record<TrackerStatus, string> = {
   STARTING: "Starting generation...",
   SEARCHING_INFORMATION: "Searching for information...",
@@ -88,8 +91,17 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
         }),
       });
       if (response.ok) {
-        const data = await response.json();
-        accessToken = data?.accessToken;
+        accessToken = parseBearerToken(
+          response.headers.get("authorization"),
+        );
+        if (!accessToken) {
+          try {
+            const data = await response.json();
+            accessToken = data?.accessToken;
+          } catch (error) {
+            console.error("Failed to parse refresh response:", error);
+          }
+        }
       } else {
         console.error("Refresh failed with status:", response.status);
       }
