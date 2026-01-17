@@ -73,17 +73,6 @@ class OAuthSuccessHandler(
             uuid
         )
 
-        val accessTokenCookie = ResponseCookie.from("accessToken", pair.first)
-            .httpOnly(true)
-            .secure(cookiesConfigurationProperties.secure)
-            .sameSite("Lax")
-            .path("/")
-            .maxAge(jwtConfigurationProperties
-                .accessTokenValidity
-                .inWholeSeconds
-            )
-            .build()
-
         val refreshTokenCookie = ResponseCookie.from("refreshToken", pair.second)
             .httpOnly(true)
             .secure(cookiesConfigurationProperties.secure)
@@ -95,8 +84,8 @@ class OAuthSuccessHandler(
             )
             .build()
 
-        response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
         response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+        response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer ${pair.first}")
 
         response.sendRedirect("$callbackUri?status=${response.status}")
     }

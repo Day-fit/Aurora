@@ -28,9 +28,11 @@ class MicroserviceJwtFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val accessToken: String? = request.cookies
-            ?.firstOrNull { it.name == "accessToken" }
-            ?.value
+        val authorizationHeader = request.getHeader("Authorization")
+        val accessToken = authorizationHeader
+            ?.takeIf { it.startsWith("Bearer ") }
+            ?.removePrefix("Bearer ")
+            ?.trim()
 
         if (accessToken == null) {
             filterChain.doFilter(request, response)

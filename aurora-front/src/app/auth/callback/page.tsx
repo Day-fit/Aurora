@@ -17,13 +17,15 @@ export default function AuthCallbackPage() {
 
     const checkStatus = async () => {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_AUTH_URL}/api/v1/auth/status`,
-          {
-            method: "GET",
-            credentials: "include",
-          },
-        );
+        const response = await fetch("/api/proxy", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            endpoint: "/api/v1/auth/refresh",
+            method: "POST",
+          }),
+        });
 
         if (!isMounted) return;
 

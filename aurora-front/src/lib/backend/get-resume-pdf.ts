@@ -11,17 +11,14 @@ export async function getResumePdf(
   }
 
   const cookieStore = await cookies();
-  const cookieHeader = cookieStore
-    .getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join("; ");
+  const accessToken = cookieStore.get("accessToken")?.value;
 
   const url = `${BASE_URL.replace(/\/$/, "")}/api/v1/core/resume/getPdf?id=${id}`;
 
   const res = await fetch(url, {
     method: "GET",
     headers: {
-      Cookie: cookieHeader,
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
     },
     cache: "no-store",
   });
