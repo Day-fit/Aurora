@@ -2,13 +2,15 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { IoSync, IoClose, IoCheckmark, IoAlertCircle } from "react-icons/io5";
-import { useTracker } from "@/context/tracker-context";
+import { useTracker, TYPE_LABELS } from "@/context/tracker-context";
 import { useRouter } from "next/navigation";
 
 export default function TrackerNotification() {
   const {
     isTracking,
     status,
+    trackerType,
+    trackingId,
     statusMessage,
     isFinished,
     hasError,
@@ -18,8 +20,19 @@ export default function TrackerNotification() {
   const router = useRouter();
 
   const handleFinish = () => {
-    if (isFinished && resourceId) {
-      router.push(`/dashboard/cv/${resourceId}`);
+    if (isFinished) {
+      if (trackerType === "AUTOGENERATION" && trackingId) {
+        // For auto-generation, redirect to create page with tracking ID
+        // Store trackingId in sessionStorage for the create page to fetch data
+        sessionStorage.setItem("autoGenerationTrackingId", trackingId);
+        router.push("/cv/create?autogen=true");
+      } else if (resourceId) {
+        // For translation/enhancement, redirect to edit the CV with the new resourceId
+        router.push(`/cv/create?id=${resourceId}`);
+      } else {
+        // Fallback: redirect to CV list page
+        router.push("/cv");
+      }
     }
     stopTracking();
     router.refresh();
@@ -50,6 +63,8 @@ export default function TrackerNotification() {
     }
   };
 
+  const typeLabel = trackerType ? TYPE_LABELS[trackerType] : "";
+
   return (
     <AnimatePresence>
       {isTracking && (
@@ -64,7 +79,9 @@ export default function TrackerNotification() {
             <span className="text-xs font-medium opacity-80 uppercase">
               {isFinished
                 ? "Click to complete"
-                : `Step ${getStepNumber()} of 4`}
+                : typeLabel
+                  ? `${typeLabel} • Step ${getStepNumber()} of 4`
+                  : `Step ${getStepNumber()} of 4`}
             </span>
             <span className="text-sm font-bold">{statusMessage}</span>
           </div>

@@ -14,7 +14,9 @@ export async function callBackend<T = any>({
   body = null,
   baseUrl,
 }: RequestType): Promise<BackendResponse<T>> {
-  const BASE_URL = baseUrl || process.env.BACKEND_AUTH_URL;
+  const BASE_URL =
+    (process.env.NODE_ENV == "production" ? "https://" : "http://") +
+    (baseUrl || process.env.BACKEND_AUTH_URL);
   if (!BASE_URL) {
     throw new Error("Base URL is not defined");
   }
@@ -64,7 +66,7 @@ export async function callBackend<T = any>({
     });
   };
 
-  const parseJson = <U,>(value: string): U | null => {
+  const parseJson = <U>(value: string): U | null => {
     try {
       return JSON.parse(value) as U;
     } catch {
@@ -73,8 +75,7 @@ export async function callBackend<T = any>({
   };
 
   const getHeaders = (includeAuth = true) => {
-    const headers: Record<string, string> = {
-    };
+    const headers: Record<string, string> = {};
     const cookieHeader = buildCookieHeader();
     if (cookieHeader) {
       headers.Cookie = cookieHeader;

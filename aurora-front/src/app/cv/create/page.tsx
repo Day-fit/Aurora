@@ -6,9 +6,10 @@ import { TemplateType } from "@/lib/types/form";
 export default async function CreatePage({
   searchParams,
 }: {
-  searchParams: Promise<{ id?: string }>;
+  searchParams: Promise<{ id?: string; autogen?: string }>;
 }) {
-  const { id } = await searchParams;
+  const { id, autogen } = await searchParams;
+  const isAutoGen = autogen === "true";
   let initialData = null;
 
   if (id) {
@@ -35,5 +36,5 @@ export default async function CreatePage({
     }
   }
 
-  return <CreateCvClient initialData={initialData} id={id} />;
+  return <CreateCvClient initialData={initialData} id={id} isAutoGen={isAutoGen} />;
 }
