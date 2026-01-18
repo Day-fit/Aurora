@@ -7,7 +7,6 @@ import React, {
   useRef,
   useCallback,
 } from "react";
-import { parseBearerToken } from "@/lib/utils/parse-bearer-token";
 
 type TrackerStatus =
   | "STARTING"
@@ -74,6 +73,8 @@ const TYPE_LABELS: Record<TrackerType, string> = {
 
 export { TYPE_LABELS };
 
+const FALLBACK_WS_URL = "ws://localhost:8081/api/v1/core/ws/tracker";
+
 export function TrackerProvider({ children }: { children: React.ReactNode }) {
   const [isTracking, setIsTracking] = useState(false);
   const [trackingId, setTrackingId] = useState<string | null>(null);
@@ -108,44 +109,36 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
     setHasError(false);
     setStatus("STARTING");
 
-    let accessToken: string | undefined;
+    let wsUrl: string;
+    let accessToken: string | null = null;
+
     try {
-      const response = await fetch("/api/proxy", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      // Get WebSocket URL and access token from server-side API
+      const response = await fetch("/api/ws-config", {
+        method: "GET",
         credentials: "include",
-        body: JSON.stringify({
-          endpoint: "/api/v1/auth/refresh",
-          method: "POST",
-        }),
       });
+
       if (response.ok) {
-        accessToken = parseBearerToken(
-          response.headers.get("authorization"),
-        );
-        if (!accessToken) {
-          try {
-            const data = await response.json();
-            accessToken = data?.accessToken;
-          } catch (error) {
-            console.error("Failed to parse refresh response:", error);
-          }
-        }
+        const config = await response.json();
+        wsUrl = config.wsUrl;
+        accessToken = config.accessToken;
       } else {
-        console.error("Refresh failed with status:", response.status);
+        console.error("Failed to get WebSocket config:", response.status);
+        wsUrl = FALLBACK_WS_URL;
       }
     } catch (error) {
-      console.error("Failed to refresh access token:", error);
+      console.error("Failed to fetch WebSocket config:", error);
+      wsUrl = FALLBACK_WS_URL;
     }
 
-    const wsUrl = accessToken
-      ? `ws://localhost:8081/api/v1/core/ws/tracker?token=${accessToken}`
-      : "ws://localhost:8081/api/v1/core/ws/tracker";
+    // Append token to URL if available
+    const finalWsUrl = accessToken ? `${wsUrl}?token=${accessToken}` : wsUrl;
 
     console.log("Token found:", accessToken ? "yes" : "no");
-    console.log("WS URL:", wsUrl);
+    console.log("WS URL:", finalWsUrl);
 
-    const socket = new WebSocket(wsUrl);
+    const socket = new WebSocket(finalWsUrl);
     socketRef.current = socket;
 
     socket.onopen = () => {
