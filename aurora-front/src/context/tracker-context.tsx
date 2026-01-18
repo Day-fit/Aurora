@@ -7,6 +7,7 @@ import React, {
   useRef,
   useCallback,
 } from "react";
+import { parseBearerToken } from "@/lib/utils/parse-bearer-token";
 
 type TrackerStatus =
   | "STARTING"
@@ -88,8 +89,17 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
         }),
       });
       if (response.ok) {
-        const data = await response.json();
-        accessToken = data?.accessToken;
+        accessToken = parseBearerToken(
+          response.headers.get("authorization"),
+        );
+        if (!accessToken) {
+          try {
+            const data = await response.json();
+            accessToken = data?.accessToken;
+          } catch (error) {
+            console.error("Failed to parse refresh response:", error);
+          }
+        }
       } else {
         console.error("Refresh failed with status:", response.status);
       }

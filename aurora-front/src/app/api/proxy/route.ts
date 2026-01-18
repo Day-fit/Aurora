@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { callBackend } from "@/lib/backend/backend";
 
 export async function POST(req: NextRequest) {
@@ -17,7 +18,15 @@ export async function POST(req: NextRequest) {
     // We return the data. Since callBackend uses 'cookies()' from next/headers,
     // any 'cookieStore.set' calls made inside callBackend will automatically
     // be applied to the outgoing response in Next.js.
-    return NextResponse.json(data, { status });
+    const response = NextResponse.json(data, { status });
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value;
+    const shouldExposeToken =
+      typeof endpoint === "string" && endpoint.startsWith("/api/v1/auth/");
+    if (accessToken && shouldExposeToken) {
+      response.headers.set("Authorization", `Bearer ${accessToken}`);
+    }
+    return response;
   } catch (error) {
     console.error("Proxy error:", error);
     return NextResponse.json(
