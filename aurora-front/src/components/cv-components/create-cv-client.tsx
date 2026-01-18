@@ -11,6 +11,15 @@ import getAutoGenerationData, {
   AutoGenerationData,
 } from "@/lib/backend/get-autogeneration-data";
 
+function safeBase64ToFile(base64: string): File | null {
+  try {
+    return base64ToFile(base64);
+  } catch (error) {
+    console.error("Failed to convert base64 to file:", error);
+    return null;
+  }
+}
+
 function transformAutoGenDataToFormValues(
   data: AutoGenerationData
 ): Partial<FormValues> {
@@ -26,7 +35,7 @@ function transformAutoGenDataToFormValues(
     gitHub: data.gitHub ?? "",
     profileDescription: data.profileDescription ?? "",
     profileImage: data.profileImage
-      ? base64ToFile(data.profileImage)
+      ? safeBase64ToFile(data.profileImage)
       : null,
     workExperience: data.workExperiences?.map((exp) => ({
       company: exp.company,
@@ -113,7 +122,7 @@ export default function CreateCvClient({
       const trackingId = sessionStorage.getItem("autoGenerationTrackingId");
       if (!trackingId) {
         setIsLoadingAutoGen(false);
-        setAutoGenError("No auto-generation data found");
+        setAutoGenError("Auto-generation session expired or not found. Please try generating again.");
         return;
       }
 

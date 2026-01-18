@@ -114,16 +114,17 @@ export function CvCard({ id, data }: CvCardProps) {
           <p className="text-sm font-medium text-text-dark/60 mb-2 uppercase tracking-wider">
             {name} {surname}
           </p>
-          {language && (
-            <div className="flex items-center gap-1.5 mb-4">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-aurora-blue-dark/20 border border-aurora-blue-dark/30 rounded-full text-xs font-medium text-aurora-blue-dark">
-                {LANGUAGE_FLAGS[language] && (
-                  <span>{LANGUAGE_FLAGS[language]}</span>
-                )}
-                {LANGUAGE_LABELS[language] || language}
-              </span>
-            </div>
-          )}
+          {language && (() => {
+            const flag = LANGUAGE_FLAGS[language];
+            return (
+              <div className="flex items-center gap-1.5 mb-4">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-aurora-blue-dark/20 border border-aurora-blue-dark/30 rounded-full text-xs font-medium text-aurora-blue-dark">
+                  {flag && <span>{flag}</span>}
+                  {LANGUAGE_LABELS[language] || language}
+                </span>
+              </div>
+            );
+          })()}
           {!language && <div className="mb-4" />}
 
           <div className="mt-auto flex flex-col gap-2">
