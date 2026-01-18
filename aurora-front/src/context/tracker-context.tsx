@@ -120,9 +120,7 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
         }),
       });
       if (response.ok) {
-        accessToken = parseBearerToken(
-          response.headers.get("authorization"),
-        );
+        accessToken = parseBearerToken(response.headers.get("authorization"));
         if (!accessToken) {
           try {
             const data = await response.json();
@@ -138,9 +136,11 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
       console.error("Failed to refresh access token:", error);
     }
 
-    const wsUrl = accessToken
-      ? `ws://localhost:8081/api/v1/core/ws/tracker?token=${accessToken}`
-      : "ws://localhost:8081/api/v1/core/ws/tracker";
+    const wsUrl =
+      (process.env.NODE_ENV === "production"
+        ? `wss://${process.env.NEXT_PUBLIC_BACKEND_CORE_URL}`
+        : `ws://${process.env.NEXT_PUBLIC_BACKEND_CORE_URL}`) +
+      `/api/v1/core/ws/tracker?token=${accessToken}`;
 
     console.log("Token found:", accessToken ? "yes" : "no");
     console.log("WS URL:", wsUrl);
@@ -153,25 +153,25 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
     };
 
     socket.onmessage = (event) => {
-        try {
-          const data: TrackerMessage = JSON.parse(event.data);
-          console.log("Tracker message:", data);
+      try {
+        const data: TrackerMessage = JSON.parse(event.data);
+        console.log("Tracker message:", data);
 
-          setTrackingId(data.trackerId);
-          setStatus(data.status);
-          setResourceId(data.resourceId);
-          setTrackerType(data.type);
+        setTrackingId(data.trackerId);
+        setStatus(data.status);
+        setResourceId(data.resourceId);
+        setTrackerType(data.type);
 
-          if (data.status === "DONE") {
-            setIsFinished(true);
-          } else if (data.status === "ERROR") {
-            setHasError(true);
-            setIsFinished(true);
-          }
-        } catch (err) {
-          console.error("Failed to parse tracker message:", err);
+        if (data.status === "DONE") {
+          setIsFinished(true);
+        } else if (data.status === "ERROR") {
+          setHasError(true);
+          setIsFinished(true);
         }
-      };
+      } catch (err) {
+        console.error("Failed to parse tracker message:", err);
+      }
+    };
 
     socket.onerror = (error) => {
       console.error("WebSocket error:", error);
@@ -183,9 +183,10 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const statusMessage = status && trackerType
-    ? STATUS_MESSAGES[trackerType][status]
-    : "Connecting...";
+  const statusMessage =
+    status && trackerType
+      ? STATUS_MESSAGES[trackerType][status]
+      : "Connecting...";
 
   return (
     <TrackerContext.Provider
