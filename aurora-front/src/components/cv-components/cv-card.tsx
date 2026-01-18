@@ -15,6 +15,7 @@ import { base64ToDataUrl } from "@/lib/utils/image";
 import { AutoGenerateModal } from "./auto-generate-modal";
 import { TranslateModal } from "./translate-modal";
 import { getResumePdf } from "@/lib/backend/get-resume-pdf";
+import { LanguageType, LANGUAGE_LABELS, LANGUAGE_FLAGS } from "@/lib/types/language";
 
 interface CvCardProps {
   id: string;
@@ -23,11 +24,12 @@ interface CvCardProps {
     name: string;
     surname: string;
     profileImage?: string | File[] | null;
+    language?: LanguageType | null;
   };
 }
 
 export function CvCard({ id, data }: CvCardProps) {
-  const { title, name, surname, profileImage } = data;
+  const { title, name, surname, profileImage, language } = data;
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [isEnhanceModalOpen, setIsEnhanceModalOpen] = useState(false);
   const [isTranslateModalOpen, setIsTranslateModalOpen] = useState(false);
@@ -109,9 +111,20 @@ export function CvCard({ id, data }: CvCardProps) {
           <h3 className="font-extrabold text-text-dark truncate text-xl leading-tight mb-1 group-hover:text-aurora-green-dark transition-colors">
             {title || "Untitled Resume"}
           </h3>
-          <p className="text-sm font-medium text-text-dark/60 mb-6 uppercase tracking-wider">
+          <p className="text-sm font-medium text-text-dark/60 mb-2 uppercase tracking-wider">
             {name} {surname}
           </p>
+          {language && (
+            <div className="flex items-center gap-1.5 mb-4">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-aurora-blue-dark/20 border border-aurora-blue-dark/30 rounded-full text-xs font-medium text-aurora-blue-dark">
+                {LANGUAGE_FLAGS[language] && (
+                  <span>{LANGUAGE_FLAGS[language]}</span>
+                )}
+                {LANGUAGE_LABELS[language] || language}
+              </span>
+            </div>
+          )}
+          {!language && <div className="mb-4" />}
 
           <div className="mt-auto flex flex-col gap-2">
             <Link

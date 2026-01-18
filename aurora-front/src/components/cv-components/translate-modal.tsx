@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import translateResume, {
   TranslateLanguage,
 } from "@/lib/backend/translate-resume";
+import { useTracker } from "@/context/tracker-context";
 
 interface TranslateModalProps {
   isOpen: boolean;
@@ -44,6 +45,7 @@ export function TranslateModal({ isOpen, onClose, cvId }: TranslateModalProps) {
   const [selectedLanguage, setSelectedLanguage] =
     useState<TranslateLanguage>("ENGLISH");
   const router = useRouter();
+  const { startTracking } = useTracker();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,11 +53,13 @@ export function TranslateModal({ isOpen, onClose, cvId }: TranslateModalProps) {
     setError(null);
 
     try {
-      const { status, data } = await translateResume(cvId, selectedLanguage);
+      const { status } = await translateResume(cvId, selectedLanguage);
       if (status !== 200 && status !== 201) {
         throw new Error("Failed to translate resume");
       }
 
+      // Start tracking the translation via WebSocket
+      await startTracking();
       onClose();
       router.refresh();
     } catch (err) {

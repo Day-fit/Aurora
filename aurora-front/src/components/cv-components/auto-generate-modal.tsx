@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { FaTimes } from "react-icons/fa";
 import resumeAutogeneration from "@/lib/backend/resume-autogenertion";
 import enhanceResume from "@/lib/backend/enhance-resume";
+import { useTracker } from "@/context/tracker-context";
 
 interface AutoGenerateModalProps {
   isOpen: boolean;
@@ -26,6 +27,7 @@ export function AutoGenerateModal({
 }: AutoGenerateModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { startTracking } = useTracker();
 
   const {
     register,
@@ -55,6 +57,8 @@ export function AutoGenerateModal({
           throw new Error("Failed to auto-generate resume");
         }
       }
+      // Start tracking the operation via WebSocket
+      await startTracking();
       reset();
       onClose();
     } catch (err) {

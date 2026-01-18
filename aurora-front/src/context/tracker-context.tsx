@@ -16,10 +16,14 @@ type TrackerStatus =
   | "DONE"
   | "ERROR";
 
+type TrackerType = "AUTOGENERATION" | "TRANSLATION" | "ENHANCEMENT";
+
+export type { TrackerType };
+
 interface TrackerMessage {
   trackerId: string;
   status: TrackerStatus;
-  type: string;
+  type: TrackerType;
   resourceId: string;
 }
 
@@ -28,6 +32,7 @@ interface TrackerContextType {
   trackingId: string | null;
   resourceId: string | null;
   status: TrackerStatus | null;
+  trackerType: TrackerType | null;
   statusMessage: string;
   isFinished: boolean;
   hasError: boolean;
@@ -37,19 +42,44 @@ interface TrackerContextType {
 
 const TrackerContext = createContext<TrackerContextType | undefined>(undefined);
 
-const STATUS_MESSAGES: Record<TrackerStatus, string> = {
-  STARTING: "Starting generation...",
-  SEARCHING_INFORMATION: "Searching for information...",
-  PROCESSING_INFORMATION: "Processing information...",
-  DONE: "Resume ready!",
-  ERROR: "Generation failed",
+const STATUS_MESSAGES: Record<TrackerType, Record<TrackerStatus, string>> = {
+  AUTOGENERATION: {
+    STARTING: "Starting auto-generation...",
+    SEARCHING_INFORMATION: "Searching for information...",
+    PROCESSING_INFORMATION: "Processing information...",
+    DONE: "Resume generated!",
+    ERROR: "Generation failed",
+  },
+  TRANSLATION: {
+    STARTING: "Starting translation...",
+    SEARCHING_INFORMATION: "Preparing translation...",
+    PROCESSING_INFORMATION: "Translating content...",
+    DONE: "Translation complete!",
+    ERROR: "Translation failed",
+  },
+  ENHANCEMENT: {
+    STARTING: "Starting enhancement...",
+    SEARCHING_INFORMATION: "Analyzing resume...",
+    PROCESSING_INFORMATION: "Enhancing content...",
+    DONE: "Enhancement complete!",
+    ERROR: "Enhancement failed",
+  },
 };
+
+const TYPE_LABELS: Record<TrackerType, string> = {
+  AUTOGENERATION: "Auto-generation",
+  TRANSLATION: "Translation",
+  ENHANCEMENT: "Enhancement",
+};
+
+export { TYPE_LABELS };
 
 export function TrackerProvider({ children }: { children: React.ReactNode }) {
   const [isTracking, setIsTracking] = useState(false);
   const [trackingId, setTrackingId] = useState<string | null>(null);
   const [resourceId, setResourceId] = useState<string | null>(null);
   const [status, setStatus] = useState<TrackerStatus | null>(null);
+  const [trackerType, setTrackerType] = useState<TrackerType | null>(null);
   const [isFinished, setIsFinished] = useState(false);
   const [hasError, setHasError] = useState(false);
   const socketRef = useRef<WebSocket | null>(null);
@@ -63,6 +93,7 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
     setTrackingId(null);
     setResourceId(null);
     setStatus(null);
+    setTrackerType(null);
     setIsFinished(false);
     setHasError(false);
   }, []);
@@ -122,24 +153,25 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
     };
 
     socket.onmessage = (event) => {
-      try {
-        const data: TrackerMessage = JSON.parse(event.data);
-        console.log("Tracker message:", data);
+        try {
+          const data: TrackerMessage = JSON.parse(event.data);
+          console.log("Tracker message:", data);
 
-        setTrackingId(data.trackerId);
-        setStatus(data.status);
-        setResourceId(data.resourceId);
+          setTrackingId(data.trackerId);
+          setStatus(data.status);
+          setResourceId(data.resourceId);
+          setTrackerType(data.type);
 
-        if (data.status === "DONE") {
-          setIsFinished(true);
-        } else if (data.status === "ERROR") {
-          setHasError(true);
-          setIsFinished(true);
+          if (data.status === "DONE") {
+            setIsFinished(true);
+          } else if (data.status === "ERROR") {
+            setHasError(true);
+            setIsFinished(true);
+          }
+        } catch (err) {
+          console.error("Failed to parse tracker message:", err);
         }
-      } catch (err) {
-        console.error("Failed to parse tracker message:", err);
-      }
-    };
+      };
 
     socket.onerror = (error) => {
       console.error("WebSocket error:", error);
@@ -151,7 +183,9 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const statusMessage = status ? STATUS_MESSAGES[status] : "Connecting...";
+  const statusMessage = status && trackerType
+    ? STATUS_MESSAGES[trackerType][status]
+    : "Connecting...";
 
   return (
     <TrackerContext.Provider
@@ -160,6 +194,7 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
         trackingId,
         resourceId,
         status,
+        trackerType,
         statusMessage,
         isFinished,
         hasError,
