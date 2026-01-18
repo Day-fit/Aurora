@@ -27,8 +27,11 @@ export default function TrackerNotification() {
         sessionStorage.setItem("autoGenerationTrackingId", trackingId);
         router.push("/cv/create?autogen=true");
       } else if (resourceId) {
-        // For translation/enhancement, redirect to the CV page
-        router.push(`/dashboard/cv/${resourceId}`);
+        // For translation/enhancement, redirect to edit the CV with the new resourceId
+        router.push(`/cv/create?id=${resourceId}`);
+      } else {
+        // Fallback: redirect to CV list page
+        router.push("/cv");
       }
     }
     stopTracking();
