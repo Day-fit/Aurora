@@ -38,7 +38,7 @@ export default function AuthModal({ mode, children }: AuthModalProps) {
           onPointerDownOutside={(e) => e.preventDefault()}
         >
           <motion.div
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-main-dark text-text-dark rounded-xl p-6 sm:p-8 shadow-2xl max-w-md w-[90vw] sm:w-[85vw] max-h-[85vh] overflow-y-auto border border-gray-700 my-4"
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-main-dark text-text-dark rounded-xl p-6 sm:p-8 shadow-2xl max-w-lg w-[92vw] sm:w-[90vw] max-h-[85vh] overflow-y-auto border border-gray-700"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
