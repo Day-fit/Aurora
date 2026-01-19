@@ -11,8 +11,8 @@ jobs:
   build-frontend:
     runs-on: ubuntu-22.04
     env:
-      NEXT_PUBLIC_BACKEND_CORE_URL: https://aurora.dayfit.pl
-      NEXT_PUBLIC_BACKEND_AUTH_URL: https://aurora.dayfit.pl
+      NEXT_PUBLIC_BACKEND_CORE_URL: aurora.dayfit.pl
+      NEXT_PUBLIC_BACKEND_AUTH_URL: aurora.dayfit.pl
     steps:
       - name: Checkout
         uses: actions/checkout@v3
