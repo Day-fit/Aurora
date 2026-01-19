@@ -8,6 +8,7 @@ import pl.dayfit.auroracore.exception.ResourceNotReadyYetException
 import pl.dayfit.auroracore.model.redis.AutoGenerationData
 import pl.dayfit.auroracore.repository.redis.AutoGenerationRepository
 import pl.dayfit.auroracore.type.AutoGenerationSource
+import pl.dayfit.auroracore.type.LanguageType
 import pl.dayfit.auroracore.type.TrackerType
 import java.util.UUID
 
@@ -20,7 +21,7 @@ class AutoGenerationService(
     /**
      * Puts a request in processing queue
      */
-    fun requestAutoGeneration(title: String, name: String, source: AutoGenerationSource, ownerId: UUID): String {
+    fun requestAutoGeneration(title: String, name: String, source: AutoGenerationSource, language: LanguageType, ownerId: UUID): String {
         val data = AutoGenerationData(
             null,
             title,
@@ -31,7 +32,8 @@ class AutoGenerationService(
             null,
             null,
             null,
-            null
+            null,
+            language = language
         )
 
         val id = trackerService
@@ -48,7 +50,8 @@ class AutoGenerationService(
                     ownerId,
                     name,
                     title,
-                    source
+                    source,
+                    language
                 )
             )
 
@@ -111,7 +114,8 @@ class AutoGenerationService(
                     it.description,
                     it.year
                 )
-            }
+            },
+            data.language
         )
     }
 }

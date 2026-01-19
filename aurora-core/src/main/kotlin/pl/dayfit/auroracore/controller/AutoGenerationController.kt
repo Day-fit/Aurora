@@ -29,6 +29,7 @@ class AutoGenerationController(
             dto.title,
             dto.name,
             dto.source,
+            dto.language,
             UUID.fromString(principal.name)
         )
 

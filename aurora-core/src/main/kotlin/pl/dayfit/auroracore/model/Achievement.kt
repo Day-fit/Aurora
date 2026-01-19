@@ -1,5 +1,6 @@
 package pl.dayfit.auroracore.model
 
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -12,6 +13,8 @@ data class Achievement(
     var id: Long? = null,
 
     var title: String,
+
+    @Column(length = 500)
     var description: String,
     var year: Int?
 )

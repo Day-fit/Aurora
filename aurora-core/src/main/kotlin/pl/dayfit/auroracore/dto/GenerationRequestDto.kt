@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import org.hibernate.validator.constraints.Length
 import pl.dayfit.auroracore.type.EducationDegree
+import pl.dayfit.auroracore.type.LanguageType
 import pl.dayfit.auroracore.type.SkillLevel
 import java.time.Instant
 
@@ -35,6 +36,7 @@ data class GenerationRequestDto (
     @Min(1)
     @Max(5)
     val templateVersion: Int,
+    val language: LanguageType = LanguageType.ENGLISH
 )
 {
     data class Education (

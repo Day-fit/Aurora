@@ -3,6 +3,7 @@ package pl.dayfit.auroracore.model.redis
 import org.springframework.data.annotation.Id
 import org.springframework.data.redis.core.RedisHash
 import pl.dayfit.auroracore.type.EducationDegree
+import pl.dayfit.auroracore.type.LanguageType
 import pl.dayfit.auroracore.type.SkillLevel
 import java.time.Instant
 import java.util.UUID
@@ -26,6 +27,7 @@ data class AutoGenerationData (
     var workExperiences: List<WorkExperience> = emptyList(),
     var personalPortfolios: List<PersonalPortfolio> = emptyList(),
     var achievements: List<Achievement> = emptyList(),
+    var language: LanguageType
 )
 {
     data class Education (

@@ -61,12 +61,14 @@ private val consumer = streamsEnvironment.consumerBuilder()
         - Create an AutoGenerationDto JSON for job: ${event.title}
         - Use ALL SOURCE DATA.
         - Sort data by importance (best first, worst last).
+        - ALL generated data must be in ${event.language} language
         
         RULES
+        - SKILLS: only pick skills that are related with ${event.title} job, skip others.
         - WORK EXPERIENCE: pick max 3–4 strongest (if any).
         - PORTFOLIO: pick max 3–4 strongest personal projects/repos (for given work); each must have a factual description based ONLY on source data. No placeholders.
         - EDUCATION: include only explicitly stated items.
-        - Preserve ALL exact tech names (protocols (e.g. X3DH), algorithms (e.g. AES256), frameworks (e.g. Flask), libraries). No replacements. Highlight advanced/rare tech.
+        - Preserve exact tech names (protocols (e.g. X3DH), algorithms (e.g. AES256), frameworks (e.g. Flask)). No replacements. Highlight advanced/rare tech.
         
         CONSTRAINTS
         - NO hallucinations: no invented companies, schools, dates, tech, URLs, contacts, images.

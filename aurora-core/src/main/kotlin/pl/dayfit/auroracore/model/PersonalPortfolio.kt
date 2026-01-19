@@ -1,5 +1,6 @@
 package pl.dayfit.auroracore.model
 
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -12,5 +13,6 @@ data class PersonalPortfolio (
     @GeneratedValue(GenerationType.UUID)
     var id: UUID? = null,
     val name: String,
+    @Column(length = 1000)
     val description: String
 )

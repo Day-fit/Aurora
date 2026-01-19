@@ -67,7 +67,8 @@ class InformationManagerService(
                 event.id,
                 event.title,
                 event.source,
-                information.getOrThrow()
+                information.getOrThrow(),
+                event.language
             )
         )
 

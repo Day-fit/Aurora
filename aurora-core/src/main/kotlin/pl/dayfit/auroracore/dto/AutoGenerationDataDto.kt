@@ -1,6 +1,7 @@
 package pl.dayfit.auroracore.dto
 
 import pl.dayfit.auroracore.type.EducationDegree
+import pl.dayfit.auroracore.type.LanguageType
 import pl.dayfit.auroracore.type.SkillLevel
 import java.time.Instant
 
@@ -18,6 +19,7 @@ data class AutoGenerationDataDto (
     val workExperiences: List<WorkExperience> = emptyList(),
     val personalPortfolios: List<PersonalPortfolio> = emptyList(),
     val achievements: List<Achievement> = emptyList(),
+    val language: LanguageType
 )
 {
     data class Education (

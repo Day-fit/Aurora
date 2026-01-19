@@ -67,7 +67,7 @@ class GenerationService(
         val resume = Resume(
             null,
             userId,
-            null,
+            requestDto.language,
             null,
             requestDto.name,
             requestDto.surname,
