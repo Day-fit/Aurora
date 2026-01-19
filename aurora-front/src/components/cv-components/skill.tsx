@@ -8,12 +8,25 @@ import React from "react";
 import { SkillLevel } from "@/lib/types/form";
 
 export default function Skills() {
-  const { control, getFieldState, formState } = useFormContext();
+  const {
+    control,
+    getFieldState,
+    formState,
+    formState: { errors },
+  } = useFormContext();
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "skills",
   });
+
+  // Check if a specific skill entry has any errors
+  const hasEntryErrors = (index: number): boolean => {
+    const skillsErrors = errors.skills as
+      | Array<Record<string, unknown>>
+      | undefined;
+    return !!(skillsErrors && skillsErrors[index]);
+  };
 
   return (
     <div className="w-full">
@@ -42,7 +55,11 @@ export default function Skills() {
             {fields.map((field, index) => (
               <div
                 key={field.id}
-                className="group flex flex-wrap sm:flex-nowrap items-center gap-2 bg-main-dark/60 border border-white/6 rounded-lg px-3 py-2 backdrop-blur-sm shadow-sm transition-colors hover:border-white/10 focus-within:border-white/20"
+                className={`group flex flex-wrap sm:flex-nowrap items-center gap-2 bg-main-dark/60 rounded-lg px-3 py-2 backdrop-blur-sm shadow-sm transition-colors hover:border-white/10 focus-within:border-white/20 ${
+                  hasEntryErrors(index)
+                    ? "border-2 border-red-500/60 shadow-[0_0_8px_rgba(239,68,68,0.2)]"
+                    : "border border-white/6"
+                }`}
               >
                 <Controller
                   control={control}

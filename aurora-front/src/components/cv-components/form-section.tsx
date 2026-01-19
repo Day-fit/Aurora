@@ -1,31 +1,64 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { flushSync } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { FiAlertCircle } from "react-icons/fi";
 
 export default function FormSection({
   title,
   children,
+  hasErrors = false,
 }: {
   title: string;
   children: React.ReactNode;
+  hasErrors?: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const isFirstRenderRef = useRef(true);
+
+  // Auto-expand section when errors appear (transition from no errors to errors)
+  useEffect(() => {
+    // Skip the first render to avoid expanding all sections on initial load
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false;
+      return;
+    }
+    // Only expand when hasErrors becomes true (and section is not already open)
+    if (hasErrors) {
+      // Use flushSync to synchronize the state update with DOM, which is the
+      // intended pattern when reacting to validation errors that need immediate UI feedback
+      flushSync(() => {
+        setOpen(true);
+      });
+    }
+  }, [hasErrors]);
 
   return (
-    <div className="w-full border border-white/10 rounded-xl bg-main-dark/50 transition-colors duration-200 hover:border-white/20">
+    <div
+      className={`w-full border rounded-xl bg-main-dark/50 transition-colors duration-200 hover:border-white/20 ${
+        hasErrors
+          ? "border-red-500/50 shadow-[0_0_8px_rgba(239,68,68,0.15)]"
+          : "border-white/10"
+      }`}
+    >
       {/* Header */}
       <button
         type="button"
         onClick={() => setOpen(!open)}
         className="w-full flex justify-between items-center px-3 sm:px-4 py-2.5 sm:py-3 text-left text-text-dark/90 font-semibold hover:bg-white/5 active:bg-white/10 rounded-t-xl transition-colors text-sm sm:text-base"
       >
-        {title}
+        <span className="flex items-center gap-2">
+          {title}
+          {hasErrors && (
+            <FiAlertCircle className="text-red-500 text-base animate-pulse" />
+          )}
+        </span>
 
         <motion.span
           animate={{ rotate: open ? 90 : 0 }}
           transition={{ duration: 0.2 }}
-          className="text-aurora-blue-dark"
+          className={hasErrors ? "text-red-500" : "text-aurora-blue-dark"}
         >
           ▶
         </motion.span>

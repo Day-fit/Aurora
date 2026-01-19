@@ -30,10 +30,20 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
   const {
     handleSubmit,
     reset,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = useFormContext();
 
   const router = useRouter();
+
+  // Helper to check if a section has errors
+  const hasSectionErrors = (sectionKey: string): boolean => {
+    return !!errors[sectionKey];
+  };
+
+  // Helper to check if any of multiple keys have errors
+  const hasAnyErrors = (...keys: string[]): boolean => {
+    return keys.some((key) => !!errors[key]);
+  };
 
   const onSubmit = async (data: any) => {
     try {
@@ -83,35 +93,64 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
               console.log("Validation failed:", validationErrors);
             })}
           >
-            <FormSection title="Styling options">
+            <FormSection
+              title="Styling options"
+              hasErrors={hasSectionErrors("templateVersion")}
+            >
               <FormStyling />
             </FormSection>
 
-            <FormSection title="Personal information">
+            <FormSection
+              title="Personal information"
+              hasErrors={hasAnyErrors(
+                "name",
+                "surname",
+                "email",
+                "age",
+                "profileDescription",
+                "title",
+                "profileImage",
+              )}
+            >
               <PersonalInfo />
             </FormSection>
 
-            <FormSection title="Your portfolio">
+            <FormSection
+              title="Your portfolio"
+              hasErrors={hasSectionErrors("personalPortfolio")}
+            >
               <PersonalPortfolio />
             </FormSection>
 
-            <FormSection title="Your online profiles">
+            <FormSection
+              title="Your online profiles"
+              hasErrors={hasAnyErrors("website", "linkedIn", "gitHub")}
+            >
               <ProfileLinks />
             </FormSection>
 
-            <FormSection title="Your education">
+            <FormSection
+              title="Your education"
+              hasErrors={hasSectionErrors("education")}
+            >
               <Education />
             </FormSection>
 
-            <FormSection title="Your work experience">
+            <FormSection
+              title="Your work experience"
+              hasErrors={hasSectionErrors("workExperience")}
+            >
               <WorkExperience />
             </FormSection>
 
-            <FormSection title="Your skills">
+            <FormSection title="Your skills" hasErrors={hasSectionErrors("skills")}>
               <Skills />
             </FormSection>
 
-            <FormSection title="Your achievements">
+            <FormSection
+              title="Your achievements"
+              hasErrors={hasSectionErrors("achievements")}
+            >
               <Achievement />
             </FormSection>
 

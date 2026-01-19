@@ -6,12 +6,23 @@ import React from "react";
 import Input from "@/components/input";
 
 export default function Achievement() {
-  const { control } = useFormContext();
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext();
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "achievements",
   });
+
+  // Check if a specific achievement entry has any errors
+  const hasEntryErrors = (index: number): boolean => {
+    const achievementsErrors = errors.achievements as
+      | Array<Record<string, unknown>>
+      | undefined;
+    return !!(achievementsErrors && achievementsErrors[index]);
+  };
 
   return (
     <div className="w-full">
@@ -45,7 +56,11 @@ export default function Achievement() {
             {fields.map((field, index) => (
               <div
                 key={field.id}
-                className="relative flex flex-col gap-3 bg-main-dark/60 border border-white/6 rounded-lg p-4 backdrop-blur-sm shadow-sm transition-colors hover:border-white/10 focus-within:border-white/20"
+                className={`relative flex flex-col gap-3 bg-main-dark/60 rounded-lg p-4 backdrop-blur-sm shadow-sm transition-colors hover:border-white/10 focus-within:border-white/20 ${
+                  hasEntryErrors(index)
+                    ? "border-2 border-red-500/60 shadow-[0_0_8px_rgba(239,68,68,0.2)]"
+                    : "border border-white/6"
+                }`}
               >
                 <div className="absolute top-3 right-3 z-10">
                   <Button
