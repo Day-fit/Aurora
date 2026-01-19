@@ -61,7 +61,8 @@ export default function LoginForm() {
     const callbackUrl = `${window.location.origin}/auth/callback`;
 
     // Most Spring Boot / OAuth2 backends use 'redirect_uri'
-    window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_AUTH_URL}/oauth2/authorization/${provider}?redirect_uri=${callbackUrl}`;
+
+    window.location.href = `${process.env.NODE_ENV == "production" ? "https" : "http"}://${process.env.NEXT_PUBLIC_BACKEND_AUTH_URL}/oauth2/authorization/${provider}?redirect_uri=${callbackUrl}`;
   };
 
   return (
