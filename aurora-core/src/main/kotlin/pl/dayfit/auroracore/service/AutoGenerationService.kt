@@ -23,6 +23,7 @@ class AutoGenerationService(
     fun requestAutoGeneration(title: String, name: String, source: AutoGenerationSource, ownerId: UUID): String {
         val data = AutoGenerationData(
             null,
+            title,
             ownerId = ownerId,
             null,
             null,
@@ -53,6 +54,7 @@ class AutoGenerationService(
 
         return id
     }
+
     fun getAutoGenerationResult(trackingId: String, ownerId: UUID): AutoGenerationDataDto {
         val dataId = trackerService
             .getTrackedResourceId(
@@ -67,6 +69,7 @@ class AutoGenerationService(
 
         return AutoGenerationDataDto(
             data.age,
+            data.title,
             data.email,
             data.website,
             data.linkedIn,

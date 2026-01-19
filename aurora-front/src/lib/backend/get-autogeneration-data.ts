@@ -5,6 +5,7 @@ import { RequestMethod } from "@/lib/types/backend";
 
 export interface AutoGenerationData {
   age?: number;
+  title?: string;
   email?: string;
   website?: string;
   linkedIn?: string;
@@ -41,7 +42,7 @@ export interface AutoGenerationData {
 }
 
 export default async function getAutoGenerationData(
-  trackingId: string
+  trackingId: string,
 ): Promise<{ data: AutoGenerationData | null; status: number }> {
   const response = await callBackend({
     endpoint: `/api/v1/core/autogeneration/${trackingId}`,

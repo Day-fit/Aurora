@@ -12,6 +12,7 @@ data class AutoGenerationData (
     @Id
     var id: String?,
 
+    var title: String,
     var ownerId: UUID,
     var age: Int?,
     var email: String?,

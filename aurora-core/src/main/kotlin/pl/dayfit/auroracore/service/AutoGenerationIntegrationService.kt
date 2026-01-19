@@ -53,7 +53,6 @@ class AutoGenerationIntegrationService(
         val generationData: AutoGenerationData = autoGenerationRepository.findById(id)
             .orElseThrow { IllegalStateException("Generation data not found") }
 
-
         val result = event.result
 
         generationData.age = result.age

@@ -6,6 +6,7 @@ import java.time.Instant
 
 data class AutoGenerationDataDto (
     val age: Int?,
+    var title: String?,
     val email: String?,
     val website: String?,
     val linkedIn: String?,

@@ -21,11 +21,11 @@ function safeBase64ToFile(base64: string): File | null {
 }
 
 function transformAutoGenDataToFormValues(
-  data: AutoGenerationData
+  data: AutoGenerationData,
 ): Partial<FormValues> {
   return {
     templateVersion: TemplateType.template1,
-    title: "",
+    title: data.title ?? "",
     name: "",
     surname: "",
     age: data.age ?? undefined,
@@ -37,26 +37,29 @@ function transformAutoGenDataToFormValues(
     profileImage: data.profileImage
       ? safeBase64ToFile(data.profileImage)
       : null,
-    workExperience: data.workExperiences?.map((exp) => ({
-      company: exp.company,
-      position: exp.position,
-      description: exp.description ?? null,
-      startDate: exp.startDate,
-      endDate: exp.endDate ?? null,
-    })) ?? [],
-    education: data.education?.map((edu) => ({
-      institution: edu.institution,
-      major: edu.major ?? null,
-      degree: edu.degree,
-      fromYear: edu.fromYear,
-      toYear: edu.toYear ?? new Date().getFullYear(),
-    })) ?? [],
+    workExperience:
+      data.workExperiences?.map((exp) => ({
+        company: exp.company,
+        position: exp.position,
+        description: exp.description ?? null,
+        startDate: exp.startDate,
+        endDate: exp.endDate ?? null,
+      })) ?? [],
+    education:
+      data.education?.map((edu) => ({
+        institution: edu.institution,
+        major: edu.major ?? null,
+        degree: edu.degree,
+        fromYear: edu.fromYear,
+        toYear: edu.toYear ?? new Date().getFullYear(),
+      })) ?? [],
     skills: data.skills ?? [],
-    achievements: data.achievements?.map((ach) => ({
-      title: ach.title,
-      description: ach.description,
-      year: ach.year ?? null,
-    })) ?? [],
+    achievements:
+      data.achievements?.map((ach) => ({
+        title: ach.title,
+        description: ach.description,
+        year: ach.year ?? null,
+      })) ?? [],
     personalPortfolio: data.personalPortfolios ?? [],
   };
 }
@@ -122,7 +125,9 @@ export default function CreateCvClient({
       const trackingId = sessionStorage.getItem("autoGenerationTrackingId");
       if (!trackingId) {
         setIsLoadingAutoGen(false);
-        setAutoGenError("Auto-generation session expired or not found. Please try generating again.");
+        setAutoGenError(
+          "Auto-generation session expired or not found. Please try generating again.",
+        );
         return;
       }
 
