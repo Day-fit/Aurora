@@ -95,7 +95,7 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
           >
             <FormSection
               title="Styling options"
-              hasErrors={hasAnyErrors("templateVersion", "language")}
+              hasErrors={hasAnyErrors("templateVersion", "language", "title")}
             >
               <FormStyling />
             </FormSection>
@@ -105,9 +105,7 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
               hasErrors={hasAnyErrors(
                 "name",
                 "surname",
-                "email",
                 "profileDescription",
-                "title",
                 "profileImage",
               )}
             >
@@ -123,7 +121,7 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
 
             <FormSection
               title="Your online profiles"
-              hasErrors={hasAnyErrors("website", "linkedIn", "gitHub")}
+              hasErrors={hasAnyErrors("email", "website", "linkedIn", "gitHub")}
             >
               <ProfileLinks />
             </FormSection>
