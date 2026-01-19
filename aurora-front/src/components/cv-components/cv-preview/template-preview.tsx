@@ -1,23 +1,12 @@
 // aurora-front/src/components/cv-components/cv-preview/template-preview.tsx
 import { useFormContext, useWatch } from "react-hook-form";
-import { useEffect, useState } from "react";
-import { TemplateType } from "@/lib/types/form";
-import Template1 from "@/components/cv-components/cv-preview/template1";
-import Template2 from "@/components/cv-components/cv-preview/template2";
-import Template3 from "@/components/cv-components/cv-preview/template3";
-import Template4 from "@/components/cv-components/cv-preview/template4";
-import Template5 from "@/components/cv-components/cv-preview/template5";
-
-const TEMPLATE_MAP: Record<number, React.ComponentType<any>> = {
-  [TemplateType.template1]: Template1,
-  [TemplateType.template2]: Template2,
-  [TemplateType.template3]: Template3,
-  [TemplateType.template4]: Template4,
-  [TemplateType.template5]: Template5,
-};
+import { useEffect, useState, useMemo } from "react";
+import { generateTemplateHtml } from "@/components/cv-components/cv-preview/freemarker-templates";
 
 export default function TemplatePreview() {
-  const [preview, setPreview] = useState<string | undefined>(undefined);
+  const [profileImageBase64, setProfileImageBase64] = useState<
+    string | undefined
+  >(undefined);
   const { control } = useFormContext();
 
   const formData = {
@@ -31,28 +20,73 @@ export default function TemplatePreview() {
     gitHub: useWatch({ control, name: "gitHub" }),
     education: useWatch({ control, name: "education" }),
     skills: useWatch({ control, name: "skills" }),
-    experience: useWatch({ control, name: "workExperience" }),
+    workExperience: useWatch({ control, name: "workExperience" }),
     achievements: useWatch({ control, name: "achievements" }),
     profileImage: useWatch({ control, name: "profileImage" }),
     templateVersion: useWatch({ control, name: "templateVersion" }),
     personalPortfolio: useWatch({ control, name: "personalPortfolio" }),
   };
 
+  // Convert File to base64 for embedding in the HTML template
+  // This is the same pattern as the original component
   useEffect(() => {
     if (formData.profileImage instanceof File) {
-      const url = URL.createObjectURL(formData.profileImage);
-      setPreview(url);
-      return () => URL.revokeObjectURL(url);
+      const reader = new FileReader();
+      reader.onload = () => {
+        setProfileImageBase64(reader.result as string);
+      };
+      reader.readAsDataURL(formData.profileImage);
+      return;
     }
-    setPreview(undefined);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setProfileImageBase64(undefined);
   }, [formData.profileImage]);
 
-  const TemplateComponent = TEMPLATE_MAP[formData.templateVersion] || Template1;
+  // Generate the HTML template using Freemarker-compatible generator
+  const templateHtml = useMemo(() => {
+    return generateTemplateHtml(formData.templateVersion || 1, {
+      name: formData.name,
+      surname: formData.surname,
+      title: formData.title,
+      profileDescription: formData.profileDescription,
+      email: formData.email,
+      website: formData.website,
+      linkedIn: formData.linkedIn,
+      gitHub: formData.gitHub,
+      education: formData.education,
+      skills: formData.skills,
+      workExperience: formData.workExperience,
+      achievements: formData.achievements,
+      personalPortfolio: formData.personalPortfolio,
+      profileImage: profileImageBase64,
+    });
+  }, [
+    formData.name,
+    formData.surname,
+    formData.title,
+    formData.profileDescription,
+    formData.email,
+    formData.website,
+    formData.linkedIn,
+    formData.gitHub,
+    formData.education,
+    formData.skills,
+    formData.workExperience,
+    formData.achievements,
+    formData.personalPortfolio,
+    formData.templateVersion,
+    profileImageBase64,
+  ]);
 
   return (
     <section className="relative overflow-hidden rounded-xl p-6 lg:p-10 min-h-[60vh]">
       <div className="w-full max-w-[800px] aspect-[1/1.4142] mx-auto">
-        <TemplateComponent formData={formData} preview={preview} />
+        <iframe
+          srcDoc={templateHtml}
+          className="w-full h-full border border-gray-300 rounded-lg bg-white"
+          title="Resume Preview"
+          sandbox="allow-same-origin"
+        />
       </div>
     </section>
   );
