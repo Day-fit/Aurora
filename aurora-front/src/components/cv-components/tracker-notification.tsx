@@ -72,34 +72,34 @@ export default function TrackerNotification() {
           initial={{ opacity: 0, y: 50, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 50, scale: 0.9 }}
-          className={`fixed bottom-6 right-6 p-4 rounded-2xl shadow-2xl z-[9999] flex items-center gap-4 text-white min-w-[300px] transition-colors duration-500 ${getStepColor()} ${isFinished ? "cursor-pointer" : ""}`}
+          className={`fixed bottom-4 sm:bottom-6 left-4 right-4 sm:left-auto sm:right-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-2xl z-[9999] flex items-center gap-3 sm:gap-4 text-white sm:min-w-[300px] max-w-full sm:max-w-md transition-colors duration-500 ${getStepColor()} ${isFinished ? "cursor-pointer active:scale-95" : ""}`}
           onClick={isFinished ? handleFinish : undefined}
         >
-          <div className="flex flex-col flex-1">
-            <span className="text-xs font-medium opacity-80 uppercase">
+          <div className="flex flex-col flex-1 min-w-0">
+            <span className="text-[10px] sm:text-xs font-medium opacity-80 uppercase truncate">
               {isFinished
                 ? "Click to complete"
                 : typeLabel
                   ? `${typeLabel} • Step ${getStepNumber()} of 4`
                   : `Step ${getStepNumber()} of 4`}
             </span>
-            <span className="text-sm font-bold">{statusMessage}</span>
+            <span className="text-xs sm:text-sm font-bold truncate">{statusMessage}</span>
           </div>
           {hasError ? (
-            <IoAlertCircle className="text-2xl" />
+            <IoAlertCircle className="text-xl sm:text-2xl flex-shrink-0" />
           ) : isFinished ? (
-            <IoCheckmark className="text-2xl" />
+            <IoCheckmark className="text-xl sm:text-2xl flex-shrink-0" />
           ) : (
-            <IoSync className="text-2xl animate-spin" />
+            <IoSync className="text-xl sm:text-2xl animate-spin flex-shrink-0" />
           )}
           <button
             onClick={(e) => {
               e.stopPropagation();
               stopTracking();
             }}
-            className="ml-2 opacity-50 hover:opacity-100"
+            className="ml-1 sm:ml-2 opacity-50 hover:opacity-100 active:scale-90 transition-all flex-shrink-0"
           >
-            <IoClose size={20} />
+            <IoClose size={18} className="sm:w-5 sm:h-5" />
           </button>
         </motion.div>
       )}

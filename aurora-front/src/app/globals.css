@@ -19,6 +19,10 @@
   --color-aurora-blue-light: #9381ff; /* Aurora (blue/purple) */
   --color-text-light: #333333; /* Text */
   --color-heading-light: #000000;
+
+  /* Custom animations */
+  --animate-slideDown: slideDown 0.3s ease-out;
+  --animate-fadeIn: fadeIn 0.3s ease-out;
 }
 body {
   background-color: var(--color-bg-dark);
@@ -31,5 +35,25 @@ body {
     transition:
       background-color 0s 600000s,
       color 0s 600000s !important;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 }

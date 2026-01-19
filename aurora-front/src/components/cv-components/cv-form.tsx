@@ -64,21 +64,21 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
   };
 
   return (
-    <section className="relative overflow-hidden rounded-xl p-6 lg:p-10 min-h-[60vh]">
-      <div className="bg-main-dark/80 backdrop-blur-sm rounded-xl p-6 md:p-12 flex flex-col md:flex-row gap-8 items-start text-text-dark shadow-2xl">
+    <section className="relative overflow-hidden rounded-xl p-4 sm:p-6 lg:p-10 min-h-[60vh]">
+      <div className="bg-main-dark/80 backdrop-blur-sm rounded-xl p-4 sm:p-6 md:p-12 flex flex-col md:flex-row gap-6 sm:gap-8 items-start text-text-dark shadow-2xl">
         <div className="w-full">
-          <header className="mb-6">
-            <h2 className="text-3xl md:text-4xl font-extrabold leading-tight bg-clip-text text-transparent bg-linear-to-r from-aurora-blue-dark to-aurora-green-dark">
+          <header className="mb-4 sm:mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold leading-tight bg-clip-text text-transparent bg-linear-to-r from-aurora-blue-dark to-aurora-green-dark">
               {cvId ? "Edit your CV" : "Create your CV"}
             </h2>
-            <p className="text-sm text-text-dark/70 mt-2 max-w-prose">
-              Fill the form on the left. AI tips and a live preview are on the
+            <p className="text-xs sm:text-sm text-text-dark/70 mt-2 max-w-prose">
+              Fill the form below. AI tips and a live preview are on the
               right.
             </p>
           </header>
 
           <form
-            className="w-full flex flex-col gap-4"
+            className="w-full flex flex-col gap-3 sm:gap-4"
             onSubmit={handleSubmit(onSubmit, (validationErrors) => {
               console.log("Validation failed:", validationErrors);
             })}
@@ -115,10 +115,10 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
               <Achievement />
             </FormSection>
 
-            <div className="mt-3 flex gap-3">
+            <div className="mt-3 flex flex-col sm:flex-row gap-2 sm:gap-3">
               <Button
                 type={ButtonType.submit}
-                className="flex-1 bg-aurora-blue-dark text-white px-6 py-3 rounded-lg shadow-xl hover:scale-102 transition-transform font-semibold"
+                className="flex-1 bg-aurora-blue-dark text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg shadow-xl hover:scale-102 transition-transform font-semibold text-sm sm:text-base"
                 disabled={isSubmitting}
                 text={
                   isSubmitting
@@ -132,7 +132,7 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
               />
               <Button
                 type={ButtonType.button}
-                className="bg-transparent border border-white/8 text-text-dark px-4 py-3 rounded-lg hover:bg-aurora-green-dark hover:text-white transition"
+                className="bg-transparent border border-white/8 text-text-dark px-4 py-2.5 sm:py-3 rounded-lg hover:bg-aurora-green-dark hover:text-white transition text-sm sm:text-base"
                 text="Reset"
                 onClick={() => reset()}
               />
