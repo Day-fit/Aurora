@@ -32,7 +32,6 @@ class AutoGenerationService(
             null,
             null,
             null,
-            null,
             language = language
         )
 
@@ -71,7 +70,6 @@ class AutoGenerationService(
             .orElseThrow { ResourceNotReadyYetException("Resource is not ready yet. Please try again later.") }
 
         return AutoGenerationDataDto(
-            data.age,
             data.title,
             data.email,
             data.website,

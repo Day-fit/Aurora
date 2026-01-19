@@ -48,7 +48,6 @@ class TranslationService (
             language = language,
             name = originalResume.name,
             surname = originalResume.surname,
-            age = originalResume.age,
             email = originalResume.email,
             templateVersion = originalResume.templateVersion,
             lastModified = Instant.now(),

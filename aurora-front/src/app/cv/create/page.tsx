@@ -19,7 +19,6 @@ export default async function CreatePage({
         title: data.title ?? "",
         name: data.name ?? "",
         surname: data.surname ?? "",
-        age: data.age ?? undefined,
         email: data.email ?? "",
         website: data.website ?? "",
         linkedIn: data.linkedIn ?? "",
@@ -32,6 +31,7 @@ export default async function CreatePage({
         education: data.education ?? [],
         personalPortfolio: data.personalPortfolio ?? [],
         templateVersion: data.templateVersion ?? TemplateType.template1,
+        language: data.language ?? "ENGLISH",
       };
     }
   }

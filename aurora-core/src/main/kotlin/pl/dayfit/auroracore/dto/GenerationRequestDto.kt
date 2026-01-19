@@ -15,7 +15,6 @@ data class GenerationRequestDto (
     val name: String,
     @NotBlank
     val surname: String,
-    val age: Int,
     @NotBlank
     @Length(max = 200)
     val title: String,

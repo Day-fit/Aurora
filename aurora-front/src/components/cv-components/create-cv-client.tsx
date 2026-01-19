@@ -25,10 +25,10 @@ function transformAutoGenDataToFormValues(
 ): Partial<FormValues> {
   return {
     templateVersion: TemplateType.template1,
+    language: "ENGLISH",
     title: data.title ?? "",
     name: "",
     surname: "",
-    age: data.age ?? undefined,
     email: data.email ?? "",
     website: data.website ?? "",
     linkedIn: data.linkedIn ?? "",
@@ -99,10 +99,10 @@ export default function CreateCvClient({
     mode: "onSubmit",
     defaultValues: processedData || {
       templateVersion: TemplateType.template1,
+      language: "ENGLISH",
       title: "",
       name: "",
       surname: "",
-      age: undefined,
       email: "",
       website: "",
       linkedIn: "",

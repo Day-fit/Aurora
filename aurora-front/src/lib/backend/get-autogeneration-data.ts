@@ -4,7 +4,6 @@ import { callBackend } from "@/lib/backend/backend";
 import { RequestMethod } from "@/lib/types/backend";
 
 export interface AutoGenerationData {
-  age?: number;
   title?: string;
   email?: string;
   website?: string;

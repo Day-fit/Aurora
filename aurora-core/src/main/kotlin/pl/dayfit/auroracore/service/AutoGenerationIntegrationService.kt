@@ -55,7 +55,6 @@ class AutoGenerationIntegrationService(
 
         val result = event.result
 
-        generationData.age = result.age
         generationData.email = result.email
         generationData.website = result.website
         generationData.linkedIn = result.linkedIn

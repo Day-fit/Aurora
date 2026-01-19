@@ -11,7 +11,6 @@ data class ResumeDetailsDto(
     val originalVersionId: UUID?,
     val name: String,
     val surname: String,
-    val age: Int,
     val title: String?,
     val workExperience: MutableList<WorkExperience> = mutableListOf(),
     val personalPortfolio: MutableList<PersonalPortfolio> = mutableListOf(),

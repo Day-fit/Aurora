@@ -95,7 +95,6 @@ class ResumeService(
             resume.originalVersion?.id,
             resume.name,
             resume.surname,
-            resume.age,
             resume.title,
             resume.workExperience
                 .map { ResumeDetailsDto.WorkExperience(it.company, it.position, it.startDate, it.endDate, it.description) }
