@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { flushSync } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiAlertCircle } from "react-icons/fi";
 
@@ -16,22 +15,39 @@ export default function FormSection({
 }) {
   const [open, setOpen] = useState(false);
   const isFirstRenderRef = useRef(true);
+  const isMountedRef = useRef(true);
 
   // Auto-expand section when errors appear (transition from no errors to errors)
   useEffect(() => {
+    // Track mounted state for cleanup
+    isMountedRef.current = true;
+
     // Skip the first render to avoid expanding all sections on initial load
     if (isFirstRenderRef.current) {
       isFirstRenderRef.current = false;
       return;
     }
+
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
     // Only expand when hasErrors becomes true (and section is not already open)
     if (hasErrors) {
-      // Use flushSync to synchronize the state update with DOM, which is the
-      // intended pattern when reacting to validation errors that need immediate UI feedback
-      flushSync(() => {
-        setOpen(true);
-      });
+      // Use setTimeout to schedule the state update outside of React's render cycle
+      // This avoids the flushSync warning while still providing immediate feedback
+      timeoutId = setTimeout(() => {
+        if (isMountedRef.current) {
+          setOpen(true);
+        }
+      }, 0);
     }
+
+    // Cleanup function to prevent memory leaks and state updates on unmounted components
+    return () => {
+      isMountedRef.current = false;
+      if (timeoutId !== undefined) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [hasErrors]);
 
   return (

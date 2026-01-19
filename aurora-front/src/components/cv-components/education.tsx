@@ -5,6 +5,7 @@ import { ButtonType } from "@/lib/types/button";
 import React from "react";
 import { EducationDegree } from "@/lib/types/form";
 import Input from "@/components/input";
+import { hasArrayFieldEntryErrors } from "@/lib/utils/form-errors";
 
 export default function Education() {
   const {
@@ -16,14 +17,6 @@ export default function Education() {
     control,
     name: "education",
   });
-
-  // Check if a specific education entry has any errors
-  const hasEntryErrors = (index: number): boolean => {
-    const educationErrors = errors.education as
-      | Array<Record<string, unknown>>
-      | undefined;
-    return !!(educationErrors && educationErrors[index]);
-  };
 
   return (
     <div className="w-full">
@@ -61,7 +54,7 @@ export default function Education() {
               <div
                 key={field.id}
                 className={`relative flex flex-col gap-3 bg-main-dark/60 rounded-lg p-4 backdrop-blur-sm shadow-sm transition-colors hover:border-white/10 focus-within:border-white/20 ${
-                  hasEntryErrors(index)
+                  hasArrayFieldEntryErrors(errors, "education", index)
                     ? "border-2 border-red-500/60 shadow-[0_0_8px_rgba(239,68,68,0.2)]"
                     : "border border-white/6"
                 }`}
