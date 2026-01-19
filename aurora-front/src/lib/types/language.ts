@@ -121,3 +121,28 @@ export const LANGUAGE_FLAGS: Partial<Record<LanguageType, string>> = {
   ROMANIAN: "🇷🇴",
   MANDARIN: "🇨🇳",
 };
+
+// Common languages used for resume/template generation (subset of all supported)
+export const COMMON_LANGUAGES: LanguageType[] = [
+  "ENGLISH",
+  "POLISH",
+  "GERMAN",
+  "FRENCH",
+  "SPANISH",
+  "ITALIAN",
+  "PORTUGUESE",
+  "DUTCH",
+  "RUSSIAN",
+  "CHINESE",
+  "JAPANESE",
+  "KOREAN",
+  "ARABIC",
+  "HINDI",
+  "TURKISH",
+  "SWEDISH",
+  "NORWEGIAN",
+  "DANISH",
+  "FINNISH",
+  "CZECH",
+  "UKRAINIAN",
+];

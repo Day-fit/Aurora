@@ -7,7 +7,7 @@ import { FaTimes } from "react-icons/fa";
 import resumeAutogeneration from "@/lib/backend/resume-autogenertion";
 import enhanceResume from "@/lib/backend/enhance-resume";
 import { useTracker } from "@/context/tracker-context";
-import { LanguageType, LANGUAGE_LABELS } from "@/lib/types/language";
+import { LanguageType, LANGUAGE_LABELS, COMMON_LANGUAGES } from "@/lib/types/language";
 
 interface AutoGenerateModalProps {
   isOpen: boolean;
@@ -21,31 +21,6 @@ interface AutoGenerateFormValues {
   title: string;
   language: LanguageType;
 }
-
-// Common languages for auto-generation (subset of all supported languages)
-const AUTOGEN_LANGUAGES: { code: LanguageType; name: string }[] = [
-  { code: "ENGLISH", name: LANGUAGE_LABELS.ENGLISH },
-  { code: "POLISH", name: LANGUAGE_LABELS.POLISH },
-  { code: "GERMAN", name: LANGUAGE_LABELS.GERMAN },
-  { code: "FRENCH", name: LANGUAGE_LABELS.FRENCH },
-  { code: "SPANISH", name: LANGUAGE_LABELS.SPANISH },
-  { code: "ITALIAN", name: LANGUAGE_LABELS.ITALIAN },
-  { code: "PORTUGUESE", name: LANGUAGE_LABELS.PORTUGUESE },
-  { code: "DUTCH", name: LANGUAGE_LABELS.DUTCH },
-  { code: "RUSSIAN", name: LANGUAGE_LABELS.RUSSIAN },
-  { code: "CHINESE", name: LANGUAGE_LABELS.CHINESE },
-  { code: "JAPANESE", name: LANGUAGE_LABELS.JAPANESE },
-  { code: "KOREAN", name: LANGUAGE_LABELS.KOREAN },
-  { code: "ARABIC", name: LANGUAGE_LABELS.ARABIC },
-  { code: "HINDI", name: LANGUAGE_LABELS.HINDI },
-  { code: "TURKISH", name: LANGUAGE_LABELS.TURKISH },
-  { code: "SWEDISH", name: LANGUAGE_LABELS.SWEDISH },
-  { code: "NORWEGIAN", name: LANGUAGE_LABELS.NORWEGIAN },
-  { code: "DANISH", name: LANGUAGE_LABELS.DANISH },
-  { code: "FINNISH", name: LANGUAGE_LABELS.FINNISH },
-  { code: "CZECH", name: LANGUAGE_LABELS.CZECH },
-  { code: "UKRAINIAN", name: LANGUAGE_LABELS.UKRAINIAN },
-];
 
 export function AutoGenerateModal({
   isOpen,
@@ -188,9 +163,9 @@ export function AutoGenerateModal({
                   {...register("language", { required: "Language is required" })}
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-text-dark focus:outline-none focus:border-aurora-green-dark"
                 >
-                  {AUTOGEN_LANGUAGES.map((lang) => (
-                    <option key={lang.code} value={lang.code}>
-                      {lang.name}
+                  {COMMON_LANGUAGES.map((lang) => (
+                    <option key={lang} value={lang}>
+                      {LANGUAGE_LABELS[lang]}
                     </option>
                   ))}
                 </select>

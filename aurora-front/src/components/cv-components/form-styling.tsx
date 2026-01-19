@@ -3,32 +3,7 @@ import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import Input from "@/components/input";
 import { TemplateType } from "@/lib/types/form";
-import { LANGUAGE_LABELS, LanguageType } from "@/lib/types/language";
-
-// Common languages for template selection (subset of all supported languages)
-const TEMPLATE_LANGUAGES: LanguageType[] = [
-  "ENGLISH",
-  "POLISH",
-  "GERMAN",
-  "FRENCH",
-  "SPANISH",
-  "ITALIAN",
-  "PORTUGUESE",
-  "DUTCH",
-  "RUSSIAN",
-  "CHINESE",
-  "JAPANESE",
-  "KOREAN",
-  "ARABIC",
-  "HINDI",
-  "TURKISH",
-  "SWEDISH",
-  "NORWEGIAN",
-  "DANISH",
-  "FINNISH",
-  "CZECH",
-  "UKRAINIAN",
-];
+import { LANGUAGE_LABELS, COMMON_LANGUAGES } from "@/lib/types/language";
 
 export default function FormStyling() {
   const { control } = useFormContext();
@@ -84,7 +59,7 @@ export default function FormStyling() {
                 {...field}
                 className="w-full bg-transparent border border-white/10 rounded-xl px-4 py-3 text-text-dark focus:outline-none focus:ring-2 focus:ring-aurora-blue-dark transition cursor-pointer"
               >
-                {TEMPLATE_LANGUAGES.map((lang) => (
+                {COMMON_LANGUAGES.map((lang) => (
                   <option
                     key={lang}
                     value={lang}
