@@ -5,7 +5,6 @@ import pl.dayfit.auroraai.type.SkillLevel
 import java.time.Instant
 
 data class AutoGenerationDto (
-    val age: Int?,
     val email: String?,
     val website: String?,
     val linkedIn: String?,

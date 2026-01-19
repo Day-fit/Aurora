@@ -15,7 +15,6 @@ data class AutoGenerationData (
 
     var title: String,
     var ownerId: UUID,
-    var age: Int?,
     var email: String?,
     var website: String?,
     var linkedIn: String?,

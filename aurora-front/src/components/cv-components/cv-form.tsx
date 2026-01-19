@@ -95,7 +95,7 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
           >
             <FormSection
               title="Styling options"
-              hasErrors={hasSectionErrors("templateVersion")}
+              hasErrors={hasAnyErrors("templateVersion", "language")}
             >
               <FormStyling />
             </FormSection>
@@ -106,7 +106,6 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
                 "name",
                 "surname",
                 "email",
-                "age",
                 "profileDescription",
                 "title",
                 "profileImage",

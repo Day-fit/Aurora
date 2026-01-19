@@ -19,8 +19,6 @@ data class EditResumeDto(
     @JsonInclude(JsonInclude.Include.NON_NULL)
     val surname: String?,
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    val age: Int?,
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Length(max = 200)
     val title: String?,
     @JsonInclude(JsonInclude.Include.NON_NULL)

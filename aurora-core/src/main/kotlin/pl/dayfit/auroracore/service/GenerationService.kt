@@ -71,7 +71,6 @@ class GenerationService(
             null,
             requestDto.name,
             requestDto.surname,
-            requestDto.age,
             requestDto.title,
             requestDto.workExperience.map {
                 WorkExperience(
@@ -156,7 +155,6 @@ class GenerationService(
         data["name"] = resume.name
         data["title"] = resume.title!!
         data["surname"] = resume.surname
-        data["age"] = resume.age
 
         // Profile
         resume.profileImage?.let { data["profileImage"] = "data:image/png;base64, ${Base64.encode(it)}" }

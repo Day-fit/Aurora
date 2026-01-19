@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { LanguageType, LANGUAGE_LABELS } from "@/lib/types/language";
 
 /* ------------------ ENUMS ------------------ */
 
@@ -53,6 +54,10 @@ export const SkillLevelEnum = z.enum(
 
 export const EducationDegreeEnum = z.enum(
   Object.values(EducationDegree) as [string, ...string[]],
+);
+
+export const LanguageTypeEnum = z.enum(
+  Object.keys(LANGUAGE_LABELS) as [LanguageType, ...LanguageType[]],
 );
 
 /* ------------------ HELPERS ------------------ */
@@ -115,6 +120,7 @@ export const PersonalPortfolioSchema = z.object({
 
 export const formSchema = z.object({
   templateVersion: TemplateTypeEnum,
+  language: LanguageTypeEnum,
 
   title: z.string().min(1, "Title is required"),
   email: z.email("Invalid email"),
@@ -127,10 +133,6 @@ export const formSchema = z.object({
   surname: z.string().min(1, "Surname is required"),
 
   profileDescription: z.string().nullable(),
-  age: z
-    .number()
-    .min(0, "Age cannot be negative")
-    .max(150, "Age cannot be greater than 150"),
 
   education: z.array(EducationSchema),
   workExperience: z.array(ExperienceSchema),
