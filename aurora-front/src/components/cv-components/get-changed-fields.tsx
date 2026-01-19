@@ -11,13 +11,13 @@ export async function getChangedFields(
     "name",
     "surname",
     "title",
-    "age",
     "email",
     "website",
     "linkedIn",
     "gitHub",
     "profileDescription",
     "templateVersion",
+    "language",
   ];
 
   for (const field of simpleFields) {
