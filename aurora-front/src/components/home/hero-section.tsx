@@ -3,15 +3,28 @@ import Button from "@/components/button";
 import heroPicture from "../../../public/template2.png";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 export default function HeroSection() {
   const router = useRouter();
 
+  const scrollToHowItWorks = () => {
+    const element = document.getElementById("how-it-works");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
-    <section className="rounded-xl p- md:p-16 min-h-[calc(100vh-80px)] ">
-      <div className="bg-main-dark/80 backdrop-blur-sm rounded-xl p-8 md:p-12 flex flex-col md:flex-row gap-10 items-center text-text-dark shadow-2xl">
-        <div className="md:w-1/2 space-y-6">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
+    <section className="rounded-xl p-4 md:p-16 min-h-[calc(100vh-80px)]">
+      <div className="bg-main-dark/80 backdrop-blur-sm rounded-xl p-6 md:p-12 flex flex-col md:flex-row gap-10 items-center text-text-dark shadow-2xl">
+        <motion.div
+          className="md:w-1/2 space-y-6"
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
             Build Your Perfect Resume with{" "}
             <span className="whitespace-nowrap bg-clip-text text-transparent bg-linear-to-r from-aurora-blue-dark via-aurora-green-dark to-aurora-blue-dark">
               AI-Powered
@@ -19,7 +32,7 @@ export default function HeroSection() {
             Guidance
           </h1>
 
-          <p className="text-lg md:text-xl text-text-dark/80 max-w-prose leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-text-dark/80 max-w-prose leading-relaxed">
             Transform your career journey with AuroraResume. Our intelligent
             platform guides you through every step of creating a professional,
             ATS-optimized resume that stands out to employers.
@@ -29,16 +42,22 @@ export default function HeroSection() {
             <Button
               text="Get Started"
               onClick={() => router.push("cv")}
-              className="px-6 py-3 bg-aurora-blue-dark text-white hover:scale-105 transform transition-all duration-200 font-semibold shadow-xl rounded-lg text-lg"
+              className="px-6 py-3 bg-aurora-blue-dark text-white hover:scale-105 active:scale-95 transform transition-all duration-200 font-semibold shadow-xl rounded-lg text-lg"
             />
             <Button
               text="Learn More"
-              className="px-6 py-3 bg-transparent border-2 border-aurora-green-dark text-text-dark hover:bg-aurora-green-dark hover:text-white hover:scale-105 transition-all duration-200 font-semibold rounded-lg text-lg"
+              onClick={scrollToHowItWorks}
+              className="px-6 py-3 bg-transparent border-2 border-aurora-green-dark text-text-dark hover:bg-aurora-green-dark hover:text-white hover:scale-105 active:scale-95 transition-all duration-200 font-semibold rounded-lg text-lg"
             />
           </div>
-        </div>
+        </motion.div>
 
-        <div className="flex justify-center items-center md:w-1/2">
+        <motion.div
+          className="flex justify-center items-center md:w-1/2"
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+        >
           <div className="relative w-full max-w-lg rounded-xl shadow-2xl p-4 bg-linear-to-tr from-white/3 to-white/5 backdrop-blur-sm transform transition-all duration-500 hover:scale-105 hover:-translate-y-2">
             <Image
               src={heroPicture}
@@ -47,7 +66,7 @@ export default function HeroSection() {
               priority
             />
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

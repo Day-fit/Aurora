@@ -68,7 +68,7 @@ export default function LoginForm() {
     <FormProvider {...method}>
       <form
         onSubmit={method.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4"
+        className="flex flex-col gap-3"
       >
         {errorMessage && (
           <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-2 rounded-lg text-sm">
@@ -85,12 +85,12 @@ export default function LoginForm() {
         {/* Login button */}
         <Button
           type={ButtonType.submit}
-          className="mt-2 bg-aurora-blue-dark text-white px-6 py-3 rounded-lg hover:bg-aurora-green-dark transition font-semibold"
+          className="mt-1 bg-aurora-blue-dark text-white px-6 py-2.5 rounded-lg hover:bg-aurora-green-dark transition font-semibold"
           disabled={method.formState.isSubmitting}
           text={method.formState.isSubmitting ? "Logging in..." : "Login"}
         />
 
-        <div className="relative my-4">
+        <div className="relative my-3">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t border-gray-700"></span>
           </div>
@@ -101,11 +101,11 @@ export default function LoginForm() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           <button
             type="button"
             onClick={() => handleOAuthLogin("google")}
-            className="flex items-center justify-center gap-3 px-6 py-3 border border-gray-700 rounded-lg bg-gray-800/30 hover:bg-gray-800 hover:border-gray-600 transition-all text-sm font-semibold"
+            className="flex items-center justify-center gap-3 px-6 py-2.5 border border-gray-700 rounded-lg bg-gray-800/30 hover:bg-gray-800 hover:border-gray-600 transition-all text-sm font-semibold"
           >
             <FaGoogle className="text-lg" />
             <span>Sign in with Google</span>
@@ -113,7 +113,7 @@ export default function LoginForm() {
           <button
             type="button"
             onClick={() => handleOAuthLogin("github")}
-            className="flex items-center justify-center gap-3 px-6 py-3 border border-gray-700 rounded-lg bg-gray-800/30 hover:bg-gray-800 hover:border-gray-600 transition-all text-sm font-semibold"
+            className="flex items-center justify-center gap-3 px-6 py-2.5 border border-gray-700 rounded-lg bg-gray-800/30 hover:bg-gray-800 hover:border-gray-600 transition-all text-sm font-semibold"
           >
             <FaGithub className="text-lg" />
             <span>Sign in with GitHub</span>
@@ -124,7 +124,7 @@ export default function LoginForm() {
         <Dialog.Close asChild>
           <Button
             type={ButtonType.button}
-            className="mt-2 bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition font-semibold"
+            className="mt-1 bg-gray-600 text-white px-6 py-2.5 rounded-lg hover:bg-gray-700 transition font-semibold"
             text="Cancel"
           />
         </Dialog.Close>
