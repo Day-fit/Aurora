@@ -93,7 +93,7 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
     setHasError(false);
   }, []);
 
-  const startTracking = useCallback(async () => {
+  const startTracking = async () => {
     activeSocket?.close();
     activeSocket = null;
 
@@ -139,6 +139,7 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     if (!accessToken) {
+      console.warn("Missing access token for SockJS tracking");
       setHasError(true);
       setIsFinished(true);
       return;
@@ -191,7 +192,7 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
     socket.onclose = () => {
       console.log("SockJS connection closed");
     };
-  }, []);
+  };
 
   const statusMessage = hasError
     ? "Tracking failed. Please try again."
