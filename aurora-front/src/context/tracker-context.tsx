@@ -139,15 +139,14 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
 
     const wsUrl =
       (process.env.NODE_ENV === "production"
-        ? `wss://${process.env.NEXT_PUBLIC_BACKEND_CORE_URL}`
-        : `ws://${process.env.NEXT_PUBLIC_BACKEND_CORE_URL}`) +
+        ? `https://${process.env.NEXT_PUBLIC_BACKEND_CORE_URL}`
+        : `http://${process.env.NEXT_PUBLIC_BACKEND_CORE_URL}`) +
       `/api/v1/core/ws/tracker?token=${accessToken}`;
 
     console.log("Token found:", accessToken ? "yes" : "no");
     console.log("WS URL:", wsUrl);
 
-    // const socket = new WebSocket(wsUrl);
-    const socket = new SockJS();
+    const socket = new SockJS(wsUrl);
     socketRef.current = socket;
 
     socket.onopen = () => {
