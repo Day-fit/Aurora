@@ -98,6 +98,9 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
     activeSocket = null;
 
     setIsTracking(true);
+    setTrackingId(null);
+    setResourceId(null);
+    setTrackerType(null);
     setIsFinished(false);
     setHasError(false);
     setStatus("STARTING");
@@ -115,14 +118,28 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
         }),
       });
 
-      if (response.ok) {
-        accessToken = parseBearerToken(response.headers.get("authorization"));
-        if (!accessToken) {
-          const data = await response.json().catch(() => null);
-          accessToken = data?.accessToken;
-        }
+      if (!response.ok) {
+        console.warn("Failed to refresh token for SockJS tracking", {
+          status: response.status,
+        });
+        setHasError(true);
+        setIsFinished(true);
+        return;
       }
-    } catch {
+
+      accessToken = parseBearerToken(response.headers.get("authorization"));
+      if (!accessToken) {
+        const data = await response.json().catch(() => null);
+        accessToken = data?.accessToken;
+      }
+    } catch (error) {
+      console.error("Failed to refresh token for SockJS tracking", error);
+      setHasError(true);
+      setIsFinished(true);
+      return;
+    }
+    if (!accessToken) {
+      console.warn("Missing access token for SockJS tracking");
       setHasError(true);
       setIsFinished(true);
       return;
@@ -168,12 +185,14 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
 
     socket.onerror = () => {
       console.warn("SockJS transport error");
+      setHasError(true);
+      setIsFinished(true);
     };
 
     socket.onclose = () => {
       console.log("SockJS connection closed");
     };
-  }, [isFinished]);
+  }, []);
 
   const statusMessage =
     status && trackerType
