@@ -1,12 +1,7 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useRef,
-  useCallback,
-} from "react";
+import React, { createContext, useContext, useState, useCallback } from "react";
+import SockJS from "sockjs-client";
 import { parseBearerToken } from "@/lib/utils/parse-bearer-token";
 
 type TrackerStatus =
@@ -41,6 +36,8 @@ interface TrackerContextType {
 }
 
 const TrackerContext = createContext<TrackerContextType | undefined>(undefined);
+
+let activeSocket: any | null = null;
 
 const STATUS_MESSAGES: Record<TrackerType, Record<TrackerStatus, string>> = {
   AUTOGENERATION: {
@@ -82,13 +79,11 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
   const [trackerType, setTrackerType] = useState<TrackerType | null>(null);
   const [isFinished, setIsFinished] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const socketRef = useRef<WebSocket | null>(null);
 
   const stopTracking = useCallback(() => {
-    if (socketRef.current?.readyState === WebSocket.OPEN) {
-      socketRef.current.close();
-    }
-    socketRef.current = null;
+    activeSocket?.close();
+    activeSocket = null;
+
     setIsTracking(false);
     setTrackingId(null);
     setResourceId(null);
@@ -99,16 +94,19 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const startTracking = useCallback(async () => {
-    if (socketRef.current) {
-      socketRef.current.close();
-    }
+    activeSocket?.close();
+    activeSocket = null;
 
     setIsTracking(true);
+    setTrackingId(null);
+    setResourceId(null);
+    setTrackerType(null);
     setIsFinished(false);
     setHasError(false);
     setStatus("STARTING");
 
     let accessToken: string | undefined;
+
     try {
       const response = await fetch("/api/proxy", {
         method: "POST",
@@ -119,43 +117,52 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
           method: "POST",
         }),
       });
-      if (response.ok) {
-        accessToken = parseBearerToken(response.headers.get("authorization"));
-        if (!accessToken) {
-          try {
-            const data = await response.json();
-            accessToken = data?.accessToken;
-          } catch (error) {
-            console.error("Failed to parse refresh response:", error);
-          }
-        }
-      } else {
-        console.error("Refresh failed with status:", response.status);
+
+      if (!response.ok) {
+        console.warn("Failed to refresh token for SockJS tracking", {
+          status: response.status,
+        });
+        setHasError(true);
+        setIsFinished(true);
+        return;
+      }
+
+      accessToken = parseBearerToken(response.headers.get("authorization"));
+      if (!accessToken) {
+        const data = await response.json().catch(() => null);
+        accessToken = data?.accessToken;
       }
     } catch (error) {
-      console.error("Failed to refresh access token:", error);
+      console.error("Failed to refresh token for SockJS tracking", error);
+      setHasError(true);
+      setIsFinished(true);
+      return;
+    }
+    if (!accessToken) {
+      console.warn("Missing access token for SockJS tracking");
+      setHasError(true);
+      setIsFinished(true);
+      return;
     }
 
-    const wsUrl =
-      (process.env.NODE_ENV === "production"
-        ? `wss://${process.env.NEXT_PUBLIC_BACKEND_CORE_URL}`
-        : `ws://${process.env.NEXT_PUBLIC_BACKEND_CORE_URL}`) +
-      `/api/v1/core/ws/tracker?token=${accessToken}`;
+    const baseUrl =
+      process.env.NODE_ENV === "production"
+        ? `https://${process.env.NEXT_PUBLIC_BACKEND_CORE_URL}`
+        : `http://localhost:8081`; // port 8081 bo Spring
 
-    console.log("Token found:", accessToken ? "yes" : "no");
-    console.log("WS URL:", wsUrl);
+    const socket = new SockJS(
+      `${baseUrl}/api/v1/core/ws/tracker?token=${accessToken}`,
+    );
 
-    const socket = new WebSocket(wsUrl);
-    socketRef.current = socket;
+    activeSocket = socket;
 
     socket.onopen = () => {
-      console.log("WebSocket connected");
+      console.log("SockJS connected");
     };
 
     socket.onmessage = (event) => {
       try {
         const data: TrackerMessage = JSON.parse(event.data);
-        console.log("Tracker message:", data);
 
         setTrackingId(data.trackerId);
         setStatus(data.status);
@@ -164,22 +171,26 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
 
         if (data.status === "DONE") {
           setIsFinished(true);
-        } else if (data.status === "ERROR") {
+        }
+
+        if (data.status === "ERROR") {
           setHasError(true);
           setIsFinished(true);
         }
-      } catch (err) {
-        console.error("Failed to parse tracker message:", err);
+      } catch {
+        setHasError(true);
+        setIsFinished(true);
       }
     };
 
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
+    socket.onerror = () => {
+      console.warn("SockJS transport error");
       setHasError(true);
+      setIsFinished(true);
     };
 
-    socket.onclose = (event) => {
-      console.log("WebSocket closed:", event.code, event.reason);
+    socket.onclose = () => {
+      console.log("SockJS connection closed");
     };
   }, []);
 
@@ -210,7 +221,8 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
 
 export function useTracker() {
   const context = useContext(TrackerContext);
-  if (!context)
-    throw new Error("useTracker must be used within a TrackerProvider");
+  if (!context) {
+    throw new Error("useTracker must be used within TrackerProvider");
+  }
   return context;
 }
