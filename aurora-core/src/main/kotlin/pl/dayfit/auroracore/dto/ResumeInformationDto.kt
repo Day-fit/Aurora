@@ -9,7 +9,7 @@ data class ResumeInformationDto(
     val title: String?,
     val name: String,
     val surname: String,
-    val profileImage: String?,
+    val previewImage: String?,
     val languageType: LanguageType?,
     val size: Long,
     val lastModified: Instant,

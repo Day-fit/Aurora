@@ -38,6 +38,7 @@ class Resume(
     @OneToMany(cascade = [CascadeType.ALL], fetch = jakarta.persistence.FetchType.EAGER)
     var achievements: MutableList<Achievement> = mutableListOf(),
     var profileImage: ByteArray? = null,
+    var previewImage: ByteArray? = null,
     @Column(length = 1000)
     var profileDescription: String?,
 

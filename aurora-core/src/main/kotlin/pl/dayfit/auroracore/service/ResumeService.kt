@@ -32,8 +32,8 @@ import pl.dayfit.auroracore.type.TrackerType
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.time.Instant
-import java.util.Base64
 import java.util.UUID
+import kotlin.io.encoding.Base64
 import kotlin.jvm.javaClass
 
 @Service
@@ -66,7 +66,7 @@ class ResumeService(
                 resume.title,
                 resume.name,
                 resume.surname,
-                resume.profileImage?.let { Base64.getEncoder().encodeToString(it) },
+                resume.previewImage?.let { Base64.encode(it) },
                 resume.language,
                 getGenerationResultSize(userId, resume.id!!),
                 resume.lastModified,
@@ -112,7 +112,7 @@ class ResumeService(
                 .map { ResumeDetailsDto.Achievement(it.title, it.description, it.year) }
                 .toMutableList(),
             resume.profileImage
-                ?.let { Base64.getEncoder().encodeToString(it) },
+                ?.let { Base64.encode(it) },
             resume.profileDescription,
             resume.email,
             resume.website,
