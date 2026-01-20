@@ -98,6 +98,9 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
     activeSocket = null;
 
     setIsTracking(true);
+    setTrackingId(null);
+    setResourceId(null);
+    setTrackerType(null);
     setIsFinished(false);
     setHasError(false);
     setStatus("STARTING");
@@ -115,14 +118,23 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
         }),
       });
 
-      if (response.ok) {
-        accessToken = parseBearerToken(response.headers.get("authorization"));
-        if (!accessToken) {
-          const data = await response.json().catch(() => null);
-          accessToken = data?.accessToken;
-        }
+      if (!response.ok) {
+        setHasError(true);
+        setIsFinished(true);
+        return;
+      }
+
+      accessToken = parseBearerToken(response.headers.get("authorization"));
+      if (!accessToken) {
+        const data = await response.json().catch(() => null);
+        accessToken = data?.accessToken;
       }
     } catch {
+      setHasError(true);
+      setIsFinished(true);
+      return;
+    }
+    if (!accessToken) {
       setHasError(true);
       setIsFinished(true);
       return;
@@ -168,15 +180,18 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
 
     socket.onerror = () => {
       console.warn("SockJS transport error");
+      setHasError(true);
+      setIsFinished(true);
     };
 
     socket.onclose = () => {
       console.log("SockJS connection closed");
     };
-  }, [isFinished]);
+  }, []);
 
-  const statusMessage =
-    status && trackerType
+  const statusMessage = hasError
+    ? "Tracking failed. Please try again."
+    : status && trackerType
       ? STATUS_MESSAGES[trackerType][status]
       : "Connecting...";
 
