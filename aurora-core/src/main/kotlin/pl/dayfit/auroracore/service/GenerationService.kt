@@ -9,11 +9,16 @@ import com.itextpdf.styledxmlparser.css.media.MediaDeviceDescription
 import com.itextpdf.styledxmlparser.css.media.MediaType
 import freemarker.template.Configuration
 import freemarker.template.Template
-import jakarta.transaction.Transactional
 import net.coobird.thumbnailator.Thumbnails
+import org.apache.pdfbox.Loader
+import org.apache.pdfbox.pdmodel.PDDocument
+import org.apache.pdfbox.rendering.ImageType
+import org.apache.pdfbox.rendering.PDFRenderer
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
 import pl.dayfit.auroracore.dto.GenerationRequestDto
@@ -47,6 +52,7 @@ class GenerationService(
     private val enumLocalizationService: EnumLocalizationService,
     private val messageSource: org.springframework.context.MessageSource
 ) {
+    private val dpi = 300f
     private val imageQuality = 0.75
     private val logger = LoggerFactory.getLogger(GenerationService::class.java)
 
@@ -116,6 +122,7 @@ class GenerationService(
                 compressImage(it)
             },
 
+            null,
             requestDto.profileDescription,
             requestDto.email,
             requestDto.website,
@@ -142,6 +149,7 @@ class GenerationService(
      * @param event The event containing the ID of the CV to be exported.
      * @return The generated résumé as a string.
      */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun generateResume(event: ResumeReadyToExport)
     {
@@ -252,12 +260,13 @@ class GenerationService(
 
                 pdfDoc.close()
 
+                resume.previewImage = generatePreview(outPdf)
+                resumeCacheService.saveResume(resume)
+
                 resumeService
                     .handleSaving(outPdf, resume.auroraUserId, resume.id!!)
             }
         }
-
-        resumeCacheService.saveResume(resume)
     }
 
     /**
@@ -290,5 +299,27 @@ class GenerationService(
         } catch (_: IllegalArgumentException) {
             throw InvalidBase64Exception("Profile image is invalid base64 string")
         }
+    }
+
+    private fun generatePreview(pdfOutputStream: ByteArrayOutputStream): ByteArray {
+        val previewOutput = ByteArrayOutputStream()
+
+        Loader.loadPDF(pdfOutputStream.toByteArray()).use { document: PDDocument ->
+            val renderer = PDFRenderer(document)
+
+            val image = renderer.renderImageWithDPI(0, dpi, ImageType.RGB)
+
+            ByteArrayOutputStream().use { tmpOutput ->
+                Thumbnails.of(image)
+                    .size(595, 842) // Optional: scale, roughly A4 at 72 DPI
+                    .outputQuality(imageQuality)
+                    .outputFormat("png")
+                    .toOutputStream(tmpOutput)
+
+                previewOutput.write(tmpOutput.toByteArray())
+            }
+        }
+
+        return previewOutput.toByteArray()
     }
 }

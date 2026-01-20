@@ -144,6 +144,12 @@
             <version>0.4.21</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>3.0.6</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>

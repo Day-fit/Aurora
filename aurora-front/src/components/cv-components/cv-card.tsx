@@ -15,7 +15,11 @@ import { base64ToDataUrl } from "@/lib/utils/image";
 import { AutoGenerateModal } from "./auto-generate-modal";
 import { TranslateModal } from "./translate-modal";
 import { getResumePdf } from "@/lib/backend/get-resume-pdf";
-import { LanguageType, LANGUAGE_LABELS, LANGUAGE_FLAGS } from "@/lib/types/language";
+import {
+  LanguageType,
+  LANGUAGE_LABELS,
+  LANGUAGE_FLAGS,
+} from "@/lib/types/language";
 
 interface CvCardProps {
   id: string;
@@ -23,13 +27,13 @@ interface CvCardProps {
     title: string;
     name: string;
     surname: string;
-    profileImage?: string | File[] | null;
+    previewImage?: string | File[] | null;
     language?: LanguageType | null;
   };
 }
 
 export function CvCard({ id, data }: CvCardProps) {
-  const { title, name, surname, profileImage, language } = data;
+  const { title, name, surname, previewImage, language } = data;
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [isEnhanceModalOpen, setIsEnhanceModalOpen] = useState(false);
   const [isTranslateModalOpen, setIsTranslateModalOpen] = useState(false);
@@ -41,18 +45,18 @@ export function CvCard({ id, data }: CvCardProps) {
   }, []);
 
   useEffect(() => {
-    if (Array.isArray(profileImage) && profileImage[0] instanceof File) {
-      const url = URL.createObjectURL(profileImage[0]);
+    if (Array.isArray(previewImage) && previewImage[0] instanceof File) {
+      const url = URL.createObjectURL(previewImage[0]);
       setBlobUrl(url);
       return () => URL.revokeObjectURL(url);
     } else {
       setBlobUrl(null);
     }
-  }, [profileImage]);
+  }, [previewImage]);
 
   const imageUrl = isMounted
     ? blobUrl ||
-      (typeof profileImage === "string" ? base64ToDataUrl(profileImage) : null)
+      (typeof previewImage === "string" ? base64ToDataUrl(previewImage) : null)
     : null;
 
   const handleDownload = async () => {
@@ -92,7 +96,7 @@ export function CvCard({ id, data }: CvCardProps) {
             <img
               src={imageUrl}
               alt={`${name} ${surname}`}
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+              className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100"
             />
           ) : (
             <div className="flex flex-col items-center text-text-dark/20">
@@ -114,17 +118,18 @@ export function CvCard({ id, data }: CvCardProps) {
           <p className="text-sm font-medium text-text-dark/60 mb-2 uppercase tracking-wider">
             {name} {surname}
           </p>
-          {language && (() => {
-            const flag = LANGUAGE_FLAGS[language];
-            return (
-              <div className="flex items-center gap-1.5 mb-4">
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-aurora-blue-dark/20 border border-aurora-blue-dark/30 rounded-full text-xs font-medium text-aurora-blue-dark">
-                  {flag && <span>{flag}</span>}
-                  {LANGUAGE_LABELS[language] || language}
-                </span>
-              </div>
-            );
-          })()}
+          {language &&
+            (() => {
+              const flag = LANGUAGE_FLAGS[language];
+              return (
+                <div className="flex items-center gap-1.5 mb-4">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-aurora-blue-dark/20 border border-aurora-blue-dark/30 rounded-full text-xs font-medium text-aurora-blue-dark">
+                    {flag && <span>{flag}</span>}
+                    {LANGUAGE_LABELS[language] || language}
+                  </span>
+                </div>
+              );
+            })()}
           {!language && <div className="mb-4" />}
 
           <div className="mt-auto flex flex-col gap-2">
