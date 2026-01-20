@@ -93,7 +93,7 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
     setHasError(false);
   }, []);
 
-  const startTracking = async () => {
+  const startTracking = useCallback(async () => {
     activeSocket?.close();
     activeSocket = null;
 
@@ -192,7 +192,7 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
     socket.onclose = () => {
       console.log("SockJS connection closed");
     };
-  };
+  }, []);
 
   const statusMessage = hasError
     ? "Tracking failed. Please try again."
