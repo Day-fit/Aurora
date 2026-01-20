@@ -119,6 +119,9 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (!response.ok) {
+        console.warn("Failed to refresh token for SockJS tracking", {
+          status: response.status,
+        });
         setHasError(true);
         setIsFinished(true);
         return;
@@ -129,7 +132,8 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
         const data = await response.json().catch(() => null);
         accessToken = data?.accessToken;
       }
-    } catch {
+    } catch (error) {
+      console.error("Failed to refresh token for SockJS tracking", error);
       setHasError(true);
       setIsFinished(true);
       return;
