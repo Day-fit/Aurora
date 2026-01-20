@@ -91,7 +91,15 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
     setTrackerType(null);
     setIsFinished(false);
     setHasError(false);
-  }, []);
+  }, [
+    setHasError,
+    setIsFinished,
+    setIsTracking,
+    setResourceId,
+    setStatus,
+    setTrackerType,
+    setTrackingId,
+  ]);
 
   const startTracking = useCallback(async () => {
     activeSocket?.close();
