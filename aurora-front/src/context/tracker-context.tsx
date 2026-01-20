@@ -7,6 +7,7 @@ import React, {
   useRef,
   useCallback,
 } from "react";
+import SockJS from "sockjs-client";
 import { parseBearerToken } from "@/lib/utils/parse-bearer-token";
 
 type TrackerStatus =
@@ -145,7 +146,8 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
     console.log("Token found:", accessToken ? "yes" : "no");
     console.log("WS URL:", wsUrl);
 
-    const socket = new WebSocket(wsUrl);
+    // const socket = new WebSocket(wsUrl);
+    const socket = new SockJS();
     socketRef.current = socket;
 
     socket.onopen = () => {

@@ -20,5 +20,6 @@ class WebSocketConfiguration(
             .setAllowedOrigins(*corsConfigurationProperties.allowedOrigins
                 .toTypedArray())
             .addInterceptors(trackerHandshakeInterceptor)
+            .withSockJS()
     }
 }
