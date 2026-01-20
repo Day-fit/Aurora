@@ -13,7 +13,8 @@ export async function getResumePdf(
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
 
-  const url = `${BASE_URL.replace(/\/$/, "")}/api/v1/core/resume/getPdf?id=${id}`;
+  const isProduction = process.env.NODE_ENV === "production";
+  const url = `${isProduction ? "https" : "http"}://${BASE_URL.replace(/\/$/, "")}/api/v1/core/resume/getPdf?id=${id}`;
 
   const res = await fetch(url, {
     method: "GET",

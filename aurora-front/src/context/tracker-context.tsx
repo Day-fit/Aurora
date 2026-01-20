@@ -131,7 +131,7 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
     const baseUrl =
       process.env.NODE_ENV === "production"
         ? `https://${process.env.NEXT_PUBLIC_BACKEND_CORE_URL}`
-        : `http://${process.env.NEXT_PUBLIC_BACKEND_CORE_URL}`;
+        : `http://localhost:8081`; // port 8081 bo Spring
 
     const socket = new SockJS(
       `${baseUrl}/api/v1/core/ws/tracker?token=${accessToken}`,
