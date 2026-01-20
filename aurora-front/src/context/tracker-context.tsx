@@ -185,7 +185,6 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
 
     socket.onerror = () => {
       console.warn("SockJS transport error");
-      setIsTracking(false);
       setHasError(true);
       setIsFinished(true);
     };
@@ -193,19 +192,10 @@ export function TrackerProvider({ children }: { children: React.ReactNode }) {
     socket.onclose = () => {
       console.log("SockJS connection closed");
     };
-  }, [
-    setHasError,
-    setIsFinished,
-    setIsTracking,
-    setResourceId,
-    setStatus,
-    setTrackerType,
-    setTrackingId,
-  ]);
+  }, []);
 
-  const statusMessage = hasError
-    ? "Tracking failed. Please try again."
-    : status && trackerType
+  const statusMessage =
+    status && trackerType
       ? STATUS_MESSAGES[trackerType][status]
       : "Connecting...";
 
