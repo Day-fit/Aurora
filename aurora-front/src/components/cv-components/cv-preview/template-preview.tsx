@@ -43,7 +43,7 @@ export default function TemplatePreview() {
     // Handle case where profileImage is already a string (base64 or data URL)
     if (typeof formData.profileImage === "string" && formData.profileImage) {
       const dataUrl = base64ToDataUrl(formData.profileImage);
-      setProfileImageBase64(dataUrl || undefined);
+      setProfileImageBase64(dataUrl ?? undefined);
       return;
     }
     
