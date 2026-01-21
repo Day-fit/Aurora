@@ -1,5 +1,6 @@
 package pl.dayfit.auroracore.service.cache
 
+import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
@@ -11,7 +12,8 @@ import java.util.UUID
 
 @Service
 class ResumeCacheService(
-    private val resumeRepository: ResumeRepository
+    private val resumeRepository: ResumeRepository,
+    private val cacheManager: CacheManager
 ) {
     @Cacheable("resume.id", key = "#id")
     fun getResumeById(id: UUID): Resume {
@@ -37,9 +39,9 @@ class ResumeCacheService(
     }
 
     @Suppress("unused")
-    @CacheEvict("resume.id", key = "#id")
     fun deleteResume(id: UUID)
     {
+        cacheManager.getCache("resume.id")
         //TODO: when adding removing functionality, please implement "resumes.ownerId" cache evict
         resumeRepository
             .deleteById(id)

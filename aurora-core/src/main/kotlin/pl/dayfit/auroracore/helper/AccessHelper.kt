@@ -2,10 +2,13 @@ package pl.dayfit.auroracore.helper
 
 import org.springframework.stereotype.Component
 import pl.dayfit.auroracore.model.Resume
+import pl.dayfit.auroracore.service.cache.ResumeCacheService
 import java.util.UUID
 
 @Component
-class AccessHelper {
+class AccessHelper(
+    private val resumeCacheService: ResumeCacheService
+) {
     /**
      * Determines if the specified user is the owner of the given résumé.
      *
@@ -14,4 +17,8 @@ class AccessHelper {
      * @return true if the specified user is the owner of the résumé, false otherwise
      */
     fun isOwner(resume: Resume, userId: UUID) = resume.auroraUserId == userId
+    fun isOwner(resumeId: UUID, userId: UUID) = isOwner(
+        resumeCacheService.getResumeById(resumeId),
+        userId
+    )
 }

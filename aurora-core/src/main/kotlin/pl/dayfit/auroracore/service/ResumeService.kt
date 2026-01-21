@@ -353,4 +353,13 @@ class ResumeService(
             else -> throw IllegalArgumentException("Unknown property: $name")
         }
     }
+
+    fun handleDeleting(resumeId: UUID, userId: UUID)
+    {
+        if (!accessHelper.isOwner(resumeId, userId)) {
+            throw AccessDeniedException("You are not allowed to delete this resume")
+        }
+
+        resumeCacheService.deleteResume(resumeId)
+    }
 }

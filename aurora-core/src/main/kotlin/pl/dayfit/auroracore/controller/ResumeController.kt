@@ -3,8 +3,10 @@ package pl.dayfit.auroracore.controller
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -168,6 +170,19 @@ class ResumeController (
 
         return ResponseEntity.ok(
             mapOf("message" to "Resume edited successfully!")
+        )
+    }
+
+    @DeleteMapping("/{resumeId}")
+    fun delete(@PathVariable resumeId: UUID, @AuthenticationPrincipal principal: Principal): ResponseEntity<Map<String, String>>
+    {
+        resumeService.handleDeleting(
+            resumeId,
+            UUID.fromString(principal.name)
+        )
+
+        return ResponseEntity.ok(
+            mapOf("message" to "Resume deleted successfully!")
         )
     }
 }
