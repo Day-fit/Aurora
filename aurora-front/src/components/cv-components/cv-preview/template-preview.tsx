@@ -28,9 +28,25 @@ export default function TemplatePreview() {
     personalPortfolio: useWatch({ control, name: "personalPortfolio" }),
   };
 
-  // Convert File to base64 for embedding in the HTML template
+  // Convert File/FileList to base64 for embedding in the HTML template
   // Also handles case where profileImage is already a base64 string (e.g., when editing existing CV)
   useEffect(() => {
+    // Handle FileList from file input (useWatch returns raw input value, not Zod-transformed)
+    if (typeof FileList !== "undefined" && formData.profileImage instanceof FileList) {
+      if (formData.profileImage.length > 0) {
+        const file = formData.profileImage[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+          setProfileImageBase64(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+        return;
+      }
+      setProfileImageBase64(undefined);
+      return;
+    }
+    
+    // Handle File object (after Zod transform or from base64ToFile conversion)
     if (formData.profileImage instanceof File) {
       const reader = new FileReader();
       reader.onload = () => {
