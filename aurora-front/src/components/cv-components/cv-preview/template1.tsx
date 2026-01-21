@@ -1,4 +1,4 @@
-export default function Template1({ formData, preview }: any) {
+export default function Template1({ formData }: any) {
   const {
     name,
     surname,
@@ -22,7 +22,7 @@ export default function Template1({ formData, preview }: any) {
       <div className="w-[35%] bg-[#1c7c74] text-white p-[25px] box-border">
         {profileImage && (
           <img
-            src={preview}
+            src={profileImage}
             alt="Profile"
             className="w-full rounded-md mb-[25px] border-[3px] border-white object-cover aspect-square"
           />

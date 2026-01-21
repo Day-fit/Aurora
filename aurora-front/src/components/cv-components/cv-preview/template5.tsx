@@ -1,4 +1,4 @@
-export default function Template5({ formData, preview }: any) {
+export default function Template5({ formData }: any) {
   const {
     name,
     surname,
@@ -56,7 +56,7 @@ export default function Template5({ formData, preview }: any) {
       <div className="text-center mb-6 pb-4 border-b-2 border-black">
         {profileImage && (
           <img
-            src={preview}
+            src={profileImage}
             alt="Profile"
             className="w-[90px] h-[90px] border-2 border-black mx-auto mb-4 object-cover"
           />
