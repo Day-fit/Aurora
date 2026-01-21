@@ -2,6 +2,7 @@
 import { useFormContext, useWatch } from "react-hook-form";
 import { useEffect, useState, useMemo } from "react";
 import { generateTemplateHtml } from "@/components/cv-components/cv-preview/freemarker-templates";
+import { base64ToDataUrl } from "@/lib/utils/image";
 
 export default function TemplatePreview() {
   const [profileImageBase64, setProfileImageBase64] = useState<
@@ -28,7 +29,7 @@ export default function TemplatePreview() {
   };
 
   // Convert File to base64 for embedding in the HTML template
-  // This is the same pattern as the original component
+  // Also handles case where profileImage is already a base64 string (e.g., when editing existing CV)
   useEffect(() => {
     if (formData.profileImage instanceof File) {
       const reader = new FileReader();
@@ -38,7 +39,14 @@ export default function TemplatePreview() {
       reader.readAsDataURL(formData.profileImage);
       return;
     }
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    
+    // Handle case where profileImage is already a string (base64 or data URL)
+    if (typeof formData.profileImage === "string" && formData.profileImage) {
+      const dataUrl = base64ToDataUrl(formData.profileImage);
+      setProfileImageBase64(dataUrl || undefined);
+      return;
+    }
+    
     setProfileImageBase64(undefined);
   }, [formData.profileImage]);
 
