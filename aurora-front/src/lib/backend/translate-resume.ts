@@ -2,6 +2,7 @@
 
 import { callBackend } from "@/lib/backend/backend";
 import { RequestMethod } from "@/lib/types/backend";
+import { ApiService } from "@/lib/backend/api-config";
 
 export type TranslateLanguage =
   | "ENGLISH"
@@ -33,7 +34,7 @@ export default async function translateResume(
   return await callBackend({
     endpoint: `/api/v1/core/resume/translate`,
     method: RequestMethod.POST,
-    baseUrl: process.env.BACKEND_CORE_URL,
+    service: ApiService.CORE,
     body: {
       id: resumeId,
       language: language,

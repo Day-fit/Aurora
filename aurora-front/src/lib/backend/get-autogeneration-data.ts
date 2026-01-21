@@ -2,6 +2,7 @@
 
 import { callBackend } from "@/lib/backend/backend";
 import { RequestMethod } from "@/lib/types/backend";
+import { ApiService } from "@/lib/backend/api-config";
 
 export interface AutoGenerationData {
   title?: string;
@@ -46,7 +47,7 @@ export default async function getAutoGenerationData(
   const response = await callBackend({
     endpoint: `/api/v1/core/autogeneration/${trackingId}`,
     method: RequestMethod.GET,
-    baseUrl: process.env.BACKEND_CORE_URL,
+    service: ApiService.CORE,
   });
 
   return {

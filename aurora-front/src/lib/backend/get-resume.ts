@@ -1,5 +1,6 @@
 import { callBackend } from "@/lib/backend/backend";
 import { RequestMethod } from "@/lib/types/backend";
+import { ApiService } from "@/lib/backend/api-config";
 import { FormValues } from "@/lib/types/form";
 
 export default async function getResume(
@@ -9,7 +10,7 @@ export default async function getResume(
     const { status, data } = await callBackend<FormValues>({
       endpoint: `/api/v1/core/resume/get?id=${id}`,
       method: RequestMethod.GET,
-      baseUrl: process.env.BACKEND_CORE_URL,
+      service: ApiService.CORE,
     });
 
     console.log(`CV with id ${id} fetched:`, data);

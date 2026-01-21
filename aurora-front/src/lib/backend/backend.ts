@@ -7,19 +7,17 @@ import {
 } from "@/lib/types/backend";
 import { cookies } from "next/headers";
 import { parseBearerToken } from "@/lib/utils/parse-bearer-token";
+import { ApiService, getServiceBaseUrl } from "@/lib/backend/api-config";
 
 export async function callBackend<T = any>({
   method = RequestMethod.POST,
   endpoint,
   body = null,
-  baseUrl,
+  service = ApiService.AUTH,
 }: RequestType): Promise<BackendResponse<T>> {
-  const BASE_URL =
-    (process.env.NODE_ENV == "production" ? "https://" : "http://") +
-    (baseUrl || process.env.BACKEND_AUTH_URL);
-  if (!BASE_URL) {
-    throw new Error("Base URL is not defined");
-  }
+  const host = getServiceBaseUrl(service);
+  const protocol = process.env.NODE_ENV === "production" ? "https://" : "http://";
+  const BASE_URL = protocol + host;
 
   console.log(
     `Calling backend with method ${method} and endpoint ${BASE_URL + endpoint}`,
