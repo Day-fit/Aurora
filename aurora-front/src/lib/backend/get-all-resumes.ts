@@ -1,12 +1,13 @@
 import { callBackend } from "@/lib/backend/backend";
 import { RequestMethod } from "@/lib/types/backend";
+import { ApiService } from "@/lib/backend/api-config";
 
 export default async function getAllResumes() {
   try {
     const { status, data } = await callBackend({
       endpoint: "/api/v1/core/resume/getAll",
       method: RequestMethod.GET,
-      baseUrl: process.env.BACKEND_CORE_URL,
+      service: ApiService.CORE,
     });
 
     if (status !== 200) return [];

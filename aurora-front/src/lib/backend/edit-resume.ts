@@ -2,6 +2,7 @@
 
 import { callBackend } from "@/lib/backend/backend";
 import { RequestMethod } from "@/lib/types/backend";
+import { ApiService } from "@/lib/backend/api-config";
 
 export async function editResume(resumeId: string, changes: any) {
   return await callBackend({
@@ -11,6 +12,6 @@ export async function editResume(resumeId: string, changes: any) {
       resumeId,
       ...changes,
     },
-    baseUrl: process.env.BACKEND_CORE_URL,
+    service: ApiService.CORE,
   });
 }

@@ -1,17 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { callBackend } from "@/lib/backend/backend";
+import { ApiService } from "@/lib/backend/api-config";
 
 export async function POST(req: NextRequest) {
   try {
-    const { endpoint, body, baseUrl, method } = await req.json();
+    const { endpoint, body, service, method } = await req.json();
+
+    // Determine the service - default to AUTH for backward compatibility
+    const apiService: ApiService = service === "CORE" ? ApiService.CORE : ApiService.AUTH;
 
     // callBackend already handles sending current cookies to the backend
     // and refreshing the token if needed.
     const { status, data } = await callBackend({
       endpoint,
       body,
-      baseUrl,
+      service: apiService,
       method,
     });
 
