@@ -7,13 +7,24 @@ import { ButtonType } from "@/lib/types/button";
 import React from "react";
 import { hasArrayFieldEntryErrors } from "@/lib/utils/form-errors";
 
+/**
+ * Props for the ArrayFieldSection component.
+ * @template T - The type of the field values, must extend FieldValues.
+ */
 interface ArrayFieldSectionProps<T extends FieldValues> {
+  /** The name of the field array in the form. */
   name: string;
+  /** Message shown when no items exist in the array. */
   emptyMessage: string;
+  /** Text for the "Add" button when the array is empty. */
   addButtonText: string;
+  /** Text for the "Add new" button when items already exist. */
   addNewButtonText: string;
+  /** Default values for a new item added to the array. */
   defaultValue: T;
+  /** Maximum number of items allowed in the array. */
   maxItems?: number;
+  /** Render function for each item. Receives the index and remove function. */
   renderItem: (index: number, remove: (index: number) => void) => React.ReactNode;
   /** Custom class for each item container. Defaults to card style. */
   itemClassName?: string;

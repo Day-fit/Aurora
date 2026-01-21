@@ -16,11 +16,15 @@ export function getAuthErrorMessage(error: string | null): string | null {
 
 /**
  * Build the OAuth login redirect URL.
+ * @throws Error if NEXT_PUBLIC_BACKEND_AUTH_URL is not defined
  */
 export function buildOAuthUrl(provider: string): string {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_AUTH_URL;
+  if (!backendUrl) {
+    throw new Error("NEXT_PUBLIC_BACKEND_AUTH_URL is not defined");
+  }
   const callbackUrl = `${window.location.origin}/auth/callback`;
   const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_AUTH_URL;
   return `${protocol}://${backendUrl}/oauth2/authorization/${provider}?redirect_uri=${callbackUrl}`;
 }
 
