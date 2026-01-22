@@ -17,5 +17,9 @@ class RedisConfiguration {
     ): CacheManager = RedisCacheManager.create(redisConnectionFactory)
 
     @Bean
-    fun redisTemplate(): RedisTemplate<String, Any> = RedisTemplate()
+    fun redisTemplate(connectionFactory: RedisConnectionFactory): RedisTemplate<String, Any>{
+        val redisTemplate = RedisTemplate<String, Any>()
+        redisTemplate.connectionFactory = (connectionFactory)
+        return redisTemplate
+    }
 }
