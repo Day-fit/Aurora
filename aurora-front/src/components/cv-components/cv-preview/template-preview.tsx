@@ -1,4 +1,3 @@
-// aurora-front/src/components/cv-components/cv-preview/template-preview.tsx
 import { useFormContext, useWatch } from "react-hook-form";
 import { useEffect, useState, useMemo } from "react";
 import { generateTemplateHtml } from "@/components/cv-components/cv-preview/freemarker-templates";
@@ -22,27 +21,26 @@ export default function TemplatePreview() {
     skills: useWatch({ control, name: "skills" }),
     workExperience: useWatch({ control, name: "workExperience" }),
     achievements: useWatch({ control, name: "achievements" }),
-    profileImage: useWatch({ control, name: "profileImage" }),
+    profileImageList: useWatch({ control, name: "profileImage" }),
     templateVersion: useWatch({ control, name: "templateVersion" }),
     personalPortfolio: useWatch({ control, name: "personalPortfolio" }),
   };
 
-  // Convert File to base64 for embedding in the HTML template
-  // This is the same pattern as the original component
+  const profileImageFile = formData.profileImageList?.[0];
+
   useEffect(() => {
-    if (formData.profileImage instanceof File) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setProfileImageBase64(reader.result as string);
-      };
-      reader.readAsDataURL(formData.profileImage);
+    if (!profileImageFile) {
+      setProfileImageBase64(undefined);
       return;
     }
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setProfileImageBase64(undefined);
-  }, [formData.profileImage]);
 
-  // Generate the HTML template using Freemarker-compatible generator
+    const reader = new FileReader();
+    reader.onload = () => {
+      setProfileImageBase64(reader.result as string);
+    };
+    reader.readAsDataURL(profileImageFile);
+  }, [profileImageFile]);
+
   const templateHtml = useMemo(() => {
     return generateTemplateHtml(formData.templateVersion || 1, {
       name: formData.name,
@@ -85,7 +83,7 @@ export default function TemplatePreview() {
           srcDoc={templateHtml}
           className="w-full h-full border border-gray-300 rounded-lg bg-white"
           title="Resume Preview"
-          sandbox="allow-same-origin"
+          sandbox="allow-scripts allow-same-origin"
         />
       </div>
     </section>
