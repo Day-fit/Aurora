@@ -155,7 +155,7 @@ export function AutoGenerateModal({
                 {...register("language", { required: "Language is required" })}
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-text-dark focus:outline-none focus:border-aurora-green-dark"
               >
-                {ALL_LANGUAGES.map((lang: LanguageType) => (
+                {ALL_LANGUAGES.map((lang) => (
                   <option key={lang} value={lang}>
                     {LANGUAGE_LABELS[lang]}
                   </option>
