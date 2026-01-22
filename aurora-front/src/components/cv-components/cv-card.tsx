@@ -9,11 +9,13 @@ import {
   FaMagic,
   FaDownload,
   FaLanguage,
+  FaTrash,
 } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { base64ToDataUrl } from "@/lib/utils/image";
 import { AutoGenerateModal } from "./auto-generate-modal";
 import { TranslateModal } from "./translate-modal";
+import { DeleteModal } from "./delete-modal";
 import { getResumePdf } from "@/lib/backend/get-resume-pdf";
 import {
   LanguageType,
@@ -37,6 +39,7 @@ export function CvCard({ id, data }: CvCardProps) {
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [isEnhanceModalOpen, setIsEnhanceModalOpen] = useState(false);
   const [isTranslateModalOpen, setIsTranslateModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -109,6 +112,13 @@ export function CvCard({ id, data }: CvCardProps) {
           <div className="absolute top-4 right-4 p-2 bg-main-dark/60 backdrop-blur-md rounded-full border border-white/10 text-aurora-blue-dark">
             <FaUserCircle className="w-4 h-4" />
           </div>
+          <button
+            onClick={() => setIsDeleteModalOpen(true)}
+            className="absolute top-4 left-4 p-2 bg-main-dark/60 backdrop-blur-md rounded-full border border-white/10 text-red-400 hover:bg-red-500/20 hover:border-red-500/30 transition-all duration-200 opacity-0 group-hover:opacity-100"
+            title="Delete resume"
+          >
+            <FaTrash className="w-4 h-4" />
+          </button>
         </div>
 
         <div className="p-6 grow flex flex-col">
@@ -176,6 +186,12 @@ export function CvCard({ id, data }: CvCardProps) {
         isOpen={isTranslateModalOpen}
         onClose={() => setIsTranslateModalOpen(false)}
         cvId={id}
+      />
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        cvId={id}
+        cvTitle={title}
       />
     </>
   );

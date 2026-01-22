@@ -61,6 +61,7 @@ export function Modal({
 
 export function ModalButtons({
   onCancel,
+  onSubmit,
   isLoading = false,
   cancelText = "Cancel",
   submitText = "Submit",
@@ -78,6 +79,7 @@ export function ModalButtons({
       </button>
       <button
         type={type}
+        onClick={type === "button" ? onSubmit : undefined}
         disabled={isLoading}
         className="flex-1 px-4 py-3 bg-aurora-green-dark hover:bg-aurora-green-dark/80 disabled:opacity-50 text-white font-semibold rounded-lg transition-colors"
       >
