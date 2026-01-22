@@ -1,96 +1,80 @@
-// Language types matching backend LanguageType enum
+// Language types matching backend LanguageType enum in core/types/LanguageType.kt
 export type LanguageType =
-  | "ENGLISH"
-  | "POLISH"
-  | "GERMAN"
-  | "FRENCH"
-  | "SPANISH"
-  | "ITALIAN"
-  | "PORTUGUESE"
   | "DUTCH"
-  | "RUSSIAN"
-  | "CHINESE"
-  | "JAPANESE"
-  | "KOREAN"
-  | "ARABIC"
-  | "HINDI"
-  | "TURKISH"
   | "SWEDISH"
-  | "NORWEGIAN"
   | "DANISH"
-  | "FINNISH"
+  | "NORWEGIAN"
+  | "POLISH"
   | "CZECH"
+  | "SLOVAK"
+  | "ROMANIAN"
+  | "HUNGARIAN"
   | "UKRAINIAN"
   | "GREEK"
-  | "HUNGARIAN"
-  | "ROMANIAN"
-  | "BULGARIAN"
-  | "CROATIAN"
-  | "SERBIAN"
-  | "SLOVAK"
-  | "SLOVENIAN"
-  | "ESTONIAN"
-  | "LATVIAN"
-  | "LITHUANIAN"
-  | "THAI"
-  | "VIETNAMESE"
-  | "INDONESIAN"
-  | "MALAY"
-  | "TAGALOG"
-  | "BENGALI"
-  | "URDU"
-  | "PERSIAN"
   | "HEBREW"
+  | "GERMAN"
+  | "TURKISH"
+  | "ITALIAN"
+  | "FARSI"
   | "SWAHILI"
-  | "AFRIKAANS"
-  | "MANDARIN";
+  | "TAMIL"
+  | "TELUGU"
+  | "MARATHI"
+  | "KANNADA"
+  | "MALAYALAM"
+  | "KOREAN"
+  | "VIETNAMESE"
+  | "THAI"
+  | "MANDARIN"
+  | "JAPANESE"
+  | "ENGLISH"
+  | "SPANISH"
+  | "HINDI"
+  | "HINDUSTANI"
+  | "ARABIC"
+  | "BENGALI"
+  | "PORTUGUESE"
+  | "RUSSIAN"
+  | "FRENCH";
 
-// Human-readable labels for each language
+// Human-readable labels for each language (matching backend LanguageType.kt labels)
 export const LANGUAGE_LABELS: Record<LanguageType, string> = {
-  ENGLISH: "English",
-  POLISH: "Polish",
-  GERMAN: "German",
-  FRENCH: "French",
-  SPANISH: "Spanish",
-  ITALIAN: "Italian",
-  PORTUGUESE: "Portuguese",
   DUTCH: "Dutch",
-  RUSSIAN: "Russian",
-  CHINESE: "Chinese",
-  JAPANESE: "Japanese",
-  KOREAN: "Korean",
-  ARABIC: "Arabic",
-  HINDI: "Hindi",
-  TURKISH: "Turkish",
   SWEDISH: "Swedish",
-  NORWEGIAN: "Norwegian",
   DANISH: "Danish",
-  FINNISH: "Finnish",
+  NORWEGIAN: "Norwegian",
+  POLISH: "Polish",
   CZECH: "Czech",
+  SLOVAK: "Slovak",
+  ROMANIAN: "Romanian",
+  HUNGARIAN: "Hungarian",
   UKRAINIAN: "Ukrainian",
   GREEK: "Greek",
-  HUNGARIAN: "Hungarian",
-  ROMANIAN: "Romanian",
-  BULGARIAN: "Bulgarian",
-  CROATIAN: "Croatian",
-  SERBIAN: "Serbian",
-  SLOVAK: "Slovak",
-  SLOVENIAN: "Slovenian",
-  ESTONIAN: "Estonian",
-  LATVIAN: "Latvian",
-  LITHUANIAN: "Lithuanian",
-  THAI: "Thai",
-  VIETNAMESE: "Vietnamese",
-  INDONESIAN: "Indonesian",
-  MALAY: "Malay",
-  TAGALOG: "Tagalog",
-  BENGALI: "Bengali",
-  URDU: "Urdu",
-  PERSIAN: "Persian",
   HEBREW: "Hebrew",
+  GERMAN: "German",
+  TURKISH: "Turkish",
+  ITALIAN: "Italian",
+  FARSI: "Farsi (Persian/Dari)",
   SWAHILI: "Swahili",
-  AFRIKAANS: "Afrikaans",
+  TAMIL: "Tamil",
+  TELUGU: "Telugu",
+  MARATHI: "Marathi",
+  KANNADA: "Kannada",
+  MALAYALAM: "Malayalam",
+  KOREAN: "Korean",
+  VIETNAMESE: "Vietnamese",
+  THAI: "Thai",
   MANDARIN: "Mandarin",
+  JAPANESE: "Japanese",
+  ENGLISH: "English",
+  SPANISH: "Spanish",
+  HINDI: "Hindi",
+  HINDUSTANI: "Hindustani (Hindi/Urdu)",
+  ARABIC: "Arabic",
+  BENGALI: "Bengali",
+  PORTUGUESE: "Portuguese",
+  RUSSIAN: "Russian",
+  FRENCH: "French",
 };
 
 // Flag emoji for common languages (optional visual enhancement)
@@ -104,7 +88,6 @@ export const LANGUAGE_FLAGS: Partial<Record<LanguageType, string>> = {
   PORTUGUESE: "🇵🇹",
   DUTCH: "🇳🇱",
   RUSSIAN: "🇷🇺",
-  CHINESE: "🇨🇳",
   JAPANESE: "🇯🇵",
   KOREAN: "🇰🇷",
   ARABIC: "🇸🇦",
@@ -113,36 +96,56 @@ export const LANGUAGE_FLAGS: Partial<Record<LanguageType, string>> = {
   SWEDISH: "🇸🇪",
   NORWEGIAN: "🇳🇴",
   DANISH: "🇩🇰",
-  FINNISH: "🇫🇮",
   CZECH: "🇨🇿",
   UKRAINIAN: "🇺🇦",
   GREEK: "🇬🇷",
   HUNGARIAN: "🇭🇺",
   ROMANIAN: "🇷🇴",
   MANDARIN: "🇨🇳",
+  HEBREW: "🇮🇱",
+  THAI: "🇹🇭",
+  VIETNAMESE: "🇻🇳",
+  BENGALI: "🇧🇩",
+  TAMIL: "🇮🇳",
+  SLOVAK: "🇸🇰",
 };
 
-// Common languages used for resume/template generation (subset of all supported)
-export const COMMON_LANGUAGES: LanguageType[] = [
-  "ENGLISH",
-  "POLISH",
-  "GERMAN",
-  "FRENCH",
-  "SPANISH",
-  "ITALIAN",
-  "PORTUGUESE",
+// All languages matching backend LanguageType.kt
+export const ALL_LANGUAGES: LanguageType[] = [
   "DUTCH",
-  "RUSSIAN",
-  "CHINESE",
-  "JAPANESE",
-  "KOREAN",
-  "ARABIC",
-  "HINDI",
-  "TURKISH",
   "SWEDISH",
-  "NORWEGIAN",
   "DANISH",
-  "FINNISH",
+  "NORWEGIAN",
+  "POLISH",
   "CZECH",
+  "SLOVAK",
+  "ROMANIAN",
+  "HUNGARIAN",
   "UKRAINIAN",
+  "GREEK",
+  "HEBREW",
+  "GERMAN",
+  "TURKISH",
+  "ITALIAN",
+  "FARSI",
+  "SWAHILI",
+  "TAMIL",
+  "TELUGU",
+  "MARATHI",
+  "KANNADA",
+  "MALAYALAM",
+  "KOREAN",
+  "VIETNAMESE",
+  "THAI",
+  "MANDARIN",
+  "JAPANESE",
+  "ENGLISH",
+  "SPANISH",
+  "HINDI",
+  "HINDUSTANI",
+  "ARABIC",
+  "BENGALI",
+  "PORTUGUESE",
+  "RUSSIAN",
+  "FRENCH",
 ];
