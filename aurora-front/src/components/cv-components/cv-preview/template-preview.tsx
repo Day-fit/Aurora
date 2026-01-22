@@ -24,6 +24,7 @@ export default function TemplatePreview() {
     profileImageList: useWatch({ control, name: "profileImage" }),
     templateVersion: useWatch({ control, name: "templateVersion" }),
     personalPortfolio: useWatch({ control, name: "personalPortfolio" }),
+    language: useWatch({ control, name: "language" }),
   };
 
   const profileImageFile = formData.profileImageList?.[0];
@@ -57,6 +58,7 @@ export default function TemplatePreview() {
       achievements: formData.achievements,
       personalPortfolio: formData.personalPortfolio,
       profileImage: profileImageBase64,
+      language: formData.language,
     });
   }, [
     formData.name,
@@ -73,6 +75,7 @@ export default function TemplatePreview() {
     formData.achievements,
     formData.personalPortfolio,
     formData.templateVersion,
+    formData.language,
     profileImageBase64,
   ]);
 

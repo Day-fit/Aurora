@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import resumeAutogeneration from "@/lib/backend/resume-autogenertion";
 import enhanceResume from "@/lib/backend/enhance-resume";
 import { useTracker } from "@/context/tracker-context";
-import { LanguageType, LANGUAGE_LABELS, COMMON_LANGUAGES } from "@/lib/types/language";
+import { LanguageType, LANGUAGE_LABELS, ALL_LANGUAGES } from "@/lib/types/language";
 import { Modal, ModalButtons } from "@/components/modal";
 
 interface AutoGenerateModalProps {
@@ -155,7 +155,7 @@ export function AutoGenerateModal({
                 {...register("language", { required: "Language is required" })}
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-text-dark focus:outline-none focus:border-aurora-green-dark"
               >
-                {COMMON_LANGUAGES.map((lang) => (
+                {ALL_LANGUAGES.map((lang: LanguageType) => (
                   <option key={lang} value={lang}>
                     {LANGUAGE_LABELS[lang]}
                   </option>

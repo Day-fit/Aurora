@@ -3,6 +3,13 @@
  * These functions generate the same HTML output as the backend Freemarker templates.
  */
 
+import { LanguageType } from "@/lib/types/language";
+import {
+  getTemplateMessages,
+  getDateLocale,
+  TemplateMessages,
+} from "@/lib/i18n/messages";
+
 interface TemplateData {
   name?: string;
   surname?: string;
@@ -40,42 +47,18 @@ interface TemplateData {
     description?: string;
   }>;
   profileImage?: string;
+  language?: LanguageType;
 }
-
-// i18n labels (English defaults, matching backend)
-const i18n = {
-  contact: "Contact",
-  education: "Education",
-  skills: "Skills",
-  workExperience: "Work Experience",
-  profile: "Profile",
-  about: "About",
-  projects: "Projects",
-  achievements: "Achievements",
-  present: "Present",
-  professionalSummary: "Professional Summary",
-  experience: "Experience",
-  featuredProjects: "Featured Projects",
-  achievementsAndAwards: "Achievements & Awards",
-  aboutMe: "About Me",
-  skillsAndCompetencies: "Skills & Competencies",
-  projectsAndPortfolio: "Projects & Portfolio",
-  professionalExperience: "Professional Experience",
-  honorsAndAchievements: "Honors & Achievements",
-  linkedin: "LinkedIn",
-  github: "GitHub",
-  website: "Website",
-  portfolio: "Portfolio",
-};
 
 /**
  * Format date for display. In frontend, dates come as ISO strings or are already formatted.
  */
-function formatDate(dateStr?: string): string {
+function formatDate(dateStr?: string, language?: LanguageType): string {
   if (!dateStr) return "";
   try {
     const date = new Date(dateStr);
-    return date.toLocaleDateString("en-US", {
+    const locale = getDateLocale(language);
+    return date.toLocaleDateString(locale, {
       year: "numeric",
       month: "short",
     });
@@ -103,7 +86,10 @@ export function generateTemplate1Html(data: TemplateData): string {
     achievements = [],
     personalPortfolio = [],
     profileImage,
+    language,
   } = data;
+
+  const i18n: TemplateMessages = getTemplateMessages(language);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -349,7 +335,7 @@ export function generateTemplate1Html(data: TemplateData): string {
                     <div class="bold">${exp.position || ""}</div>
                     <div class="mt-tiny">${exp.company || ""}</div>
                     <div class="date-range">
-                        ${formatDate(exp.startDate)} - ${exp.endDate ? formatDate(exp.endDate) : i18n.present}
+                        ${formatDate(exp.startDate, language)} - ${exp.endDate ? formatDate(exp.endDate, language) : i18n.present}
                     </div>
                     ${exp.description ? `<p class="description">${exp.description}</p>` : ""}
                 </div>
@@ -422,7 +408,10 @@ export function generateTemplate2Html(data: TemplateData): string {
     achievements = [],
     personalPortfolio = [],
     profileImage,
+    language,
   } = data;
+
+  const i18n: TemplateMessages = getTemplateMessages(language);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -661,7 +650,7 @@ export function generateTemplate2Html(data: TemplateData): string {
                                 <div class="item-title">${exp.position || ""}</div>
                                 <div class="item-subtitle">${exp.company || ""}</div>
                                 <div class="date-range">
-                                    ${formatDate(exp.startDate)} - ${exp.endDate ? formatDate(exp.endDate) : i18n.present}
+                                    ${formatDate(exp.startDate, language)} - ${exp.endDate ? formatDate(exp.endDate, language) : i18n.present}
                                 </div>
                                 ${exp.description ? `<p class="description">${exp.description}</p>` : ""}
                             </div>
@@ -784,7 +773,10 @@ export function generateTemplate3Html(data: TemplateData): string {
     achievements = [],
     personalPortfolio = [],
     profileImage,
+    language,
   } = data;
+
+  const i18n: TemplateMessages = getTemplateMessages(language);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -1021,7 +1013,7 @@ export function generateTemplate3Html(data: TemplateData): string {
                     <div class="item-header">
                         <div class="item-title">${exp.position || ""}</div>
                         <div class="date-range">
-                            ${formatDate(exp.startDate)} - ${exp.endDate ? formatDate(exp.endDate) : i18n.present}
+                            ${formatDate(exp.startDate, language)} - ${exp.endDate ? formatDate(exp.endDate, language) : i18n.present}
                         </div>
                     </div>
                     <div class="item-subtitle">${exp.company || ""}</div>
@@ -1150,7 +1142,10 @@ export function generateTemplate4Html(data: TemplateData): string {
     achievements = [],
     personalPortfolio = [],
     profileImage,
+    language,
   } = data;
+
+  const i18n: TemplateMessages = getTemplateMessages(language);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -1423,7 +1418,7 @@ export function generateTemplate4Html(data: TemplateData): string {
                                 <div class="item-title">${exp.position || ""}</div>
                                 <div class="item-subtitle">${exp.company || ""}</div>
                                 <div class="date-range">
-                                    ${formatDate(exp.startDate)} - ${exp.endDate ? formatDate(exp.endDate) : i18n.present}
+                                    ${formatDate(exp.startDate, language)} - ${exp.endDate ? formatDate(exp.endDate, language) : i18n.present}
                                 </div>
                                 ${exp.description ? `<p class="description">${exp.description}</p>` : ""}
                             </div>
@@ -1553,7 +1548,10 @@ export function generateTemplate5Html(data: TemplateData): string {
     achievements = [],
     personalPortfolio = [],
     profileImage,
+    language,
   } = data;
+
+  const i18n: TemplateMessages = getTemplateMessages(language);
 
   // Build contact line with separators
   const contactParts = [
@@ -1787,7 +1785,7 @@ export function generateTemplate5Html(data: TemplateData): string {
                             <div class="item-subtitle">${exp.company || ""}</div>
                         </div>
                         <div class="date-range">
-                            ${formatDate(exp.startDate)} - ${exp.endDate ? formatDate(exp.endDate) : i18n.present}
+                            ${formatDate(exp.startDate, language)} - ${exp.endDate ? formatDate(exp.endDate, language) : i18n.present}
                         </div>
                     </div>
                     ${exp.description ? `<p class="description">${exp.description}</p>` : ""}
