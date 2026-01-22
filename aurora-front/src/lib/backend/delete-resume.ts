@@ -13,7 +13,7 @@ export default async function deleteResume(resumeId: string) {
       service: ApiService.CORE,
     });
 
-    if (status === 200) {
+    if (status === 200 || status === 204) {
       await revalidateCvList();
     }
 

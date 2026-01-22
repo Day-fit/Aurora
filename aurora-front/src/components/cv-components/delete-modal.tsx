@@ -30,7 +30,7 @@ export function DeleteModal({
 
     try {
       const { status } = await deleteResume(cvId);
-      if (status !== 200) {
+      if (status !== 200 && status !== 204) {
         throw new Error("Failed to delete resume");
       }
 

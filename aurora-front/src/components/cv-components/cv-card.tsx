@@ -116,6 +116,7 @@ export function CvCard({ id, data }: CvCardProps) {
             onClick={() => setIsDeleteModalOpen(true)}
             className="absolute top-4 left-4 p-2 bg-main-dark/60 backdrop-blur-md rounded-full border border-white/10 text-red-400 hover:bg-red-500/20 hover:border-red-500/30 transition-all duration-200 opacity-0 group-hover:opacity-100"
             title="Delete resume"
+            aria-label="Delete resume"
           >
             <FaTrash className="w-4 h-4" />
           </button>
