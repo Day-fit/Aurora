@@ -120,7 +120,7 @@ class ResumeController (
      */
     @PostMapping("/generate")
     fun generate(@RequestBody requestDto: GenerationRequestDto,
-                 @RequestParam("file") file: MultipartFile,
+                 @RequestParam("image") file: MultipartFile,
                  @AuthenticationPrincipal principal: Principal
     ): ResponseEntity<Map<String, String>> {
         val resumeId = generationService.requestGeneration(
@@ -165,7 +165,7 @@ class ResumeController (
      */
     @PatchMapping("/edit")
     fun edit(@RequestBody editDto: EditResumeDto,
-             @RequestParam("file") file: MultipartFile?,
+             @RequestParam("image") file: MultipartFile?,
              @AuthenticationPrincipal principal: Principal?
     ): ResponseEntity<Map<String, String>>
     {
