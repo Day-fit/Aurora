@@ -160,12 +160,7 @@ export function CvCard({ id, data }: CvCardProps) {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <motion.span
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 3 }}
-              >
-                <FaMagic className="w-4 h-4" />
-              </motion.span>
+              <FaMagic className="w-4 h-4" />
               ENHANCE CV
             </motion.button>
             <div className="flex gap-2">
