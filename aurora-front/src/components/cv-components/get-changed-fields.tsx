@@ -1,10 +1,14 @@
-import { fileToBase64 } from "@/lib/utils/image";
+export interface ChangedFieldsResult {
+  changes: any;
+  profileImageChanged: boolean;
+}
 
 export async function getChangedFields(
   originalData: any,
   newData: any,
-): Promise<any> {
+): Promise<ChangedFieldsResult> {
   const changes: any = {};
+  let profileImageChanged = false;
 
   // Handle simple fields
   const simpleFields = [
@@ -26,13 +30,11 @@ export async function getChangedFields(
     }
   }
 
-  // Handle profileImage specially
+  // Handle profileImage specially - check if it changed but don't include in changes
+  // The File object will be passed separately as multipart
   if (newData.profileImage instanceof File) {
-    // Convert File to base64 for comparison and submission
-    const newImageBase64 = await fileToBase64(newData.profileImage);
-    if (originalData?.profileImage !== newImageBase64) {
-      changes.profileImage = newImageBase64;
-    }
+    // A new file was selected, so it's always considered changed
+    profileImageChanged = true;
   } else if (newData.profileImage === null && originalData?.profileImage) {
     changes.profileImage = null;
   }
@@ -55,5 +57,5 @@ export async function getChangedFields(
     }
   }
 
-  return changes;
+  return { changes, profileImageChanged };
 }

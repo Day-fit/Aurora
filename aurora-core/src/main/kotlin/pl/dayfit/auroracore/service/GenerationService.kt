@@ -9,7 +9,6 @@ import com.itextpdf.styledxmlparser.css.media.MediaDeviceDescription
 import com.itextpdf.styledxmlparser.css.media.MediaType
 import freemarker.template.Configuration
 import freemarker.template.Template
-import net.coobird.thumbnailator.Thumbnails
 import org.apache.pdfbox.Loader
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.rendering.ImageType
@@ -21,9 +20,10 @@ import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
+import org.springframework.web.multipart.MultipartFile
 import pl.dayfit.auroracore.dto.GenerationRequestDto
 import pl.dayfit.auroracore.event.ResumeReadyToExport
-import pl.dayfit.auroracore.exception.InvalidBase64Exception
+import pl.dayfit.auroracore.helper.ImageCompressorHelper
 import pl.dayfit.auroracore.model.Achievement
 import pl.dayfit.auroracore.model.Education
 import pl.dayfit.auroracore.model.PersonalPortfolio
@@ -50,10 +50,10 @@ class GenerationService(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val resumeService: ResumeService,
     private val enumLocalizationService: EnumLocalizationService,
+    private val imageHelper: ImageCompressorHelper,
     private val messageSource: org.springframework.context.MessageSource
 ) {
     private val dpi = 300f
-    private val imageQuality = 0.75
     private val logger = LoggerFactory.getLogger(GenerationService::class.java)
 
     /**
@@ -68,7 +68,7 @@ class GenerationService(
      * @return The unique identifier of the generated résumé.
      */
     @Transactional
-    fun requestGeneration(requestDto: GenerationRequestDto, userId: UUID): UUID
+    fun requestGeneration(requestDto: GenerationRequestDto, file: MultipartFile?, userId: UUID): UUID
     {
         val resume = Resume(
             null,
@@ -118,10 +118,8 @@ class GenerationService(
                     it.year
                 )
             }.toMutableList(),
-            requestDto.profileImage?.let {
-                compressImage(it)
-            },
-
+            file?.inputStream
+                ?.use { imageHelper.compressProfileImage(it) },
             null,
             requestDto.profileDescription,
             requestDto.email,
@@ -134,7 +132,6 @@ class GenerationService(
 
         val id = resumeCacheService.saveResume(resume)
             .id!!
-
 
         applicationEventPublisher.publishEvent(
             ResumeReadyToExport(id)
@@ -285,41 +282,13 @@ class GenerationService(
         return formatter.format(instant)
     }
 
-    private fun compressImage(image: String): ByteArray {
-        try {
-            val inputStream = ByteArrayInputStream(Base64.decode(image))
-            val outputStream = ByteArrayOutputStream()
-            Thumbnails.of(inputStream)
-                .outputQuality(imageQuality)
-                .size(600, 600)
-                .keepAspectRatio(true)
-                .toOutputStream(outputStream)
-
-            return outputStream.toByteArray()
-        } catch (_: IllegalArgumentException) {
-            throw InvalidBase64Exception("Profile image is invalid base64 string")
-        }
-    }
-
     private fun generatePreview(pdfOutputStream: ByteArrayOutputStream): ByteArray {
-        val previewOutput = ByteArrayOutputStream()
-
         Loader.loadPDF(pdfOutputStream.toByteArray()).use { document: PDDocument ->
             val renderer = PDFRenderer(document)
 
             val image = renderer.renderImageWithDPI(0, dpi, ImageType.RGB)
 
-            ByteArrayOutputStream().use { tmpOutput ->
-                Thumbnails.of(image)
-                    .size(595, 842) // Optional: scale, roughly A4 at 72 DPI
-                    .outputQuality(imageQuality)
-                    .outputFormat("png")
-                    .toOutputStream(tmpOutput)
-
-                previewOutput.write(tmpOutput.toByteArray())
-            }
+            return imageHelper.compressPreview(image)
         }
-
-        return previewOutput.toByteArray()
     }
 }

@@ -9,11 +9,14 @@ import { cookies } from "next/headers";
 import { parseBearerToken } from "@/lib/utils/parse-bearer-token";
 import { ApiService, getServiceBaseUrl } from "@/lib/backend/api-config";
 
+const APPLICATION_JSON = "application/json";
+
 export async function callBackend<T = any>({
   method = RequestMethod.POST,
   endpoint,
   body = null,
   service = ApiService.AUTH,
+  file = null,
 }: RequestType): Promise<BackendResponse<T>> {
   const host = getServiceBaseUrl(service);
   const protocol = process.env.NODE_ENV === "production" ? "https://" : "http://";
@@ -84,11 +87,27 @@ export async function callBackend<T = any>({
         headers.Authorization = `Bearer ${accessToken}`;
       }
     }
-    // ONLY add Content-Type if we are actually sending a body
-    if (body && method !== RequestMethod.GET) {
-      headers["Content-Type"] = "application/json";
+    // ONLY add Content-Type if we are actually sending a body and not using FormData
+    // When using FormData, browser will set Content-Type with correct boundary automatically
+    if (body && method !== RequestMethod.GET && !file) {
+      headers["Content-Type"] = APPLICATION_JSON;
     }
     return headers;
+  };
+
+  const buildRequestBody = (): FormData | string | undefined => {
+    if (file) {
+      const formData = new FormData();
+      formData.append("image", file);
+      if (body) {
+        formData.append(
+          "requestDto",
+          new Blob([JSON.stringify(body)], { type: APPLICATION_JSON }),
+        );
+      }
+      return formData;
+    }
+    return body ? JSON.stringify(body) : undefined;
   };
 
   const url = `${BASE_URL.replace(/\/$/, "")}/${endpoint.replace(/^\//, "")}`;
@@ -96,7 +115,7 @@ export async function callBackend<T = any>({
   let res = await fetch(url, {
     method,
     headers: getHeaders(),
-    body: body ? JSON.stringify(body) : undefined,
+    body: buildRequestBody(),
     cache: "no-store",
   });
 
@@ -131,7 +150,7 @@ export async function callBackend<T = any>({
           res = await fetch(url, {
             method,
             headers: getHeaders(),
-            body: body ? JSON.stringify(body) : undefined,
+            body: buildRequestBody(),
             cache: "no-store",
           });
           applySetCookieHeader(res.headers.get("set-cookie"));

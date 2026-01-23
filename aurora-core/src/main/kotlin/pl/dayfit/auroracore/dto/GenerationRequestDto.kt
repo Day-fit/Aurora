@@ -24,7 +24,6 @@ data class GenerationRequestDto (
     val website: String?,
     val linkedIn: String?,
     val gitHub: String?,
-    val profileImage: String?,
     val profileDescription: String?,
     val education: List<Education>,
     val skills: List<Skill>,

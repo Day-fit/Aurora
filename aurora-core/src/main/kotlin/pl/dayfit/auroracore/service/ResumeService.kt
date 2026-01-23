@@ -15,12 +15,14 @@ import org.springframework.rabbit.stream.producer.RabbitStreamTemplate
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 import pl.dayfit.auroracore.dto.EditResumeDto
 import pl.dayfit.auroracore.dto.ResumeDetailsDto
 import pl.dayfit.auroracore.dto.ResumeInformationDto
 import pl.dayfit.auroracore.event.EnhanceRequestedEvent
 import pl.dayfit.auroracore.event.ResumeReadyToExport
 import pl.dayfit.auroracore.helper.AccessHelper
+import pl.dayfit.auroracore.helper.ImageCompressorHelper
 import pl.dayfit.auroracore.model.Achievement
 import pl.dayfit.auroracore.model.Education
 import pl.dayfit.auroracore.model.PersonalPortfolio
@@ -45,6 +47,7 @@ class ResumeService(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val enhancementStreamTemplate: RabbitStreamTemplate,
     private val trackerService: TrackerService,
+    private val imageCompressorHelper: ImageCompressorHelper,
 ) {
     private val logger = LoggerFactory.getLogger(this.javaClass)
     private val prohibitedProperties = listOf("resumeId") //Might get bigger over time (that's why we're using a list)
@@ -209,7 +212,7 @@ class ResumeService(
      * @throws AccessDeniedException If the user does not have ownership of the résumé being edited.
      */
     @Transactional
-    fun processEdit(editDto: EditResumeDto, userId: UUID)
+    fun processEdit(editDto: EditResumeDto, file: MultipartFile?, userId: UUID)
     {
         val resumeId = editDto.resumeId
         val resume = resumeCacheService.getResumeById(resumeId)
@@ -217,6 +220,13 @@ class ResumeService(
         if(!accessHelper.isOwner(resume, userId))
         {
             throw AccessDeniedException("You are not allowed to edit this resume")
+        }
+
+        if (file != null)
+        {
+            resume.profileImage = imageCompressorHelper.compressProfileImage(
+                file.inputStream
+            )
         }
 
         val editNode = jacksonObjectMapper.valueToTree<ObjectNode>(editDto)
