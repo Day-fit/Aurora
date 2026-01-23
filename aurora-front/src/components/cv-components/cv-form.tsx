@@ -17,7 +17,6 @@ import PersonalPortfolio from "@/components/cv-components/personal-portfolio";
 import { generateResume } from "@/lib/backend/resume-generation";
 import { useRouter } from "next/navigation";
 import { revalidateCvList } from "@/lib/backend/revalidate";
-import { fileToBase64 } from "@/lib/utils/image";
 import { getChangedFields } from "@/components/cv-components/get-changed-fields";
 import { editResume } from "@/lib/backend/edit-resume";
 
@@ -47,22 +46,30 @@ export default function CvForm({ originalData, cvId }: CvFormProps) {
 
   const onSubmit = async (data: any) => {
     try {
-      const payload = { ...data };
+      // Extract profileImage as File for multipart upload
+      const profileImage =
+        data.profileImage instanceof File ? data.profileImage : null;
 
-      if (data.profileImage instanceof File) {
-        payload.profileImage = await fileToBase64(data.profileImage);
-      }
+      // Create payload without profileImage (it will be sent as multipart)
+      const { profileImage: _, ...payload } = data;
 
       if (cvId && originalData) {
-        const changes = await getChangedFields(originalData, payload);
-        if (Object.keys(changes).length === 0) {
+        const { changes, profileImageChanged } = await getChangedFields(
+          originalData,
+          data,
+        );
+        if (Object.keys(changes).length === 0 && !profileImageChanged) {
           console.log("No changes detected");
           return;
         }
-        await editResume(cvId, changes);
+        await editResume(
+          cvId,
+          changes,
+          profileImageChanged ? profileImage : null,
+        );
         console.log("Changes detected:", changes);
       } else {
-        await generateResume(payload);
+        await generateResume(payload, profileImage);
       }
 
       await revalidateCvList();

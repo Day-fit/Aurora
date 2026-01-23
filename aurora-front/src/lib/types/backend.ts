@@ -17,4 +17,5 @@ export interface RequestType {
   method?: RequestMethod;
   endpoint: string;
   service?: ApiService;
+  file?: File | null;
 }

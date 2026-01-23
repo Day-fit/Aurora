@@ -4,7 +4,11 @@ import { callBackend } from "@/lib/backend/backend";
 import { RequestMethod } from "@/lib/types/backend";
 import { ApiService } from "@/lib/backend/api-config";
 
-export async function editResume(resumeId: string, changes: any) {
+export async function editResume(
+  resumeId: string,
+  changes: any,
+  profileImage: File | null = null,
+) {
   return await callBackend({
     endpoint: "/api/v1/core/resume/edit",
     method: RequestMethod.PATCH,
@@ -13,5 +17,6 @@ export async function editResume(resumeId: string, changes: any) {
       ...changes,
     },
     service: ApiService.CORE,
+    file: profileImage,
   });
 }
