@@ -27,7 +27,14 @@ export default function TemplatePreview() {
     language: useWatch({ control, name: "language" }),
   };
 
-  const profileImageFile = formData.profileImageList?.[0];
+  // Handle both FileList (from file input) and File object (from existing resume)
+  const profileImageFile = (() => {
+    const imageValue = formData.profileImageList;
+    if (!imageValue) return null;
+    if (imageValue instanceof FileList && imageValue.length > 0) return imageValue[0];
+    if (imageValue instanceof File) return imageValue;
+    return null;
+  })();
 
   useEffect(() => {
     if (!profileImageFile) {
