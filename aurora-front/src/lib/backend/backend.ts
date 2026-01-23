@@ -9,6 +9,8 @@ import { cookies } from "next/headers";
 import { parseBearerToken } from "@/lib/utils/parse-bearer-token";
 import { ApiService, getServiceBaseUrl } from "@/lib/backend/api-config";
 
+const APPLICATION_JSON = "application/json";
+
 export async function callBackend<T = any>({
   method = RequestMethod.POST,
   endpoint,
@@ -88,7 +90,7 @@ export async function callBackend<T = any>({
     // ONLY add Content-Type if we are actually sending a body and not using FormData
     // When using FormData, browser will set Content-Type with correct boundary automatically
     if (body && method !== RequestMethod.GET && !file) {
-      headers["Content-Type"] = "application/json";
+      headers["Content-Type"] = APPLICATION_JSON;
     }
     return headers;
   };
@@ -100,7 +102,7 @@ export async function callBackend<T = any>({
       if (body) {
         formData.append(
           "requestDto",
-          new Blob([JSON.stringify(body)], { type: "application/json" }),
+          new Blob([JSON.stringify(body)], { type: APPLICATION_JSON }),
         );
       }
       return formData;
