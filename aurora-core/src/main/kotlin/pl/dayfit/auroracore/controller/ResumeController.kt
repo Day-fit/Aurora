@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
@@ -118,9 +119,9 @@ class ResumeController (
      * @return a ResponseEntity containing a map with a single entry where the key is "resumeId" and the value is a string representation of the newly generated résumé's unique identifier
      *
      */
-    @PostMapping("/generate")
-    fun generate(@RequestBody requestDto: GenerationRequestDto,
-                 @RequestParam("image") file: MultipartFile,
+    @PostMapping("/generate", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun generate(@RequestPart("requestDto") requestDto: GenerationRequestDto,
+                 @RequestPart("image") file: MultipartFile,
                  @AuthenticationPrincipal principal: Principal
     ): ResponseEntity<Map<String, String>> {
         val resumeId = generationService.requestGeneration(
@@ -163,9 +164,9 @@ class ResumeController (
      * @return a ResponseEntity containing a map with a single entry where the key is "message"
      *         and the value is a confirmation that the résumé was successfully edited
      */
-    @PatchMapping("/edit")
-    fun edit(@RequestBody editDto: EditResumeDto,
-             @RequestParam("image") file: MultipartFile?,
+    @PatchMapping("/edit", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun edit(@RequestPart("requestDto") editDto: EditResumeDto,
+             @RequestPart("image", required = false) file: MultipartFile?,
              @AuthenticationPrincipal principal: Principal?
     ): ResponseEntity<Map<String, String>>
     {
