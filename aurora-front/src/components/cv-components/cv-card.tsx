@@ -12,6 +12,7 @@ import {
   FaTrash,
 } from "react-icons/fa";
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { base64ToDataUrl } from "@/lib/utils/image";
 import { AutoGenerateModal } from "./auto-generate-modal";
 import { TranslateModal } from "./translate-modal";
@@ -144,36 +145,49 @@ export function CvCard({ id, data }: CvCardProps) {
           {!language && <div className="mb-4" />}
 
           <div className="mt-auto flex flex-col gap-2">
-            <Link
-              href={{ pathname: "/cv/create", query: { id } }}
-              className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-linear-to-r from-aurora-blue-dark to-aurora-blue-dark/80 hover:from-aurora-green-dark hover:to-aurora-green-dark/80 text-white text-sm font-bold rounded-lg transition-all duration-300 shadow-lg active:scale-95"
-            >
-              <FaEdit className="w-4 h-4" />
-              EDIT RESUME
-            </Link>
-            <button
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href={{ pathname: "/cv/create", query: { id } }}
+                className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-linear-to-r from-aurora-blue-dark to-aurora-blue-dark/80 hover:from-aurora-green-dark hover:to-aurora-green-dark/80 text-white text-sm font-bold rounded-lg transition-all duration-300 shadow-lg"
+              >
+                <FaEdit className="w-4 h-4" />
+                EDIT RESUME
+              </Link>
+            </motion.div>
+            <motion.button
               onClick={() => setIsEnhanceModalOpen(true)}
-              className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-linear-to-r from-aurora-green-dark to-aurora-green-dark/80 hover:from-aurora-blue-dark hover:to-aurora-blue-dark/80 text-white text-sm font-bold rounded-lg transition-all duration-300 shadow-lg active:scale-95"
+              className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-linear-to-r from-aurora-green-dark to-aurora-green-dark/80 hover:from-aurora-blue-dark hover:to-aurora-blue-dark/80 text-white text-sm font-bold rounded-lg transition-all duration-300 shadow-lg"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              <FaMagic className="w-4 h-4" />
+              <motion.span
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 3 }}
+              >
+                <FaMagic className="w-4 h-4" />
+              </motion.span>
               ENHANCE CV
-            </button>
+            </motion.button>
             <div className="flex gap-2">
-              <button
+              <motion.button
                 onClick={handleDownload}
                 disabled={isDownloading}
-                className="flex items-center justify-center gap-2 flex-1 py-3 px-4 bg-white/5 hover:bg-white/10 text-text-dark text-sm font-bold rounded-lg transition-all duration-300 active:scale-95 disabled:opacity-50"
+                className="flex items-center justify-center gap-2 flex-1 py-3 px-4 bg-white/5 hover:bg-white/10 text-text-dark text-sm font-bold rounded-lg transition-all duration-300 disabled:opacity-50"
+                whileHover={{ scale: isDownloading ? 1 : 1.02 }}
+                whileTap={{ scale: isDownloading ? 1 : 0.98 }}
               >
                 <FaDownload className="w-4 h-4" />
                 {isDownloading ? "..." : "PDF"}
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 onClick={() => setIsTranslateModalOpen(true)}
-                className="flex items-center justify-center gap-2 flex-1 py-3 px-4 bg-white/5 hover:bg-white/10 text-text-dark text-sm font-bold rounded-lg transition-all duration-300 active:scale-95"
+                className="flex items-center justify-center gap-2 flex-1 py-3 px-4 bg-white/5 hover:bg-white/10 text-text-dark text-sm font-bold rounded-lg transition-all duration-300"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 <FaLanguage className="w-4 h-4" />
                 TRANSLATE
-              </button>
+              </motion.button>
             </div>
           </div>
         </div>

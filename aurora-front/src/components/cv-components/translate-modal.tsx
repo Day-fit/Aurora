@@ -47,8 +47,7 @@ export function TranslateModal({ isOpen, onClose, cvId }: TranslateModalProps) {
   const router = useRouter();
   const { startTracking } = useTracker();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setIsLoading(true);
     setError(null);
 
@@ -78,32 +77,32 @@ export function TranslateModal({ isOpen, onClose, cvId }: TranslateModalProps) {
       footer={
         <ModalButtons
           onCancel={onClose}
+          onSubmit={handleSubmit}
           isLoading={isLoading}
           submitText="Translate"
           loadingText="Translating..."
+          type="button"
         />
       }
     >
-      <form onSubmit={handleSubmit}>
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-text-dark/80 mb-2">
-            Target Language
-          </label>
-          <select
-            value={selectedLanguage}
-            onChange={(e) =>
-              setSelectedLanguage(e.target.value as TranslateLanguage)
-            }
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-text-dark focus:outline-none focus:border-aurora-green-dark"
-          >
-            {LANGUAGES.map((lang) => (
-              <option key={lang.code} value={lang.code}>
-                {lang.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </form>
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-text-dark/80 mb-2">
+          Target Language
+        </label>
+        <select
+          value={selectedLanguage}
+          onChange={(e) =>
+            setSelectedLanguage(e.target.value as TranslateLanguage)
+          }
+          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-text-dark focus:outline-none focus:border-aurora-green-dark"
+        >
+          {LANGUAGES.map((lang) => (
+            <option key={lang.code} value={lang.code}>
+              {lang.name}
+            </option>
+          ))}
+        </select>
+      </div>
     </Modal>
   );
 }

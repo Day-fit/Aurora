@@ -23,21 +23,30 @@ export function CvHeader() {
           </span>
         </h1>
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
-          <Link
-            href="/cv/create"
-            className="group flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-aurora-blue-dark text-white hover:scale-105 active:scale-95 transform transition-all duration-200 font-semibold shadow-xl rounded-lg text-sm sm:text-lg"
-          >
-            <span className="transition-transform group-hover:rotate-90">
-              +
-            </span>
-            Create New CV
-          </Link>
-          <button
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Link
+              href="/cv/create"
+              className="group flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-aurora-blue-dark text-white transform transition-all duration-200 font-semibold shadow-xl rounded-lg text-sm sm:text-lg"
+            >
+              <motion.span
+                className="transition-transform"
+                animate={{ rotate: 0 }}
+                whileHover={{ rotate: 90 }}
+                transition={{ duration: 0.2 }}
+              >
+                +
+              </motion.span>
+              Create New CV
+            </Link>
+          </motion.div>
+          <motion.button
             onClick={() => setIsModalOpen(true)}
-            className="px-4 sm:px-6 py-2.5 sm:py-3 bg-aurora-green-dark text-white hover:bg-aurora-green-dark/80 hover:scale-105 active:scale-95 transform transition-all duration-200 font-semibold shadow-xl rounded-lg text-sm sm:text-lg"
+            className="px-4 sm:px-6 py-2.5 sm:py-3 bg-aurora-green-dark text-white hover:bg-aurora-green-dark/80 transform transition-all duration-200 font-semibold shadow-xl rounded-lg text-sm sm:text-lg"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             Auto-Generate
-          </button>
+          </motion.button>
         </div>
       </motion.header>
       <AutoGenerateModal
