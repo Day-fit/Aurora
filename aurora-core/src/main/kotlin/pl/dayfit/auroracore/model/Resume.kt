@@ -8,21 +8,21 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
+import org.hibernate.annotations.SQLDelete
 import pl.dayfit.auroracore.type.LanguageType
 import java.time.Instant
 import java.util.UUID
 
 @Entity
+@SQLDelete(sql = "WITH updated AS (UPDATE resume SET parent_id = NULL WHERE parent_id = ?) DELETE FROM resume WHERE id = ?")
 class Resume(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID?,
     var auroraUserId: UUID,
     var language: LanguageType?,
-
     @ManyToOne(cascade = [CascadeType.DETACH])
     var originalVersion: Resume?,
-
     var name: String,
     var surname: String,
     @Column(length = 200)
