@@ -126,10 +126,13 @@ export async function callBackend<T = any>({
 
   const url = `${BASE_URL.replace(/\/$/, "")}/${endpoint.replace(/^\//, "")}`;
 
+  // Don't include body for GET/HEAD requests
+  const requestBody = method === RequestMethod.GET ? undefined : buildRequestBody();
+
   let res = await fetch(url, {
     method,
     headers: getHeaders(),
-    body: buildRequestBody(),
+    body: requestBody,
     cache: "no-store",
   });
 
@@ -163,7 +166,7 @@ export async function callBackend<T = any>({
           res = await fetch(url, {
             method,
             headers: getHeaders(),
-            body: buildRequestBody(),
+            body: requestBody,
             cache: "no-store",
           });
 
