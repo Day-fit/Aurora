@@ -121,7 +121,7 @@ class ResumeController (
      */
     @PostMapping("/generate", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun generate(@RequestPart("requestDto") requestDto: GenerationRequestDto,
-                 @RequestPart("image") file: MultipartFile,
+                 @RequestPart("image") file: MultipartFile?,
                  @AuthenticationPrincipal principal: Principal
     ): ResponseEntity<Map<String, String>> {
         val resumeId = generationService.requestGeneration(

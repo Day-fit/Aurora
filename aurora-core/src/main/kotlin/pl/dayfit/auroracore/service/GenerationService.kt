@@ -68,7 +68,7 @@ class GenerationService(
      * @return The unique identifier of the generated résumé.
      */
     @Transactional
-    fun requestGeneration(requestDto: GenerationRequestDto, file: MultipartFile, userId: UUID): UUID
+    fun requestGeneration(requestDto: GenerationRequestDto, file: MultipartFile?, userId: UUID): UUID
     {
         val resume = Resume(
             null,
@@ -118,8 +118,8 @@ class GenerationService(
                     it.year
                 )
             }.toMutableList(),
-            imageHelper.compressProfileImage(file.inputStream),
-
+            file?.inputStream
+                ?.use { imageHelper.compressProfileImage(it) },
             null,
             requestDto.profileDescription,
             requestDto.email,
