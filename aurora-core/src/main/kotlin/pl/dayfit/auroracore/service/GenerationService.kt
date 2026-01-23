@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
+import org.springframework.web.multipart.MultipartFile
 import pl.dayfit.auroracore.dto.GenerationRequestDto
 import pl.dayfit.auroracore.event.ResumeReadyToExport
 import pl.dayfit.auroracore.exception.InvalidBase64Exception
@@ -35,6 +36,7 @@ import pl.dayfit.auroracore.type.LanguageType
 import pl.dayfit.auroracore.util.LocaleMapper
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import java.io.StringWriter
 import java.time.Instant
 import java.time.ZoneId
@@ -68,7 +70,7 @@ class GenerationService(
      * @return The unique identifier of the generated résumé.
      */
     @Transactional
-    fun requestGeneration(requestDto: GenerationRequestDto, userId: UUID): UUID
+    fun requestGeneration(requestDto: GenerationRequestDto, file: MultipartFile, userId: UUID): UUID
     {
         val resume = Resume(
             null,
@@ -118,9 +120,7 @@ class GenerationService(
                     it.year
                 )
             }.toMutableList(),
-            requestDto.profileImage?.let {
-                compressImage(it)
-            },
+            compressImage(file.inputStream),
 
             null,
             requestDto.profileDescription,
@@ -285,11 +285,10 @@ class GenerationService(
         return formatter.format(instant)
     }
 
-    private fun compressImage(image: String): ByteArray {
+    private fun compressImage(fileStream: InputStream): ByteArray {
         try {
-            val inputStream = ByteArrayInputStream(Base64.decode(image))
             val outputStream = ByteArrayOutputStream()
-            Thumbnails.of(inputStream)
+            Thumbnails.of(fileStream)
                 .outputQuality(imageQuality)
                 .size(600, 600)
                 .keepAspectRatio(true)

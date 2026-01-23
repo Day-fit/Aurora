@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import pl.dayfit.auroracore.dto.EditResumeDto
 import pl.dayfit.auroracore.dto.GenerationRequestDto
@@ -118,9 +119,13 @@ class ResumeController (
      *
      */
     @PostMapping("/generate")
-    fun generate(@RequestBody requestDto: GenerationRequestDto, @AuthenticationPrincipal principal: Principal): ResponseEntity<Map<String, String>> {
+    fun generate(@RequestBody requestDto: GenerationRequestDto,
+                 @RequestParam("file") file: MultipartFile,
+                 @AuthenticationPrincipal principal: Principal
+    ): ResponseEntity<Map<String, String>> {
         val resumeId = generationService.requestGeneration(
             requestDto,
+            file,
             UUID.fromString(
                 principal.name
             )
