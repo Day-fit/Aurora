@@ -19,12 +19,16 @@ export async function callBackend<T = any>({
   file = null,
 }: RequestType): Promise<BackendResponse<T>> {
   const host = getServiceBaseUrl(service);
-  const protocol = process.env.NODE_ENV === "production" ? "https://" : "http://";
+  const authHost = getServiceBaseUrl(ApiService.AUTH);
+  const protocol =
+    process.env.NODE_ENV === "production" ? "https://" : "http://";
   const BASE_URL = protocol + host;
+  const AUTH_BASE_URL = protocol + authHost;
 
   console.log(
     `Calling backend with method ${method} and endpoint ${BASE_URL + endpoint}`,
   );
+
   const cookieStore = await cookies();
 
   const getAccessToken = () => cookieStore.get("accessToken")?.value;
@@ -78,63 +82,75 @@ export async function callBackend<T = any>({
   const getHeaders = (includeAuth = true) => {
     const headers: Record<string, string> = {};
     const cookieHeader = buildCookieHeader();
+
     if (cookieHeader) {
       headers.Cookie = cookieHeader;
     }
+
     if (includeAuth) {
       const accessToken = getAccessToken();
       if (accessToken) {
         headers.Authorization = `Bearer ${accessToken}`;
       }
     }
-    // ONLY add Content-Type if we are actually sending a body and not using FormData
-    // When using FormData, browser will set Content-Type with correct boundary automatically
-    if (body && method !== RequestMethod.GET && !file) {
+
+    // ❗ FIX: only set Content-Type for pure JSON requests
+    if (file === undefined && body && method !== RequestMethod.GET) {
       headers["Content-Type"] = APPLICATION_JSON;
     }
+
     return headers;
   };
 
   const buildRequestBody = (): FormData | string | undefined => {
-    if (file) {
+    // ❗ FIX: multipart even when file === null
+    if (file !== undefined) {
       const formData = new FormData();
-      formData.append("image", file);
+
       if (body) {
         formData.append(
           "requestDto",
           new Blob([JSON.stringify(body)], { type: APPLICATION_JSON }),
         );
       }
+
+      if (file instanceof File) {
+        formData.append("image", file);
+      }
+
       return formData;
     }
+
     return body ? JSON.stringify(body) : undefined;
   };
 
   const url = `${BASE_URL.replace(/\/$/, "")}/${endpoint.replace(/^\//, "")}`;
 
+  // Don't include body for GET/HEAD requests
+  const requestBody = method === RequestMethod.GET ? undefined : buildRequestBody();
+
   let res = await fetch(url, {
     method,
     headers: getHeaders(),
-    body: buildRequestBody(),
+    body: requestBody,
     cache: "no-store",
   });
 
-  // If the backend sent Set-Cookie headers (on login or any request),
-  // we must capture them and set them in Next.js
   applySetCookieHeader(res.headers.get("set-cookie"));
 
-  if (res.status === 401) {
+  if (res.status === 401 || res.status === 403) {
     const refreshToken = getRefreshToken();
 
     if (refreshToken) {
       try {
-        const refreshRes = await fetch(`${BASE_URL}/api/v1/auth/refresh`, {
+        const refreshRes = await fetch(`${AUTH_BASE_URL}/api/v1/auth/refresh`, {
           method: "POST",
-          headers: getHeaders(false),
+          headers: getHeaders(true),
           cache: "no-store",
         });
 
         applySetCookieHeader(refreshRes.headers.get("set-cookie"));
+
         const refreshText = await refreshRes.text();
         const refreshData = refreshText
           ? parseJson<{ accessToken?: string }>(refreshText)
@@ -143,16 +159,17 @@ export async function callBackend<T = any>({
         const refreshAccessToken =
           parseBearerToken(refreshRes.headers.get("authorization")) ||
           refreshData?.accessToken;
+
         storeAccessToken(refreshAccessToken);
 
         if (refreshRes.ok) {
-          // Retry the original request with the new Authorization header
           res = await fetch(url, {
             method,
             headers: getHeaders(),
-            body: buildRequestBody(),
+            body: requestBody,
             cache: "no-store",
           });
+
           applySetCookieHeader(res.headers.get("set-cookie"));
         }
       } catch (err) {
@@ -175,6 +192,7 @@ export async function callBackend<T = any>({
     (typeof data === "object" && data && "accessToken" in data
       ? (data as { accessToken?: string }).accessToken
       : undefined);
+
   storeAccessToken(responseAccessToken);
 
   return {
