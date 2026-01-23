@@ -11,28 +11,33 @@ export default function PersonalInfo() {
   const profileImage = useWatch({ control, name: "profileImage" });
 
   useEffect(() => {
+    let url: string | null = null;
+
     // Handle different types of profileImage value
-    if (!profileImage) {
+    if (profileImage) {
+      // If it's a FileList (from file input)
+      if (profileImage instanceof FileList && profileImage.length > 0) {
+        const file = profileImage[0];
+        url = URL.createObjectURL(file);
+        setPreviewUrl(url);
+      }
+      // If it's a single File object (from editing existing resume)
+      else if (profileImage instanceof File) {
+        url = URL.createObjectURL(profileImage);
+        setPreviewUrl(url);
+      } else {
+        setPreviewUrl(null);
+      }
+    } else {
       setPreviewUrl(null);
-      return;
     }
 
-    // If it's a FileList (from file input)
-    if (profileImage instanceof FileList && profileImage.length > 0) {
-      const file = profileImage[0];
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-      return () => URL.revokeObjectURL(url);
-    }
-
-    // If it's a single File object (from editing existing resume)
-    if (profileImage instanceof File) {
-      const url = URL.createObjectURL(profileImage);
-      setPreviewUrl(url);
-      return () => URL.revokeObjectURL(url);
-    }
-
-    setPreviewUrl(null);
+    // Cleanup function - always runs on unmount or before next effect
+    return () => {
+      if (url) {
+        URL.revokeObjectURL(url);
+      }
+    };
   }, [profileImage]);
 
   return (

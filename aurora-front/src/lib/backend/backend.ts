@@ -19,9 +19,11 @@ export async function callBackend<T = any>({
   file = null,
 }: RequestType): Promise<BackendResponse<T>> {
   const host = getServiceBaseUrl(service);
+  const authHost = getServiceBaseUrl(ApiService.AUTH);
   const protocol =
     process.env.NODE_ENV === "production" ? "https://" : "http://";
   const BASE_URL = protocol + host;
+  const AUTH_BASE_URL = protocol + authHost;
 
   console.log(
     `Calling backend with method ${method} and endpoint ${BASE_URL + endpoint}`,
@@ -138,7 +140,7 @@ export async function callBackend<T = any>({
 
     if (refreshToken) {
       try {
-        const refreshRes = await fetch(`${BASE_URL}/api/v1/auth/refresh`, {
+        const refreshRes = await fetch(`${AUTH_BASE_URL}/api/v1/auth/refresh`, {
           method: "POST",
           headers: getHeaders(true),
           cache: "no-store",
