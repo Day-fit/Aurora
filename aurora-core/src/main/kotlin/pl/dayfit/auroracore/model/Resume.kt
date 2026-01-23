@@ -14,7 +14,7 @@ import java.time.Instant
 import java.util.UUID
 
 @Entity
-@SQLDelete(sql = "UPDATE resume SET parent_id = NULL WHERE parent_id = id")
+@SQLDelete(sql = "WITH updated AS (UPDATE resume SET parent_id = NULL WHERE parent_id = ?) DELETE FROM resume WHERE id = ?")
 class Resume(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
