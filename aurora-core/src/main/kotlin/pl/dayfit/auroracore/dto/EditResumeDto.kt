@@ -30,8 +30,6 @@ data class EditResumeDto(
     val linkedIn: String?,
     @JsonInclude(JsonInclude.Include.NON_NULL)
     val gitHub: String?,
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    val profileImage: String?,
     @Length(max = 2000)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     val profileDescription: String?,

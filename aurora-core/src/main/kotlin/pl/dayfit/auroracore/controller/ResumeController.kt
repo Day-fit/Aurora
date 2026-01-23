@@ -164,10 +164,14 @@ class ResumeController (
      *         and the value is a confirmation that the résumé was successfully edited
      */
     @PatchMapping("/edit")
-    fun edit(@RequestBody editDto: EditResumeDto, @AuthenticationPrincipal principal: Principal?): ResponseEntity<Map<String, String>>
+    fun edit(@RequestBody editDto: EditResumeDto,
+             @RequestParam("file") file: MultipartFile?,
+             @AuthenticationPrincipal principal: Principal?
+    ): ResponseEntity<Map<String, String>>
     {
         resumeService.processEdit(
             editDto,
+            file,
             UUID.fromString(
                 principal?.name
             )
