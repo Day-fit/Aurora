@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException
+import org.springframework.web.HttpMediaTypeException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.resource.NoResourceFoundException
@@ -110,6 +111,12 @@ class GlobalExceptionHandler {
     fun handleInvalidBase64Exception(e: InvalidBase64Exception): ResponseEntity<Map<String, String>> {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(mapOf("error" to (e.message ?: "Invalid base64 string")))
+    }
+
+    @ExceptionHandler(HttpMediaTypeException::class)
+    fun handleHttpMediaTypeException(e: HttpMediaTypeException): ResponseEntity<Map<String, String>> {
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+            .body(mapOf("error" to (e.message ?: "Unsupported media type")))
     }
 
     @ExceptionHandler(Exception::class)

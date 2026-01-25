@@ -11,6 +11,15 @@ import { ApiService, getServiceBaseUrl } from "@/lib/backend/api-config";
 
 const APPLICATION_JSON = "application/json";
 
+/**
+ * Endpoints that explicitly expect multipart/form-data
+ * EVERYTHING else will be sent as application/json
+ */
+const MULTIPART_ENDPOINTS = [
+  "/api/v1/core/resume/generate",
+  "/api/v1/core/resume/edit",
+];
+
 export async function callBackend<T = any>({
   method = RequestMethod.POST,
   endpoint,
@@ -25,10 +34,6 @@ export async function callBackend<T = any>({
   const BASE_URL = protocol + host;
   const AUTH_BASE_URL = protocol + authHost;
 
-  console.log(
-    `Calling backend with method ${method} and endpoint ${BASE_URL + endpoint}`,
-  );
-
   const cookieStore = await cookies();
 
   const getAccessToken = () => cookieStore.get("accessToken")?.value;
@@ -40,15 +45,14 @@ export async function callBackend<T = any>({
   };
 
   const applySetCookieHeader = (setCookieHeader: string | null) => {
-    if (!setCookieHeader) {
-      return;
-    }
+    if (!setCookieHeader) return;
 
     const cookiesToSet = setCookieHeader.split(/,(?=[^;]+=[^;]+)/);
     cookiesToSet.forEach((cookieString) => {
       const [nameValue] = cookieString.split(";");
       const [name, value] = nameValue.split("=");
       const cookieName = name.trim();
+
       cookieStore.set(cookieName, value.trim(), {
         httpOnly: cookieName === "refreshToken",
         path: "/",
@@ -59,9 +63,7 @@ export async function callBackend<T = any>({
   };
 
   const storeAccessToken = (token?: string) => {
-    if (!token) {
-      return;
-    }
+    if (!token) return;
 
     cookieStore.set("accessToken", token, {
       httpOnly: true,
@@ -79,32 +81,17 @@ export async function callBackend<T = any>({
     }
   };
 
-  const getHeaders = (includeAuth = true) => {
-    const headers: Record<string, string> = {};
-    const cookieHeader = buildCookieHeader();
-
-    if (cookieHeader) {
-      headers.Cookie = cookieHeader;
-    }
-
-    if (includeAuth) {
-      const accessToken = getAccessToken();
-      if (accessToken) {
-        headers.Authorization = `Bearer ${accessToken}`;
-      }
-    }
-
-    // ❗ FIX: only set Content-Type for pure JSON requests
-    if (file === undefined && body && method !== RequestMethod.GET) {
-      headers["Content-Type"] = APPLICATION_JSON;
-    }
-
-    return headers;
-  };
+  const isMultipartEndpoint = MULTIPART_ENDPOINTS.some((e): boolean => {
+    console.log(endpoint);
+    return endpoint.startsWith(e);
+  });
 
   const buildRequestBody = (): FormData | string | undefined => {
-    // ❗ FIX: multipart even when file === null
-    if (file !== undefined) {
+    if (method === RequestMethod.GET) {
+      return undefined;
+    }
+
+    if (isMultipartEndpoint) {
       const formData = new FormData();
 
       if (body) {
@@ -124,10 +111,31 @@ export async function callBackend<T = any>({
     return body ? JSON.stringify(body) : undefined;
   };
 
-  const url = `${BASE_URL.replace(/\/$/, "")}/${endpoint.replace(/^\//, "")}`;
+  const requestBody = buildRequestBody();
 
-  // Don't include body for GET/HEAD requests
-  const requestBody = method === RequestMethod.GET ? undefined : buildRequestBody();
+  const getHeaders = (includeAuth = true) => {
+    const headers: Record<string, string> = {};
+    const cookieHeader = buildCookieHeader();
+
+    if (cookieHeader) {
+      headers.Cookie = cookieHeader;
+    }
+
+    if (includeAuth) {
+      const accessToken = getAccessToken();
+      if (accessToken) {
+        headers.Authorization = `Bearer ${accessToken}`;
+      }
+    }
+
+    if (requestBody && !isMultipartEndpoint && method !== RequestMethod.GET) {
+      headers["Content-Type"] = APPLICATION_JSON;
+    }
+
+    return headers;
+  };
+
+  const url = `${BASE_URL.replace(/\/$/, "")}/${endpoint.replace(/^\//, "")}`;
 
   let res = await fetch(url, {
     method,
