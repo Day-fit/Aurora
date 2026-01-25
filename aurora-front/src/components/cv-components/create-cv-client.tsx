@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import CvForm from "@/components/cv-components/cv-form";
 import TemplatePreview from "@/components/cv-components/cv-preview/template-preview";
 import { base64ToFile } from "@/lib/utils/image";
+import { isoToDateInput } from "@/lib/utils/date";
 import getAutoGenerationData, {
   AutoGenerationData,
 } from "@/lib/backend/get-autogeneration-data";
@@ -17,17 +18,6 @@ function safeBase64ToFile(base64: string): File | null {
   } catch (error) {
     console.error("Failed to convert base64 to file:", error);
     return null;
-  }
-}
-
-// Convert ISO 8601 date to date input format (YYYY-MM-DD)
-function isoToDateInput(isoDate: string | null | undefined): string {
-  if (!isoDate) return "";
-  try {
-    const match = isoDate.match(/^(\d{4}-\d{2}-\d{2})/);
-    return match ? match[1] : "";
-  } catch {
-    return "";
   }
 }
 
