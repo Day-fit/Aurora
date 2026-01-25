@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import CvForm from "@/components/cv-components/cv-form";
 import TemplatePreview from "@/components/cv-components/cv-preview/template-preview";
 import { base64ToFile } from "@/lib/utils/image";
+import { isoToDateInput } from "@/lib/utils/date";
 import getAutoGenerationData, {
   AutoGenerationData,
 } from "@/lib/backend/get-autogeneration-data";
@@ -42,8 +43,8 @@ function transformAutoGenDataToFormValues(
         company: exp.company,
         position: exp.position,
         description: exp.description ?? null,
-        startDate: exp.startDate,
-        endDate: exp.endDate ?? null,
+        startDate: isoToDateInput(exp.startDate),
+        endDate: isoToDateInput(exp.endDate),
       })) ?? [],
     education:
       data.education?.map((edu) => ({

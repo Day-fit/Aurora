@@ -33,9 +33,10 @@ interface CvCardProps {
     previewImage?: string | File[] | null;
     language?: LanguageType | null;
   };
+  onDeleted?: () => void;
 }
 
-export function CvCard({ id, data }: CvCardProps) {
+export function CvCard({ id, data, onDeleted }: CvCardProps) {
   const { title, name, surname, previewImage, language } = data;
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [isEnhanceModalOpen, setIsEnhanceModalOpen] = useState(false);
@@ -202,6 +203,7 @@ export function CvCard({ id, data }: CvCardProps) {
         onClose={() => setIsDeleteModalOpen(false)}
         cvId={id}
         cvTitle={title}
+        onDeleted={onDeleted}
       />
     </>
   );

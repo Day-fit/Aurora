@@ -1,6 +1,5 @@
 import Button from "@/components/button";
-import { FiMenu } from "react-icons/fi";
-import PhoneNav from "@/components/layout/header/phone-nav";
+import MobileMenuWrapper from "@/components/layout/header/mobile-menu-wrapper";
 import Link from "next/link";
 import { isLoggedInServer } from "@/lib/backend/auth";
 import Image from "next/image";
@@ -16,8 +15,6 @@ export default async function Header() {
 
   return (
     <div className="sticky top-2 z-50">
-      <input type="checkbox" id="mobile-menu-toggle" className="peer hidden" />
-
       <header className="flex flex-row items-center justify-between m-2 rounded-2xl bg-main-dark text-text-dark p-3 shadow-md pointer-events-auto relative z-50">
         <Link
           href="/"
@@ -37,13 +34,8 @@ export default async function Header() {
           </div>
         </Link>
 
-        {/* Hamburger menu - acting as label for the checkbox */}
-        <label
-          htmlFor="mobile-menu-toggle"
-          className="md:hidden text-heading-dark bg-frame-dark p-2 rounded-md hover:bg-aurora-blue-dark active:scale-95 transition-all cursor-pointer flex items-center justify-center"
-        >
-          <FiMenu className="w-5 h-5" />
-        </label>
+        {/* Mobile menu */}
+        <MobileMenuWrapper isLogged={isLogged} />
 
         <nav className="hidden md:flex text-text-dark text-center justify-center">
           <ul className="flex flex-row gap-6">
@@ -93,10 +85,6 @@ export default async function Header() {
           )}
         </div>
       </header>
-
-      <div className="hidden peer-checked:block">
-        <PhoneNav isLogged={isLogged} />
-      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 import getResume from "@/lib/backend/get-resume";
 import CreateCvClient from "@/components/cv-components/create-cv-client";
 import { TemplateType } from "@/lib/types/form";
+import { isoToDateInput } from "@/lib/utils/date";
 
 export default async function CreatePage({
   searchParams,
@@ -25,7 +26,11 @@ export default async function CreatePage({
         gitHub: data.gitHub ?? "",
         profileDescription: data.profileDescription ?? "",
         profileImage: data.profileImage ?? null,
-        workExperience: data.workExperience ?? [],
+        workExperience: (data.workExperience ?? []).map((exp: { company?: string; position?: string; description?: string | null; startDate?: string; endDate?: string | null }) => ({
+          ...exp,
+          startDate: isoToDateInput(exp.startDate),
+          endDate: isoToDateInput(exp.endDate),
+        })),
         achievements: data.achievements ?? [],
         skills: data.skills ?? [],
         education: data.education ?? [],
