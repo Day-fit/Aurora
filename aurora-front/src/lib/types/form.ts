@@ -74,11 +74,27 @@ const urlSchema = z
   ])
   .optional();
 
-const InstantSchema = z
+// DateToInstantSchema accepts either:
+// 1. A simple date string (YYYY-MM-DD) from date input and transforms it to ISO 8601
+// 2. An already valid ISO 8601 instant format (for editing existing resumes)
+const DateToInstantSchema = z
   .string()
-  .regex(
-    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/,
-    "Invalid Instant format",
+  .min(1, "Date is required")
+  .transform((val) => {
+    // If already in ISO 8601 format with time, return as-is
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/.test(val)) {
+      return val;
+    }
+    // If simple date format (YYYY-MM-DD), convert to ISO 8601 with midnight UTC
+    if (/^\d{4}-\d{2}-\d{2}$/.test(val)) {
+      return `${val}T00:00:00Z`;
+    }
+    // Return as-is for validation to fail
+    return val;
+  })
+  .refine(
+    (val) => /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/.test(val),
+    "Invalid date format"
   )
   .refine((val) => !isNaN(Date.parse(val)), "Invalid date value");
 
@@ -88,8 +104,8 @@ export const ExperienceSchema = z.object({
   company: z.string().min(1, "Company name is required"),
   position: z.string().min(1, "Position is required"),
   description: z.string().nullable(),
-  startDate: InstantSchema,
-  endDate: InstantSchema.nullable(),
+  startDate: DateToInstantSchema,
+  endDate: DateToInstantSchema.nullable(),
 });
 
 export const AchievementSchema = z.object({

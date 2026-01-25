@@ -2,7 +2,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import deleteResume from "@/lib/backend/delete-resume";
 import { Modal, ModalButtons } from "@/components/modal";
 import { FaExclamationTriangle } from "react-icons/fa";
@@ -12,6 +11,7 @@ interface DeleteModalProps {
   onClose: () => void;
   cvId: string;
   cvTitle: string;
+  onDeleted?: () => void;
 }
 
 export function DeleteModal({
@@ -19,10 +19,10 @@ export function DeleteModal({
   onClose,
   cvId,
   cvTitle,
+  onDeleted,
 }: DeleteModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   const handleDelete = async () => {
     setIsLoading(true);
@@ -35,7 +35,7 @@ export function DeleteModal({
       }
 
       onClose();
-      router.refresh();
+      onDeleted?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {

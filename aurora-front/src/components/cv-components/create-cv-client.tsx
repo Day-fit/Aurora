@@ -20,6 +20,17 @@ function safeBase64ToFile(base64: string): File | null {
   }
 }
 
+// Convert ISO 8601 date to date input format (YYYY-MM-DD)
+function isoToDateInput(isoDate: string | null | undefined): string {
+  if (!isoDate) return "";
+  try {
+    const match = isoDate.match(/^(\d{4}-\d{2}-\d{2})/);
+    return match ? match[1] : "";
+  } catch {
+    return "";
+  }
+}
+
 function transformAutoGenDataToFormValues(
   data: AutoGenerationData,
 ): Partial<FormValues> {
@@ -42,8 +53,8 @@ function transformAutoGenDataToFormValues(
         company: exp.company,
         position: exp.position,
         description: exp.description ?? null,
-        startDate: exp.startDate,
-        endDate: exp.endDate ?? null,
+        startDate: isoToDateInput(exp.startDate),
+        endDate: isoToDateInput(exp.endDate),
       })) ?? [],
     education:
       data.education?.map((edu) => ({

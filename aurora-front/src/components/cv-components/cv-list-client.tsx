@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { CvCard } from "@/components/cv-components/cv-card";
 import { CvHeader } from "@/components/cv-components/cv-header";
 import { CvEmptyState } from "@/components/cv-components/cv-empty-state";
@@ -20,45 +20,45 @@ export function CvListClient() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchResumes() {
-      try {
-        const response = await fetch("/api/proxy", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            endpoint: "/api/v1/core/resume/getAll",
-            method: "GET",
-            service: "CORE",
-          }),
-        });
+  const fetchResumes = useCallback(async () => {
+    try {
+      const response = await fetch("/api/proxy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          endpoint: "/api/v1/core/resume/getAll",
+          method: "GET",
+          service: "CORE",
+        }),
+      });
 
-        const data = await response.json();
+      const data = await response.json();
 
-        // Check the actual response status, not just response.ok
-        if (response.status === 401 || response.status === 403) {
-          setError("Authentication required. Please log in again.");
-          setResumes([]);
-        } else if (!response.ok) {
-          setError("Failed to load resumes");
-          setResumes([]);
-        } else if (Array.isArray(data)) {
-          setResumes(data);
-        } else {
-          setResumes([]);
-        }
-      } catch (err) {
-        console.error("Failed to fetch resumes:", err);
+      // Check the actual response status, not just response.ok
+      if (response.status === 401 || response.status === 403) {
+        setError("Authentication required. Please log in again.");
+        setResumes([]);
+      } else if (!response.ok) {
         setError("Failed to load resumes");
         setResumes([]);
-      } finally {
-        setIsLoading(false);
+      } else if (Array.isArray(data)) {
+        setResumes(data);
+      } else {
+        setResumes([]);
       }
+    } catch (err) {
+      console.error("Failed to fetch resumes:", err);
+      setError("Failed to load resumes");
+      setResumes([]);
+    } finally {
+      setIsLoading(false);
     }
-
-    fetchResumes();
   }, []);
+
+  useEffect(() => {
+    fetchResumes();
+  }, [fetchResumes]);
 
   if (isLoading) {
     return (
@@ -101,7 +101,7 @@ export function CvListClient() {
             <CvHeader />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 w-full">
               {resumes.map((cv) => (
-                <CvCard key={cv.id} id={cv.id} data={cv} />
+                <CvCard key={cv.id} id={cv.id} data={cv} onDeleted={fetchResumes} />
               ))}
             </div>
           </div>

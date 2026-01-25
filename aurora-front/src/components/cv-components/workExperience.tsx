@@ -40,12 +40,12 @@ export default function WorkExperience() {
             <Input
               name={`workExperience.${index}.startDate`}
               label="Start Date"
-              type="datetime-local"
+              type="date"
             />
             <Input
               name={`workExperience.${index}.endDate`}
               label="End Date"
-              type="datetime-local"
+              type="date"
             />
           </div>
 

@@ -1,35 +1,81 @@
+"use client";
+
 import Button from "@/components/button";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { logout } from "@/lib/backend/logout";
 import { ButtonType } from "@/lib/types/button";
+import { FiX } from "react-icons/fi";
 
-export default function PhoneNav({ isLogged }: { isLogged: boolean }) {
+interface PhoneNavProps {
+  isLogged: boolean;
+  onClose?: () => void;
+}
+
+export default function PhoneNav({ isLogged, onClose }: PhoneNavProps) {
+  const pathname = usePathname();
+
+  const handleLinkClick = () => {
+    onClose?.();
+  };
+
+  const isActive = (href: string) => {
+    if (href === "/") {
+      return pathname === "/";
+    }
+    return pathname.startsWith(href);
+  };
+
   return (
     <aside className="flex flex-col m-2 rounded-2xl p-4 shadow-xl transition-all duration-300 md:hidden bg-main-dark text-text-dark animate-[slideDown_0.3s_ease-out]">
+      {/* Close button */}
+      <button
+        onClick={onClose}
+        className="self-end p-2 rounded-lg hover:bg-white/5 active:bg-white/10 transition-colors mb-2"
+        aria-label="Close menu"
+      >
+        <FiX className="w-5 h-5" />
+      </button>
+
       <nav className="flex flex-col gap-2 text-center">
         <ul className="flex flex-col gap-2">
           <li>
             <Link
               href="/"
-              className="block w-full py-2 px-4 rounded-lg hover:bg-white/5 active:bg-white/10 transition-colors"
+              onClick={handleLinkClick}
+              className={`block w-full py-3 px-4 rounded-lg transition-colors ${
+                isActive("/")
+                  ? "bg-aurora-blue-dark/20 text-aurora-blue-dark font-medium"
+                  : "hover:bg-white/5 active:bg-white/10"
+              }`}
             >
               Home
             </Link>
           </li>
           <li>
             <Link
-              href="/cv/create"
-              className="block w-full py-2 px-4 rounded-lg hover:bg-white/5 active:bg-white/10 transition-colors"
+              href="/cv"
+              onClick={handleLinkClick}
+              className={`block w-full py-3 px-4 rounded-lg transition-colors ${
+                isActive("/cv") && !pathname.includes("/create")
+                  ? "bg-aurora-blue-dark/20 text-aurora-blue-dark font-medium"
+                  : "hover:bg-white/5 active:bg-white/10"
+              }`}
             >
-              Create
+              Your CVs
             </Link>
           </li>
           <li>
             <Link
-              href="/cv"
-              className="block w-full py-2 px-4 rounded-lg hover:bg-white/5 active:bg-white/10 transition-colors"
+              href="/cv/create"
+              onClick={handleLinkClick}
+              className={`block w-full py-3 px-4 rounded-lg transition-colors ${
+                isActive("/cv/create")
+                  ? "bg-aurora-blue-dark/20 text-aurora-blue-dark font-medium"
+                  : "hover:bg-white/5 active:bg-white/10"
+              }`}
             >
-              Edit
+              Create CV
             </Link>
           </li>
         </ul>
@@ -40,13 +86,15 @@ export default function PhoneNav({ isLogged }: { isLogged: boolean }) {
           <>
             <Link
               href="/auth/login"
-              className="block w-full py-2 px-4 text-center rounded-lg hover:bg-white/5 active:bg-white/10 transition-colors"
+              onClick={handleLinkClick}
+              className="block w-full py-3 px-4 text-center rounded-lg hover:bg-white/5 active:bg-white/10 transition-colors"
             >
               Log in
             </Link>
             <Link
               href="/auth/register"
-              className="block w-full py-2 px-4 text-center rounded-lg bg-aurora-blue-dark text-white hover:bg-aurora-blue-dark/80 active:scale-95 transition-all"
+              onClick={handleLinkClick}
+              className="block w-full py-3 px-4 text-center rounded-lg bg-aurora-blue-dark text-white hover:bg-aurora-blue-dark/80 active:scale-95 transition-all font-medium"
             >
               Sign up
             </Link>
@@ -56,7 +104,7 @@ export default function PhoneNav({ isLogged }: { isLogged: boolean }) {
             <Button
               type={ButtonType.submit}
               text="Log out"
-              className="w-full py-2 px-4 text-heading-dark hover:bg-white/5 active:bg-white/10"
+              className="w-full py-3 px-4 text-heading-dark hover:bg-white/5 active:bg-white/10"
             />
           </form>
         )}
