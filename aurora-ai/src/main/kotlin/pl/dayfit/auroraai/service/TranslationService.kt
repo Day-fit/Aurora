@@ -56,7 +56,17 @@ class TranslationService(
             .store(false)
             .input(
                 """
-                You are an expert translator. Your task is to translate this resume into ${event.targetLanguage}
+                You are an expert translator. Your task is to translate this resume into ${event.targetLanguage}.
+                IMPORTANT: Use the native script and characters of ${event.targetLanguage}. For example:
+                - Chinese: use 汉字 characters
+                - Japanese: use 日本語 (kanji, hiragana, katakana)
+                - Korean: use 한국어 (hangul)
+                - Arabic: use العربية script
+                - Russian: use кириллица (Cyrillic)
+                - Hindi: use हिंदी (Devanagari)
+                Do NOT romanize or transliterate. Output must be in the authentic writing system of ${event.targetLanguage}.
+                
+                Content to translate:
                 - Title: ${resume.title},
                 - Description: ${resume.description},
                 
@@ -69,7 +79,7 @@ class TranslationService(
                 
                 - Education Majors: ${resume.educationMajors.joinToString(", ")}
                 
-                Keep everything as close to the original as possible.
+                Keep everything as close to the original as possible while using authentic ${event.targetLanguage} characters.
             """
             )
             .text(TranslationResumeAiDto::class.java)
