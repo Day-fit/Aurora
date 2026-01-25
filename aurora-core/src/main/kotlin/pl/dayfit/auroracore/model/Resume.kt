@@ -8,13 +8,12 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
-import org.hibernate.annotations.SQLDelete
+import jakarta.persistence.PreRemove
 import pl.dayfit.auroracore.type.LanguageType
 import java.time.Instant
 import java.util.UUID
 
 @Entity
-@SQLDelete(sql = "WITH updated AS (UPDATE resume SET parent_id = NULL WHERE parent_id = ?) DELETE FROM resume WHERE id = ?")
 class Resume(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -51,4 +50,11 @@ class Resume(
     var templateVersion: Int,
     var lastModified: Instant,
     var enhanced: Boolean = false
-)
+) {
+    @PreRemove
+    fun preRemove() {
+        originalVersion?.let { parent ->
+            parent.originalVersion = null
+        }
+    }
+}
