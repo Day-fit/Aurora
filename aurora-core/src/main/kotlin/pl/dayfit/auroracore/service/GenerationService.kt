@@ -250,6 +250,10 @@ class GenerationService(
                 props.mediaDeviceDescription = media
                 
                 // Use DefaultFontProvider with embedded fonts for non-Latin character support
+                // Parameters: (registerStandardPdfFonts, registerShippedFonts, registerSystemFonts)
+                // - registerStandardPdfFonts: enables standard 14 PDF fonts
+                // - registerShippedFonts: enables iText's bundled fonts (includes Noto fonts for CJK support)
+                // - registerSystemFonts: enables system-installed fonts for additional Unicode coverage
                 val fontProvider = DefaultFontProvider(true, true, true)
                 props.fontProvider = fontProvider
                 

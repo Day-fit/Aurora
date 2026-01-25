@@ -28,18 +28,17 @@ export default function TrackerNotification() {
         stopTracking();
         router.push("/cv/create?autogen=true");
       } else if (resourceId) {
-        // For translation/enhancement, redirect to edit the CV with the new resourceId
-        const targetPath = `/cv/create?id=${resourceId}`;
+        // For translation/enhancement, navigate to edit the new CV with the resourceId
+        // Using replace to avoid adding to history (user shouldn't go back to in-progress state)
         stopTracking();
-        
-        // Refresh to ensure stale data is cleared, then navigate to the new resource
+        router.push(`/cv/create?id=${resourceId}`);
+        // Refresh to ensure server components re-fetch data for the new resource
         router.refresh();
-        router.push(targetPath);
       } else {
-        // Fallback: redirect to CV list page
+        // Fallback: redirect to CV list page with refresh to show updated list
         stopTracking();
-        router.refresh();
         router.push("/cv");
+        router.refresh();
       }
     } else {
       stopTracking();
