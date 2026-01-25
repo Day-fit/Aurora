@@ -2,6 +2,7 @@ package pl.dayfit.auroracore.service
 
 import com.itextpdf.html2pdf.ConverterProperties
 import com.itextpdf.html2pdf.HtmlConverter
+import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider
 import com.itextpdf.kernel.geom.PageSize
 import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.kernel.pdf.PdfWriter
@@ -247,7 +248,12 @@ class GenerationService(
                 media.width = PageSize.A4.width
                 media.height = PageSize.A4.height
                 props.mediaDeviceDescription = media
-                val htmlBytes = htmlOs.toString().toByteArray()
+                
+                // Use DefaultFontProvider with embedded fonts for non-Latin character support
+                val fontProvider = DefaultFontProvider(true, true, true)
+                props.fontProvider = fontProvider
+                
+                val htmlBytes = htmlOs.toString().toByteArray(Charsets.UTF_8)
 
                 HtmlConverter.convertToPdf(
                     ByteArrayInputStream(htmlBytes),

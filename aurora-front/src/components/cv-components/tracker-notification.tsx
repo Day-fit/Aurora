@@ -25,17 +25,25 @@ export default function TrackerNotification() {
         // For auto-generation, redirect to create page with tracking ID
         // Store trackingId in sessionStorage for the create page to fetch data
         sessionStorage.setItem("autoGenerationTrackingId", trackingId);
+        stopTracking();
         router.push("/cv/create?autogen=true");
       } else if (resourceId) {
         // For translation/enhancement, redirect to edit the CV with the new resourceId
-        router.push(`/cv/create?id=${resourceId}`);
+        const targetPath = `/cv/create?id=${resourceId}`;
+        stopTracking();
+        
+        // Refresh to ensure stale data is cleared, then navigate to the new resource
+        router.refresh();
+        router.push(targetPath);
       } else {
         // Fallback: redirect to CV list page
+        stopTracking();
+        router.refresh();
         router.push("/cv");
       }
+    } else {
+      stopTracking();
     }
-    stopTracking();
-    router.refresh();
   };
 
   if (!isTracking) return null;
